@@ -1,0 +1,46 @@
+<jwt-app>
+  <ua-compatibility>IE8=IE7</ua-compatibility>
+  <use-script-nonce>true</use-script-nonce>
+  <serve-private-resources-to-bots>true</serve-private-resources-to-bots>
+
+  <user-agents type="bot">
+    <user-agent>.*bot.*</user-agent>
+    <user-agent>.*Bot.*</user-agent>
+    <user-agent>.*crawl.*</user-agent>
+    <user-agent>.*Crawl.*</user-agent>
+    <user-agent>.*spider.*</user-agent>
+    <user-agent>.*Spider.*</user-agent>
+    <user-agent>.*Slurp.*</user-agent>
+    <user-agent>.*ia_archiver.*</user-agent>
+    <user-agent>.*Twiceler.*</user-agent>
+    <user-agent>.*Yandex.*</user-agent>
+    <user-agent>.*Nutch.*</user-agent>
+    <user-agent>.*Ezooms.*</user-agent>
+    <user-agent>.*Scrapy.*</user-agent>
+    <user-agent>.*Buck.*</user-agent>
+    <user-agent>.*Barkrowler.*</user-agent>
+    <user-agent>.*Censys.*</user-agent>
+    <user-agent>.*Blogtrottr.*</user-agent>
+    <user-agent>.*InternetMeasurement.*</user-agent>
+    <user-agent>.*Owler.*</user-agent>
+    <user-agent>.*centuryb.o.t9.*</user-agent>
+    <user-agent>.*Turnitin.*</user-agent>
+    <user-agent>.*MatchorySearch.*</user-agent>
+    <user-agent>.*newspaper.*</user-agent>
+    <user-agent>.*Go-http-client.*</user-agent>
+    <user-agent>.*Mojolicious.*</user-agent>
+    <user-agent>.*python-requests.*</user-agent>
+    <user-agent>.*Python.*</user-agent>
+    <user-agent>.*python-urllib.*</user-agent>
+    <user-agent>.*Apache-HttpClient.*</user-agent>
+    <user-agent>.*com.apple.WebKit.Networking.*</user-agent>
+    <user-agent>.*NetworkingExtension.*</user-agent>
+  </user-agents>
+
+  <properties>
+    <property name="tinyMCEVersion">6</property>
+    <property name="tinyMCEBaseURL">wt-resources/tinymce6</property>
+    <property name="leafletJSURL">https://unpkg.com/leaflet@1.5.1/dist/leaflet.js</property>
+    <property name="leafletCSSURL">https://unpkg.com/leaflet@1.5.1/dist/leaflet.css</property>
+  </properties>
+</jwt-app>

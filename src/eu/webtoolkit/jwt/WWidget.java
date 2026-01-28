@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -443,11 +443,11 @@ public abstract class WWidget extends WObject {
     String canAdjustX = adjustOrientations.contains(Orientation.Horizontal) ? "true" : "false";
     String canAdjustY = adjustOrientations.contains(Orientation.Vertical) ? "true" : "false";
     this.doJavaScript(
-        "Wt4_12_1.positionAtWidget('"
+        "Wt4_12_2.positionAtWidget('"
             + this.getId()
             + "','"
             + widget.getId()
-            + "',Wt4_12_1"
+            + "',Wt4_12_2"
             + side
             + ","
             + "false,"
@@ -996,7 +996,7 @@ public abstract class WWidget extends WObject {
    * @see WWidget#isRendered()
    */
   public String getJsRef() {
-    return "Wt4_12_1.$('" + this.getId() + "')";
+    return "Wt4_12_2.$('" + this.getId() + "')";
   }
   /**
    * Sets an attribute value.
@@ -1570,6 +1570,7 @@ public abstract class WWidget extends WObject {
 
   static String WT_RESIZE_JS = "wtResize";
   static String WT_GETPS_JS = "wtGetPS";
+  protected static String WT_GETEXTRAMS_JS = "wtGetExtraMS";
   /**
    * Sets the widget to be aware of its size set by a layout manager.
    *

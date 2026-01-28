@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ class WebRenderer implements SlotLearnerInterface {
     this.linkedCssCount_ = -1;
     this.solution_ = "";
     this.currentStatelessSlotIsActuallyStateless_ = true;
-    this.cookiesToSet_ = new ArrayList<javax.servlet.http.Cookie>();
+    this.cookiesToSet_ = new ArrayList<Cookie>();
     this.currentFormObjects_ = new HashMap<String, WObject>();
     this.currentFormObjectsList_ = "";
     this.formObjectsChanged_ = true;
@@ -266,13 +266,13 @@ class WebRenderer implements SlotLearnerInterface {
     }
   }
 
-  public void setCookie(final javax.servlet.http.Cookie cookie) {
+  public void setCookie(final Cookie cookie) {
     this.cookiesToSet_.add(cookie);
     this.cookieUpdateNeeded_ = true;
   }
 
-  public void removeCookie(final javax.servlet.http.Cookie cookie) {
-    javax.servlet.http.Cookie tmp = cookie;
+  public void removeCookie(final Cookie cookie) {
+    Cookie tmp = cookie;
     tmp.setValue("deleted");
     tmp.setMaxAge(0);
     this.cookiesToSet_.add(tmp);
@@ -426,7 +426,7 @@ class WebRenderer implements SlotLearnerInterface {
   private int linkedCssCount_;
   private String solution_;
   private boolean currentStatelessSlotIsActuallyStateless_;
-  private List<javax.servlet.http.Cookie> cookiesToSet_;
+  private List<Cookie> cookiesToSet_;
   private Map<String, WObject> currentFormObjects_;
   private String currentFormObjectsList_;
   private boolean formObjectsChanged_;
@@ -435,7 +435,7 @@ class WebRenderer implements SlotLearnerInterface {
   private boolean cookieUpdateNeeded_;
 
   private void setHeaders(final WebResponse response, final String mimeType) {
-    for (javax.servlet.http.Cookie cookie : this.cookiesToSet_) {
+    for (Cookie cookie : this.cookiesToSet_) {
       response.addCookie(cookie);
     }
     this.cookiesToSet_.clear();
@@ -522,7 +522,7 @@ class WebRenderer implements SlotLearnerInterface {
         "SHOW_ERROR", conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
     script.setCondition("UGLY_INTERNAL_PATHS", this.session_.isUseUglyInternalPaths());
     script.setCondition("DYNAMIC_JS", false);
-    script.setVar("WT_CLASS", "Wt4_12_1");
+    script.setVar("WT_CLASS", "Wt4_12_2");
     script.setVar("APP_CLASS", app.getJavaScriptClass());
     script.setCondition("STRICTLY_SERIALIZED_EVENTS", conf.serializedEvents());
     script.setCondition("WEB_SOCKETS", conf.webSockets());
@@ -583,18 +583,18 @@ class WebRenderer implements SlotLearnerInterface {
         boolean enabledAjax = app.enableAjax_;
         if (app.enableAjax_) {
           this.collectedJS1_
-              .append("var form = Wt4_12_1.getElement('Wt-form'); if (form) {")
+              .append("var form = Wt4_12_2.getElement('Wt-form'); if (form) {")
               .append(this.beforeLoadJS_.toString());
           this.beforeLoadJS_.setLength(0);
           this.collectedJS1_
               .append("var domRoot=")
               .append(app.domRoot_.getJsRef())
               .append(';')
-              .append("Wt4_12_1.progressed(domRoot);");
+              .append("Wt4_12_2.progressed(domRoot);");
           int librariesLoaded = this.loadScriptLibraries(this.collectedJS1_, app);
           app.streamBeforeLoadJavaScript(this.collectedJS1_, false);
           this.collectedJS2_
-              .append("Wt4_12_1.resolveRelativeAnchors();")
+              .append("Wt4_12_2.resolveRelativeAnchors();")
               .append("domRoot.style.visibility = 'visible';")
               .append(app.getJavaScriptClass())
               .append("._p_.doAutoJavaScript();");
@@ -647,7 +647,7 @@ class WebRenderer implements SlotLearnerInterface {
               .append("}, 400);")
               .append("else ");
         }
-        out.append("Wt4_12_1.ready(function() { ")
+        out.append("Wt4_12_2.ready(function() { ")
             .append(app.getJavaScriptClass())
             .append("._p_.load(true);});\n");
       }
@@ -946,7 +946,7 @@ class WebRenderer implements SlotLearnerInterface {
     if (widgetset) {
       String historyE = app.getEnvironment().getParameter("Wt-history");
       if (historyE != null) {
-        out.append("Wt4_12_1")
+        out.append("Wt4_12_2")
             .append(".history.initialize('")
             .append(historyE.charAt(0))
             .append("-field', '")
@@ -964,7 +964,7 @@ class WebRenderer implements SlotLearnerInterface {
       out.append("};\n");
     }
     this.renderSetServerPush(out);
-    out.append("Wt4_12_1.ready(function() { ")
+    out.append("Wt4_12_2.ready(function() { ")
         .append(app.getJavaScriptClass())
         .append("._p_.load(")
         .append(!widgetset)
@@ -1196,7 +1196,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void loadStyleSheet(
       final StringBuilder out, WApplication app, final WLinkedCssStyleSheet sheet) {
-    out.append("Wt4_12_1")
+    out.append("Wt4_12_2")
         .append(".addStyleSheet('")
         .append(sheet.getLink().resolveUrl(app))
         .append("', '")
@@ -1215,7 +1215,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   private void removeStyleSheets(final StringBuilder out, WApplication app) {
     for (int i = (int) app.styleSheetsToRemove_.size() - 1; i > -1; --i) {
-      out.append("Wt4_12_1")
+      out.append("Wt4_12_2")
           .append(".removeStyleSheet('")
           .append(app.styleSheetsToRemove_.get(i).getLink().resolveUrl(app))
           .append("');\n ");
@@ -1768,9 +1768,7 @@ class WebRenderer implements SlotLearnerInterface {
 
   void updateMultiSessionCookie(final WebRequest request) {
     final Configuration conf = this.session_.getController().getConfiguration();
-    javax.servlet.http.Cookie cookie =
-        new javax.servlet.http.Cookie(
-            "ms" + request.getScriptName(), this.session_.getMultiSessionId());
+    Cookie cookie = new Cookie("ms" + request.getScriptName(), this.session_.getMultiSessionId());
     cookie.setMaxAge(conf.getMultiSessionCookieTimeout());
     cookie.setSecure(this.session_.getEnv().getUrlScheme().equals("https"));
     this.setCookie(cookie);

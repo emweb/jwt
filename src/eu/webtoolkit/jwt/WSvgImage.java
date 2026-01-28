@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -337,6 +337,39 @@ public class WSvgImage extends WResource implements WVectorImage {
     response.setContentType("image/svg+xml");
     Writer o = response.out();
     this.streamResourceData(o);
+  }
+  /**
+   * Creates a new bot resource.
+   *
+   * <p>By default, this returns a {@link WMemoryResource}, if the {@link
+   * WResource#getBotResourceId()} was set, or a {@link WSelfDeletingResource} otherwise.
+   *
+   * <p>In both cases, the resource will serve the image data as if it was served just before the
+   * destruction of the {@link WApplication} (still after the execution of {@link
+   * WApplication#destroy()}).
+   *
+   * <p>
+   *
+   * @see WResource#setBotResourceId(String id)
+   */
+  public WResource getBotResource() {
+    WMemoryResource res = null;
+    if (this.useCustomBotResourceId()) {
+      res = new WMemoryResource("image/svg+xml");
+    } else {
+      res = new WSelfDeletingResource("image/svg+xml");
+    }
+    try {
+      res.setData(this.writeToMemory());
+    } catch (final IOException e) {
+      logger.error(
+          new StringWriter()
+              .append("Failed to generate bot resource for SVG image: ")
+              .append(e.getMessage())
+              .toString());
+      return null;
+    }
+    return res;
   }
 
   public WPainter getPainter() {

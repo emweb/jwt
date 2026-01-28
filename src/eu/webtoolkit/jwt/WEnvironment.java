@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +52,7 @@ public class WEnvironment {
 
   /** Wt&apos;s JavaScript scope. */
   public static String getJavaScriptWtScope() {
-    return "Wt4_12_1";
+    return "Wt4_12_2";
   }
   /**
    * Parameters passed to the application.
@@ -112,8 +112,8 @@ public class WEnvironment {
    * Returns the cookies from the environment.
    *
    * <p>This returns all cookies that were present in initial request for the application. Cookies
-   * set with {@link WApplication#setCookie(javax.servlet.http.Cookie cookie)
-   * WApplication#setCookie()} are not taken into consideration.
+   * set with {@link WApplication#setCookie(Cookie cookie) WApplication#setCookie()} are not taken
+   * into consideration.
    *
    * <p>Cookies allow you to persist information across sessions, but note that not all clients may
    * support cookies or may some clients may be configured to block cookies.
@@ -485,7 +485,7 @@ public class WEnvironment {
    * <p>Example: <code>&quot;1.99.2&quot;</code>
    */
   public static String getLibraryVersion() {
-    return "4.12.1";
+    return "4.12.2";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int
   // major, final bad java simple ref int minor) ;

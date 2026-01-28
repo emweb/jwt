@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -731,7 +731,7 @@ public class WPainterPath extends WJavaScriptExposableObject {
   public WPainterPath getCrisp() {
     WPainterPath result = new WPainterPath();
     if (this.isJavaScriptBound()) {
-      result.assignBinding(this, "Wt4_12_1.gfxUtils.path_crisp(" + this.getJsRef() + ')');
+      result.assignBinding(this, "Wt4_12_2.gfxUtils.path_crisp(" + this.getJsRef() + ')');
     }
     for (int i = 0; i < this.segments_.size(); ++i) {
       final WPainterPath.Segment segment = this.segments_.get(i);

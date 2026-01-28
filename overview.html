@@ -25,6 +25,220 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
 
+<h2>Release 4.12.2 (January 28, 2026)</h2>
+
+<p>JWt 4.12.2 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13767" target="_blank">Issue #13767</a>:
+    Some servlet containers threw an error if the jsessionid should have been appended.
+    This error is now caught and the URL is constructed manually.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14051" target="_blank">Issue #14051</a>:
+    fixed URLS starting with a dot sometimes being reduced to only the first character
+    after that point, or raising an index out of bounds exception when the URL only
+    contained a dot.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14177" target="_blank">Issue #14177</a>:
+    ensured that <a href="eu/webtoolkit/jwt/WXmlLocalizedStrings.html" target="_blank">WXmlLocalizedStrings</a>
+    are queried in the reverse order they are added. If two bundles offer the same key, the last added
+    instance will take precedence.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14038" target="_blank">Issue #14038</a>:
+    ensured that the propagation of the enabled/disabled state of a <a href="eu/webtoolkit/jwt/WCompositeWidget.html" target="_blank">WCompositeWidget</a>
+    does not happen when no implementation is specified yet.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13880" target="_blank">Issue #13880</a>:
+    fixed bot potentially being redirected to another page when trying to load a private
+    resource.
+
+    Additionally, it is now possible to configure whether private resources are served
+    to bots by setting the <code>serve-private-resources-to-bots</code> option to true.
+    In that case, the private resources that have overridden the
+    <a href="eu/webtoolkit/jwt/WResource.html#getBotResource()" target="_blank">WResource.getBotResource()</a>
+    method will be added as public resources so that it can be served to bots. That
+    function is already overridden by
+    <a href="eu/webtoolkit/jwt/WRasterPaintDevice.html" target="_blank">WRasterPaintDevice</a> and
+    <a href="eu/webtoolkit/jwt/WSvgImage.html" target="_blank">WSvgImage</a>.
+    The path under which these bot resources are exposed can be configured using the
+    <code>bot-resources-path</code> option in the <code>wt_config.xml</code> file and the
+    <a href="eu/webtoolkit/jwt/WResource.html#setBotResourceId(java.lang.String)" target="_blank">WResource.setBotResourceId()</a>
+    method.
+
+    Finally, in order to help managing those bot resources, it is now possible to remove
+    entrypoints while the server is running, and the new
+    <a href="eu/webtoolkit/jwt/WSelfDeletingResource.html" target="_blank">WSelfDeletingResource</a>
+    class was added, which is a WResource that will automatically unexposed itself after
+    being served once.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13798" target="_blank">Issue #13798</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a> submenus not taking
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#setAdjust(java.util.EnumSet)" target="_blank">WPopupMenu.setAdjust()</a>
+    flags into account when opening. Since
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a> submenus can now
+    hide its parent menu, more control over
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#setAutoHide(boolean)" target="_blank">WPopupMenu.setAutoHide()</a>
+    was added, by allowing to change it for submenus as well, and by adding different
+    <a href="eu/webtoolkit/jwt/WPopupMenu.AutoHideBehaviour.html" target="_blank">WPopupMenu.AutoHideBehaviour</a>
+    options that can be set using
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#setAutoHideBehaviour(eu.webtoolkit.jwt.WPopupMenu.AutoHideBehaviour)" target="_blank">WPopupMenu.setAutoHideBehaviour()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14058" target="_blank">Issue #14058</a>:
+    ensured the initial <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> or
+    <a href="eu/webtoolkit/jwt/WTabWidget.html" target="_blank">WTabWidget</a> selection is visually rendered.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13861" target="_blank">Issue #13861</a>:
+    corrected the layout rendering for <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a>,
+    that are loaded <a href="eu/webtoolkit/jwt/ContentLoading.html#Lazy" target="_blank">Lazy</a>
+    through a <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13961" target="_blank">Issue #13961</a>:
+    corrected a check in the JavaScript code that was creating an error when pasting content to a
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13786" target="_blank">Issue #13786</a>:
+    fixed <a href="eu/webtoolkit/jwt/WTableView.html#scrollTo(eu.webtoolkit.jwt.WModelIndex,eu.webtoolkit.jwt.ScrollHint)" target="_blank">WTableView::scrollTo()</a>
+    only checking if the top of the row was in the viewport in order to decide whether to scroll or not. It will now scroll if
+    either the top or the bottom of the row are not in the viewport.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13818" target="_blank">Issue #13818</a>:
+    fixed <a href="eu/webtoolkit/jwt/WGroupBox.html" target="_blank">WGroupBox</a> switching from horizontal to vertical layouting inside a
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a> when using
+    <a href="eu/webtoolkit/jwt/WGroupBox.html#setTitle(java.lang.CharSequence)" target="_blank">WGroupBox.setTitle()</a>.
+
+    Additionally, fixed
+    <a href="eu/webtoolkit/jwt/WGroupBox.html" target="_blank">WGroupBox</a> not always respecting the minimum
+    size of its content when having a
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#JavaScript" target="_blank">LayoutImplementation.JavaScript</a>.
+    This could lead to other widget overlapping the content of the
+    <a href="eu/webtoolkit/jwt/WGroupBox.html" target="_blank">WGroupBox</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13670" target="_blank">Issue #13670</a>:
+    fixed the following issues with layouts:
+    <ul>
+      <li>
+        a bug where JavaScript layouts would sometimes not allow its
+        <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a> to be resized.
+      </li>
+      <li>
+        a bug leading to items in flex layouts to have negative margins.
+      </li>
+      <li>
+        JavaScript layouts not taking margins into account if those margins width were set using
+        "thin", "medium" or "thick".
+      </li>
+      <li>
+        JavaScript layouts sometimes leaving a pixel between its content and the border of its
+        <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a>. This was
+        especially visible when zooming in or out on the page.
+      </li>
+      <li>
+        elements inside of
+        <a href="eu/webtoolkit/jwt/WHBoxLayout.html" target="_blank">WHBoxLayout</a> or
+        <a href="eu/webtoolkit/jwt/WVBoxLayout.html" target="_blank">WVBoxLayout</a> respectively not filling
+        the entire column/row, if its height/width was not set to "auto".
+      </li>
+      <li>
+        flex layouts not making their
+        <a href="eu/webtoolkit/jwt/WContainerWidget.html" target="_blank">WContainerWidget</a> fit its content
+        when the <code>WContainerWidget</code> had a <code>max-width</code> or a <code>max-height</code>
+        set, without having a <code>width</code> or a <code>height</code> set.
+      </li>
+      <li>
+        flex layouts not allowing their content aligned in the same direction as itself to be shrunk.
+        This could lead to several elements overlapping each other.
+      </li>
+    </ul>
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13674" target="_blank">Issue #13674</a>:
+    fixed URL fragments sometimes being considered part of the internal path.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13777" target="_blank">Issue #13777</a>:
+    It's now made sure that a change on <a href="eu/webtoolkit/jwt/WStandardItemModel.html" target="_blank">WStandardItemModel</a>
+    cannot be performed on invalid indices, with a crash as a result.
+    Nor can this change be (incorrectly) propagated to a <a href="eu/webtoolkit/jwt/WTreeView.html" target="_blank">WTreeView</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14079" target="_blank">Issue #14079</a>:
+    corrected various functions of both <a href="eu/webtoolkit/jwt/WAbstractItemModel.html" target="_blank">WAbstractItemModel</a> and
+    <a href="eu/webtoolkit/jwt/WAbstractListModel.html" target="_blank">WAbstractListModel</a>.
+    Many of its implementations also received fixes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13388" target="_blank">Issue #13388</a>:
+    prevented a segmentation fault from happening when authenticating a user with
+    <a href="eu/webtoolkit/jwt/auth/mfa/TotpProcess.html" target="_blank">Auth.Mfa.TotpProcess</a>
+    while using a database not supporting transactions.
+  </li>
+</ul>
+
+<p>JWt 4.12.2 also addresses the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13207" target="_blank">Issue #13207</a>:
+    added the ability to use a <code>jwt_config.xml</code> file instead of setting configuration in code.
+    This way configuration can be changed, with just a servlet restart. This can be set with the init-param: <code>jwt-config</code> in the <code>web.xml</code>.
+    The whole <a href="eu/webtoolkit/jwt/Configuration.html" target="_blank">Configuration</a> file is now more in line with Wt, introducing missing setters for the max request size, webGL, and bootstrapping.
+    Some options in the <a href="eu/webtoolkit/jwt/Configuration.html" target="_blank">Configuration</a> are now correcly deprecated.
+    The <a href="eu/webtoolkit/jwt/Configuration.html#debug()" target="_blank">Configuration.debug()</a> getter now returns the correct value.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13770" target="_blank">Issue #13770</a>:
+    separated the default strings and templates in two different <code>xml</code> files. This should make it easier to localize the default strings.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13791" target="_blank">Issue #13791</a>:
+    made the focus go back to the last focused widget when a popup gets hidden.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13776" target="_blank">Issue #13776</a>:
+    the validity time of the link sent to:
+    <ul>
+      <li>validate a user's email address</li>
+      <li>reset a user's password</li>
+    </ul>
+    is now mentioned in both the email itself and the confirmation popup shown to the user.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14267" target="_blank">Issue #14267</a>:
+    added client URL in JavaScript error reports.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14192" target="_blank">Issue #14192</a>:
+    made <a href="eu/webtoolkit/jwt/auth/mfa/Totp.html#validateCode(java.lang.String,java.lang.String,int,java.time.Duration)" target="_blank">Auth.Mfa.Totp.validateCode()</a>
+    accept the next code as well as the current and previous codes.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13052" target="_blank">Issue #13052</a>:
+    delayed the generation of the internal path from text in
+    <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a> until
+    <a href="eu/webtoolkit/jwt/WMenuItem.html#getPathComponent()" target="_blank">WMenuItem.getPathComponent()</a> is called.
+    This will stop potential warnings about loss of detail when setting the text of a WMenuItem if the internal path is not used.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13676" target="_blank">Issue #13676</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WFileDropWidget.html" target="_blank">WFileDropWidget</a> making the client update
+    whether it can accept files or not every time it was updated.
+  </li>
+</ul>
+
 <h2>Release 4.12.1 (October 16, 2025)</h2>
 
 <p>JWt 4.12.1 is a patch release that addresses the following issues:</p>

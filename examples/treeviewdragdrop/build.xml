@@ -35,7 +35,7 @@
     <copy todir="${jwt-lib.dir}" flatten="true">
       <fileset dir="${jwt.dir}/dist" />
       <fileset dir="${jwt.dir}/lib" 
-	       includes="*.jar servlet-api/*.jar gson/*.jar"/>
+	       includes="*.jar jakarta/*.jar jakarta/servlet-api/*.jar gson/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>

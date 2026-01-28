@@ -15,8 +15,8 @@ import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

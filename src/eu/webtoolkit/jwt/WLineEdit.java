@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -396,7 +396,7 @@ public class WLineEdit extends WFormWidget {
     String s = String.valueOf(start);
     String e = String.valueOf(start + length);
     this.doJavaScript(
-        "Wt4_12_1.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
+        "Wt4_12_2.setUnicodeSelectionRange(" + this.getJsRef() + "," + s + "," + e + ")");
   }
   /**
    * Returns the current cursor position.
@@ -807,7 +807,7 @@ public class WLineEdit extends WFormWidget {
     String space = "";
     space += this.spaceChar_;
     String jsObj =
-        "new Wt4_12_1.WLineEdit("
+        "new Wt4_12_2.WLineEdit("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

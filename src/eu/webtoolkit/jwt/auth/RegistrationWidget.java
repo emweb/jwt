@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -219,7 +219,19 @@ public class RegistrationWidget extends WTemplateFormView {
             this.model_.loginUser(this.model_.getLogin(), user);
           } else {
             if (this.authWidget_ != null) {
-              this.authWidget_.displayInfo(WString.tr("Wt.Auth.confirm-email-first"));
+              int validity = this.model_.getBaseAuth().getEmailTokenValidity();
+              int hours = validity / 60;
+              int minutes = validity % 60;
+              WString validityStr =
+                  hours != 0 && minutes != 0 ? WString.tr("Wt.Auth.and") : new WString("{1}");
+              if (hours != 0) {
+                validityStr.arg(WString.trn("Wt.Auth.time.hours-only", hours).arg(hours));
+              }
+              if (minutes != 0) {
+                validityStr.arg(WString.trn("Wt.Auth.time.minutes-only", minutes).arg(minutes));
+              }
+              this.authWidget_.displayInfo(
+                  WString.tr("Wt.Auth.confirm-email-first").arg(validityStr));
             }
             this.close();
           }

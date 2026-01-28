@@ -17,7 +17,9 @@
     <fileset dir="." />
     <fileset dir="${jwt.dir}/dist" />
     <fileset dir="${jwt.dir}/lib" />
-    <fileset dir="${jwt.dir}/lib/servlet-api" />
+    <fileset dir="${jwt.dir}/lib/jakarta" />
+    <fileset dir="${jwt.dir}/lib/jakarta/servlet-api/" />
+    <fileset dir="${jwt.dir}/lib/hibernate" />
   </path>
 
   <target name="all" depends="dist">
@@ -36,10 +38,10 @@
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
     
     <mkdir dir="${jwt-lib.dir}"/>
-    <copy todir="${jwt-lib.dir}">
+    <copy todir="${jwt-lib.dir}" flatten="true">
       <fileset dir="${jwt.dir}/dist" />
-      <fileset dir="${jwt.dir}/lib" 
-	       includes="*.jar servlet-api/*.jar"/>
+      <fileset dir="${jwt.dir}/lib"
+               includes="*.jar jakarta/*.jar jakarta/servlet-api/*.jar gson/*.jar hibernate/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>
@@ -65,10 +67,7 @@
 	 webxml="WebRoot/WEB-INF/web.xml"
 	 duplicate="preserve">
       <fileset dir="WebRoot"/>
-      <lib dir="${jwt-lib.dir}" 
-	   includes="**/*.jar" 
-	   excludes="servlet-api-*.jar">
-      </lib>
+      <lib dir="${jwt-lib.dir}" includes="*.jar" excludes="servlet-api-*.jar" />
       <classes dir="${build.dir}"/>
     </war>
   </target>

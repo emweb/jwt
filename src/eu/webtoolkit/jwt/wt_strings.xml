@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<messages nplurals="2"
+          plural="n == 1 ? 0 : 1">
+  <message id="Wt.QuittedMessage">
+    The application has stopped running, would you like to restart?
+  </message>
+
+  <message id="Wt.WAbstractItemView.PageIOfN"><b>{1}</b> of <b>{2}</b></message>
+  <message id="Wt.WAbstractItemView.PageBar.First">&#x00ab; First</message>
+  <message id="Wt.WAbstractItemView.PageBar.Previous">&#x2039; Previous</message>
+  <message id="Wt.WAbstractItemView.PageBar.Next">Next &#x203a;</message>
+  <message id="Wt.WAbstractItemView.PageBar.Last">Last &#x00bb;</message>
+
+  <message id="Wt.WCalendar.PrevMonth">&#x00ab;</message>
+  <message id="Wt.WCalendar.NextMonth">&#x00bb;</message>
+  <message id="Wt.WCalendar.today">Today</message>
+
+  <message id="Wt.WDate.Monday">Monday</message>
+  <message id="Wt.WDate.Tuesday">Tuesday</message>
+  <message id="Wt.WDate.Wednesday">Wednesday</message>
+  <message id="Wt.WDate.Thursday">Thursday</message>
+  <message id="Wt.WDate.Friday">Friday</message>
+  <message id="Wt.WDate.Saturday">Saturday</message>
+  <message id="Wt.WDate.Sunday">Sunday</message>
+  <message id="Wt.WDate.3.Mon">Mon</message>
+  <message id="Wt.WDate.3.Tue">Tue</message>
+  <message id="Wt.WDate.3.Wed">Wed</message>
+  <message id="Wt.WDate.3.Thu">Thu</message>
+  <message id="Wt.WDate.3.Fri">Fri</message>
+  <message id="Wt.WDate.3.Sat">Sat</message>
+  <message id="Wt.WDate.3.Sun">Sun</message>
+  <message id="Wt.WDate.January">January</message>
+  <message id="Wt.WDate.February">February</message>
+  <message id="Wt.WDate.March">March</message>
+  <message id="Wt.WDate.April">April</message>
+  <message id="Wt.WDate.May">May</message>
+  <message id="Wt.WDate.June">June</message>
+  <message id="Wt.WDate.July">July</message>
+  <message id="Wt.WDate.August">August</message>
+  <message id="Wt.WDate.September">September</message>
+  <message id="Wt.WDate.October">October</message>
+  <message id="Wt.WDate.November">November</message>
+  <message id="Wt.WDate.December">December</message>
+  <message id="Wt.WDate.3.Jan">Jan</message>
+  <message id="Wt.WDate.3.Feb">Feb</message>
+  <message id="Wt.WDate.3.Mar">Mar</message>
+  <message id="Wt.WDate.3.Apr">Apr</message>
+  <message id="Wt.WDate.3.May">May</message>
+  <message id="Wt.WDate.3.Jun">Jun</message>
+  <message id="Wt.WDate.3.Jul">Jul</message>
+  <message id="Wt.WDate.3.Aug">Aug</message>
+  <message id="Wt.WDate.3.Sep">Sep</message>
+  <message id="Wt.WDate.3.Oct">Oct</message>
+  <message id="Wt.WDate.3.Nov">Nov</message>
+  <message id="Wt.WDate.3.Dec">Dec</message>
+
+  <message id="Wt.WDatePicker.Close">Close</message>
+
+  <message id="Wt.WDateTime.LessThanASecond">less than a second</message>
+  <message id="Wt.WDateTime.seconds">
+    <plural case="0">one second</plural>
+    <plural case="1">{1} seconds</plural>
+  </message>
+  <message id="Wt.WDateTime.minutes">
+    <plural case="0">one minute</plural>
+    <plural case="1">{1} minutes</plural>
+  </message>
+  <message id="Wt.WDateTime.hours">
+    <plural case="0">one hour</plural>
+    <plural case="1">{1} hours</plural>
+  </message>
+  <message id="Wt.WDateTime.days">
+    <plural case="0">one day</plural>
+    <plural case="1">{1} days</plural>
+  </message>
+  <message id="Wt.WDateTime.weeks">
+    <plural case="0">one week</plural>
+    <plural case="1">{1} weeks</plural>
+  </message>
+  <message id="Wt.WDateTime.months">
+    <plural case="0">one month</plural>
+    <plural case="1">{1} months</plural>
+  </message>
+  <message id="Wt.WDateTime.years">
+    <plural case="0">one year</plural>
+    <plural case="1">{1} years</plural>
+  </message>
+  <message id="Wt.WDateTime.null"></message>
+
+  <message id="Wt.WDateValidator.DateTooEarly">The date must be after {1}</message>
+  <message id="Wt.WDateValidator.DateTooLate">The date must be before {1}</message>
+  <message id="Wt.WDateValidator.WrongDateRange">The date must be between {1} and {2}</message>
+  <message id="Wt.WDateValidator.WrongFormat">Must be a date in the format '{1}'</message>
+
+  <message id="Wt.WEmailValidator.Invalid">Must be a valid email address</message>
+  <message id="Wt.WEmailValidator.Invalid.Multiple">Must be a comma-separated list of email addresses</message>
+  <message id="Wt.WEmailValidator.NotMatching">Must be an email address matching the pattern '{1}'</message>
+  <message
+    id="Wt.WEmailValidator.NotMatching.Multiple">Must be a comma-separated list of email addresses matching the pattern '{1}'</message>
+
+  <message id="Wt.WTimeValidator.TimeTooEarly">The time must be after {1}</message>
+  <message id="Wt.WTimeValidator.TimeTooLate">The time must be before {1}</message>
+  <message id="Wt.WTimeValidator.WrongTimeRange">The time must be between {1} and {2}</message>
+  <message id="Wt.WTimeValidator.WrongFormat">Must be a time in the format '{1}'</message>
+  <message id="Wt.WTimeValidator.WrongStep">An invalid increment has been used</message>
+  <message id="Wt.WTimeValidator.WrongStep-seconds">The time must be an increment of {1} second(s)</message>
+  <message id="Wt.WTimeValidator.WrongStep-minutes">The time must be an increment of {1} minute(s)</message>
+
+  <message id="Wt.WDefaultLoadingIndicator.Loading">Loading...</message>
+
+  <message id="Wt.WDoubleValidator.NotANumber">Must be a number</message>
+  <message id="Wt.WDoubleValidator.TooSmall">The number must be larger than {1}</message>
+  <message id="Wt.WDoubleValidator.BadRange">The number must be in the range {1} to {2}</message>
+  <message id="Wt.WDoubleValidator.TooLarge">The number must be smaller than {1}</message>
+
+  <message id="Wt.WInPlaceEdit.Save">Save</message>
+  <message id="Wt.WInPlaceEdit.Cancel">Cancel</message>
+
+  <message id="Wt.WIntValidator.NotAnInteger">Must be an integer number</message>
+  <message id="Wt.WIntValidator.TooSmall">The number must be larger than {1}</message>
+  <message id="Wt.WIntValidator.BadRange">The number must be in the range {1} to {2}</message>
+  <message id="Wt.WIntValidator.TooLarge">The number must be smaller than {1}</message>
+
+  <message id="Wt.WLengthValidator.TooShort">The input must be at least {1} characters</message>
+  <message id="Wt.WLengthValidator.BadRange">The input must have a length between {1} and {2} characters</message>
+  <message id="Wt.WLengthValidator.TooLong">The input must be no more than {1} characters</message>
+
+  <message id="Wt.WPasswordValidator.TooShort">The password is too short</message>
+  <message id="Wt.WPasswordValidator.TooLong">The password is too long</message>
+
+  <message id="Wt.WMediaPlayer.play">Play</message>
+  <message id="Wt.WMediaPlayer.pause">Pause</message>
+  <message id="Wt.WMediaPlayer.stop">Stop</message>
+  <message id="Wt.WMediaPlayer.mute">Mute</message>
+  <message id="Wt.WMediaPlayer.unmute">Unmute</message>
+  <message id="Wt.WMediaPlayer.volume-max">Maximum volume</message>
+  <message id="Wt.WMediaPlayer.repeat">Repeat</message>
+  <message id="Wt.WMediaPlayer.repeat-off">Repeat off</message>
+  <message id="Wt.WMediaPlayer.video-play-icon">Play</message>
+  <message id="Wt.WMediaPlayer.full-screen">Full screen</message>
+  <message id="Wt.WMediaPlayer.restore-screen">Restore screen</message>
+
+  <message id="Wt.WMessageBox.Abort">Abort</message>
+  <message id="Wt.WMessageBox.Cancel">Cancel</message>
+  <message id="Wt.WMessageBox.Ignore">Ignore</message>
+  <message id="Wt.WMessageBox.No">No</message>
+  <message id="Wt.WMessageBox.NoToAll">No to All</message>
+  <message id="Wt.WMessageBox.Ok">Ok</message>
+  <message id="Wt.WMessageBox.Retry">Retry</message>
+  <message id="Wt.WMessageBox.Yes">Yes</message>
+  <message id="Wt.WMessageBox.YesToAll">Yes to All</message>
+
+  <message id="Wt.WOverlayLoadingIndicator.Loading">Loading...</message>
+
+  <message id="Wt.WRegExpValidator.Invalid">Invalid input</message>
+
+  <message id="Wt.WValidator.Invalid">This field cannot be empty</message>
+
+  <message id="Wt.true">true</message>
+  <message id="Wt.false">false</message>
+</messages>

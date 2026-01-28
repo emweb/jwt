@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -153,7 +153,7 @@ public class AuthThrottle {
     app.loadJavaScript("js/AuthThrottle.js", wtjs1());
     button.setJavaScriptMember(
         " AuthThrottle",
-        "new Wt4_12_1.AuthThrottle(Wt4_12_1,"
+        "new Wt4_12_2.AuthThrottle(Wt4_12_2,"
             + button.getJsRef()
             + ","
             + WString.toWString(WString.tr("Wt.Auth.throttle-retry")).getJsStringLiteral()

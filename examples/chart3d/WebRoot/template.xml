@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+	<message id="surface-chart">
+		<h2>Surface chart features</h2>
+		
+		<p>
+			This chart demos the new 3D chart features in JWt 3.3.4.
+			Featured are:
+			<ol>
+				<li>Customizable mouse handlers, demo'd here with:
+					<ol>
+						<li>Panning with right mouse button (camera handler)</li>
+						<li>Zooming with middle mouse button (camera handler)</li>
+						<li>Rectangle selection on right-click drag (spiral selection)</li>
+					</ol>
+				</li>
+				<li>Intersection lines between surfaces</li>
+				<li>Invisible intersection planes, to show isolines on the surface</li>
+				<li>Picking (the surface and points on the spiral can be selected)</li>
+				<li>Isolines on the top and bottom plane</li>
+				<li>Clipping along the axes, with highlighting</li>
+				<li>Point sprites: the points on the spiral are crosses</li>
+			</ol>
+		</p>
+
+		<div class="selectable-area">
+		    ${chart}
+		    ${selected-range}
+		</div>
+		
+		<div class="settings-column">
+		    <h3>Mouse handlers</h3>
+		    <p>Hover over the mouse handlers to see their description.</p>
+		    ${mouse-handler}
+
+		    <h3>Intersection lines</h3>
+		    <p>${intersection-lines}</p>
+		    <p>color: ${intersection-lines-color}</p>
+		    
+		    <h3>Invisible intersection planes</h3>
+		    <p>${intersection-planes}</p>
+		    
+		    <h3>Isolines</h3>
+		    <p>${isolines}</p>
+		</div>
+
+		<div class="settings-column">
+    		<h3>Clipping</h3>
+    
+    		${clipping-lines}
+    
+    		<h4>X</h4>
+    		<div>
+    			<span class="slider-label">Min:</span>
+    			${x-min-slider} 
+    			<br />
+    			<span class="slider-label">Max:</span>
+    			${x-max-slider} 
+    		</div>
+    
+    		<h4>Y</h4>
+    		<div>
+    			<span class="slider-label">Min:</span>
+    			${y-min-slider} 
+    			<br />
+    			<span class="slider-label">Max:</span>
+    			${y-max-slider} 
+    		</div>
+    
+    		<h4>Z</h4>
+    		<div>
+    			<span class="slider-label">Min:</span>
+    			${z-min-slider} 
+    			<br />
+    			<span class="slider-label">Max:</span>
+    			${z-max-slider} 
+    		</div>
+  		</div>
+		
+		<div class="clear"></div>
+	</message>
+	
+	<message id="camera-tooltip">
+    	<div class="camera-tooltip">
+	    	The camera mouse handler allows for rotating the
+	    	camera and zooming in and out, but also:
+	    	
+	    	<ul>
+	    		<li>Panning with the right mouse button</li>
+	    		<li>Zooming using the middle mouse button,
+	    			or by pressing the left and right mouse
+	    			button simultaneously.</li>
+	    	</ul>
+		</div>
+	</message>
+	
+	<message id="select-sombrero-tooltip">
+		<div class="camera-tooltip">
+		    <p>
+			    This mouse handler allows you to pick a point
+			    on the sombrero surface by clicking on it. All intersections
+			    will be shown with blue squares.
+			</p>
+			<p>
+			    The list of selections
+			    has a distance parameter, so that you can filter on
+			    distance, e.g. when you only want the nearest intersection.
+			</p>
+			
+			<p>
+			    Use <tt>CTRL</tt> to add to the existing selection.
+			</p>
+		</div>
+	</message>
+	
+	<message id="select-spiral-tooltip">
+		<div class="camera-tooltip">
+		    <p>
+			    This mouse handler allows you to pick points on the
+			    spiral by clicking on them.
+			</p>
+			
+			<p>
+	    		You can use the right mouse button to draw a rectangle
+	    		within which all points should be selected.
+			</p>
+			
+			<p>
+     			Use <tt>CTRL</tt> to add to the existing selection.
+			</p>
+		</div>
+	</message>
+</messages>

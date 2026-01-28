@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -2401,7 +2401,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
 
   public void setJavaScriptMatrix4(
       final WGLWidget.JavaScriptMatrix4x4 jsm, final javax.vecmath.Matrix4f m) {
-    this.js_.append("Wt4_12_1.glMatrix.mat4.set(");
+    this.js_.append("Wt4_12_2.glMatrix.mat4.set(");
     javax.vecmath.Matrix4f t = WebGLUtils.transpose(m);
     WebGLUtils.renderfv(this.js_, t, JsArrayType.Float32Array);
     this.js_.append(", ").append(jsm.getJsRef()).append(");");
@@ -2548,7 +2548,7 @@ class WClientGLWidget extends WAbstractGLImplementation {
   public void render(final String jsRef, EnumSet<RenderFlag> flags) {
     if (flags.contains(RenderFlag.Full)) {
       StringWriter tmp = new StringWriter();
-      tmp.append("{\nvar o = new Wt4_12_1.WGLWidget(")
+      tmp.append("{\nvar o = new Wt4_12_2.WGLWidget(")
           .append(WApplication.getInstance().getJavaScriptClass())
           .append(",")
           .append(jsRef)

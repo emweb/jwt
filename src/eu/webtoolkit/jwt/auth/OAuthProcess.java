@@ -10,13 +10,14 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +142,7 @@ public class OAuthProcess extends WObject {
         && this.service_.isPopupEnabled()) {
       StringBuilder js = new StringBuilder();
       js.append("function(object, event) {")
-          .append("Wt4_12_1.PopupWindow(Wt4_12_1")
+          .append("Wt4_12_2.PopupWindow(Wt4_12_2")
           .append(",")
           .append(WWebWidget.jsStringLiteral(this.getAuthorizeUrl()))
           .append(", ")
@@ -253,6 +254,7 @@ public class OAuthProcess extends WObject {
     this.startInternalPath_ = "";
     this.redirectEndpoint_ = null;
     this.httpClient_ = null;
+    this.updateMutex_ = new ReentrantLock();
     this.doneCallbackConnection_ = new AbstractSignal.Connection();
     this.redirectEndpoint_ = new OAuthRedirectEndpoint(this);
     WApplication app = WApplication.getInstance();
@@ -371,6 +373,7 @@ public class OAuthProcess extends WObject {
   String startInternalPath_;
   private OAuthRedirectEndpoint redirectEndpoint_;
   private HttpClient httpClient_;
+  private ReentrantLock updateMutex_;
   AbstractSignal.Connection doneCallbackConnection_;
 
   void requestToken(final String authorizationCode) {

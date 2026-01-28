@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,6 +111,9 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
   public WModelIndex mapToSource(final WModelIndex proxyIndex) {
     if ((proxyIndex != null)) {
       WSortFilterProxyModel.Item parentItem = this.parentItemFromIndex(proxyIndex);
+      if ((int) parentItem.proxyRowMap_.size() <= proxyIndex.getRow()) {
+        return null;
+      }
       return this.getSourceModel()
           .getIndex(
               parentItem.proxyRowMap_.get(proxyIndex.getRow()),
@@ -468,7 +471,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
     if (row < currentCount) {
       sourceRow = this.mapToSource(this.getIndex(row, 0, parent)).getRow();
     } else {
-      sourceRow = this.getSourceModel().getRowCount(this.mapToSource(parent));
+      if (row > currentCount) {
+        row = currentCount;
+        sourceRow = this.getSourceModel().getRowCount(this.mapToSource(parent));
+      } else {
+        sourceRow = this.getSourceModel().getRowCount(this.mapToSource(parent));
+      }
     }
     this.inserting_ = true;
     boolean result = this.getSourceModel().insertRows(sourceRow, count, this.mapToSource(parent));
@@ -477,9 +485,15 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
       return false;
     }
     WSortFilterProxyModel.Item item = this.itemFromIndex(parent);
-    this.beginInsertRows(parent, row, row);
-    item.proxyRowMap_.add(sourceRow);
-    item.sourceRowMap_.add(0 + sourceRow, row);
+    this.beginInsertRows(parent, row, row + count - 1);
+    for (int i = 0; i < count; i++) {
+      item.proxyRowMap_.add(0 + row + i, sourceRow + i);
+      item.sourceRowMap_.add(0 + sourceRow + i, row + i);
+    }
+    for (int i = row + count; i < this.getRowCount(); ++i) {
+      item.proxyRowMap_.set(i, item.proxyRowMap_.get(i) + count);
+      item.sourceRowMap_.set(i, item.sourceRowMap_.get(i) + count);
+    }
     this.endInsertRows();
     return true;
   }
@@ -489,6 +503,12 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
    * <p>The rows are removed from the source model.
    */
   public boolean removeRows(int row, int count, final WModelIndex parent) {
+    if (row >= this.getRowCount()) {
+      return false;
+    }
+    if (row + count > this.getRowCount()) {
+      count = this.getRowCount() - row;
+    }
     for (int i = 0; i < count; ++i) {
       int sourceRow = this.mapToSource(this.getIndex(row, 0, parent)).getRow();
       if (!this.getSourceModel().removeRows(sourceRow, 1, this.mapToSource(parent))) {
@@ -597,6 +617,11 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
   }
 
   private void sourceColumnsInserted(final WModelIndex parent, int start, int end) {
+    if (this.dynamic_) {
+      if (this.filterKeyColumn_ >= start && this.filterKeyColumn_ <= end) {
+        this.invalidate();
+      }
+    }
     this.endInsertColumns();
   }
 
@@ -700,7 +725,8 @@ public class WSortFilterProxyModel extends WAbstractProxyModel {
     boolean refilter =
         this.dynamic_
             && (this.filterKeyColumn_ >= topLeft.getColumn()
-                && this.filterKeyColumn_ <= bottomRight.getColumn());
+                    && this.filterKeyColumn_ <= bottomRight.getColumn()
+                || ObjectUtils.cast(this.getSourceModel(), WStringListModel.class) != null);
     boolean resort =
         this.dynamic_
             && (this.sortKeyColumn_ >= topLeft.getColumn()

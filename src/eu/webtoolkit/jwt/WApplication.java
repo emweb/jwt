@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.apache.commons.io.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +76,8 @@ import org.slf4j.LoggerFactory;
  *       browser window, or multiple top-level widgets using {@link WApplication#bindWidget(WWidget
  *       widget, String domId) bindWidget()} when deployed in {@link EntryPointType#WidgetSet} mode
  *       to manage a number of widgets within a 3rd party page.
- *   <li>definition of cookies using {@link WApplication#setCookie(javax.servlet.http.Cookie cookie)
- *       setCookie()} to persist information across sessions, which may be read using {@link
+ *   <li>definition of cookies using {@link WApplication#setCookie(Cookie cookie) setCookie()} to
+ *       persist information across sessions, which may be read using {@link
  *       WEnvironment#getCookie(String cookieName) WEnvironment#getCookie()} in a future session.
  *   <li>management of the internal path (that enables browser history and bookmarks) using {@link
  *       WApplication#setInternalPath(String path, boolean emitChange) setInternalPath()} and
@@ -166,6 +166,7 @@ public class WApplication extends WObject {
     this.hideLoadingIndicator_ = new EventSignal("hideload", this);
     this.unloaded_ = new JSignal(this, "Wt-unload");
     this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
+    this.focusChanged_ = new Signal();
     this.addedCookies_ = new HashMap<String, String>();
     this.soundManager_ = null;
     this.serverSideFontMetrics_ = (ServerSideFontMetrics) null;
@@ -881,7 +882,8 @@ public class WApplication extends WObject {
     if (!(this.localizedStrings_ != null)) {
       this.localizedStrings_ = new WCombinedLocalizedStrings();
       WXmlLocalizedStrings defaultMessages = new WXmlLocalizedStrings();
-      defaultMessages.useBuiltin(WtServlet.Wt_xml);
+      defaultMessages.useBuiltin(WtServlet.Wt_strings_xml);
+      defaultMessages.useBuiltin(WtServlet.Wt_templates_xml);
       this.localizedStrings_.add(defaultMessages);
     }
     if (this.localizedStrings_.getItems().size() > 1) {
@@ -1938,7 +1940,7 @@ public class WApplication extends WObject {
    * @see WEnvironment#supportsCookies()
    * @see WEnvironment#getCookie(String cookieName)
    */
-  public void setCookie(final javax.servlet.http.Cookie cookie) {
+  public void setCookie(final Cookie cookie) {
     this.session_.getRenderer().setCookie(cookie);
   }
   /**
@@ -1962,8 +1964,7 @@ public class WApplication extends WObject {
    *
    * @see WEnvironment#supportsCookies()
    * @see WEnvironment#getCookie(String cookieName)
-   * @deprecated Use {@link WApplication#setCookie(javax.servlet.http.Cookie cookie) setCookie()}
-   *     instead.
+   * @deprecated Use {@link WApplication#setCookie(Cookie cookie) setCookie()} instead.
    */
   public void setCookie(
       final String name,
@@ -1972,7 +1973,7 @@ public class WApplication extends WObject {
       final String domain,
       final String path,
       boolean secure) {
-    javax.servlet.http.Cookie cookie = new javax.servlet.http.Cookie(name, value);
+    Cookie cookie = new Cookie(name, value);
     cookie.setMaxAge(maxAge);
     cookie.setDomain(domain);
     cookie.setPath(path);
@@ -2017,9 +2018,9 @@ public class WApplication extends WObject {
    *
    * <p>
    *
-   * @see WApplication#setCookie(javax.servlet.http.Cookie cookie)
+   * @see WApplication#setCookie(Cookie cookie)
    */
-  public void removeCookie(final javax.servlet.http.Cookie cookie) {
+  public void removeCookie(final Cookie cookie) {
     this.session_.getRenderer().removeCookie(cookie);
     this.removeAddedCookies(cookie.getName());
   }
@@ -2028,12 +2029,11 @@ public class WApplication extends WObject {
    *
    * <p>
    *
-   * @see WApplication#setCookie(javax.servlet.http.Cookie cookie)
-   * @deprecated Use {@link WApplication#removeCookie(javax.servlet.http.Cookie cookie)
-   *     removeCookie()} instead.
+   * @see WApplication#setCookie(Cookie cookie)
+   * @deprecated Use {@link WApplication#removeCookie(Cookie cookie) removeCookie()} instead.
    */
   public void removeCookie(final String name, final String domain, final String path) {
-    javax.servlet.http.Cookie rmCookie = new javax.servlet.http.Cookie(name, "");
+    Cookie rmCookie = new Cookie(name, "");
     rmCookie.setDomain(domain);
     rmCookie.setPath(path);
     this.session_.getRenderer().removeCookie(rmCookie);
@@ -2275,9 +2275,9 @@ public class WApplication extends WObject {
     if (this.loadingIndicator_ != null) {
       this.domRoot_.addWidget(indicator);
       this.showLoadJS.setJavaScript(
-          "function(o,e) {Wt4_12_1.inline('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_12_2.inline('" + this.loadingIndicator_.getId() + "');}");
       this.hideLoadJS.setJavaScript(
-          "function(o,e) {Wt4_12_1.hide('" + this.loadingIndicator_.getId() + "');}");
+          "function(o,e) {Wt4_12_2.hide('" + this.loadingIndicator_.getId() + "');}");
       this.loadingIndicator_.hide();
     }
   }
@@ -2445,6 +2445,7 @@ public class WApplication extends WObject {
     this.focusId_ = id;
     this.selectionStart_ = selectionStart;
     this.selectionEnd_ = selectionEnd;
+    this.focusChanged_.trigger();
   }
   /**
    * Loads an internal JavaScript file.
@@ -2698,7 +2699,7 @@ public class WApplication extends WObject {
       this.domRoot2_.enableAjax();
     }
     this.doJavaScript(
-        "Wt4_12_1.ajaxInternalPaths("
+        "Wt4_12_2.ajaxInternalPaths("
             + WWebWidget.jsStringLiteral(this.resolveRelativeUrl(this.getBookmarkUrl("/")))
             + ");");
   }
@@ -2904,6 +2905,7 @@ public class WApplication extends WObject {
   EventSignal hideLoadingIndicator_;
   private JSignal unloaded_;
   private JSignal idleTimeout_;
+  Signal focusChanged_;
   private Map<String, String> addedCookies_;
 
   public String findAddedCookies(final String name) {
@@ -2990,18 +2992,35 @@ public class WApplication extends WObject {
     if (fn.length() != 0 && fn.charAt(0) != '/') {
       fn = '/' + fn;
     }
-    if (resource.getInternalPath().length() == 0) {
-      return this.session_.getMostRelativeUrl(fn)
-          + "&request=resource&resource="
-          + Utils.urlEncode(resource.getId())
-          + "&ver="
-          + String.valueOf(resource.getVersion());
-    } else {
-      fn = resource.getInternalPath() + fn;
-      if (this.session_.getApplicationName().length() != 0 && fn.charAt(0) != '/') {
-        fn = '/' + fn;
+    final Configuration conf = this.getEnv().getServer().getConfiguration();
+    if (conf.isServePrivateResourcesToBots() && this.getEnv().agentIsSpiderBot()) {
+      String appUrl = this.session_.getApplicationUrl();
+      if (appUrl.equals("/")) {
+        appUrl = "";
+      } else {
+        if (appUrl.length() != 0 && appUrl.charAt(appUrl.length() - 1) != '/') {
+          appUrl += '/';
+        }
       }
-      return this.session_.getMostRelativeUrl(fn);
+      return appUrl
+          + conf.getBotResourcesPath()
+          + "/"
+          + Utils.urlEncode(resource.getBotResourceId())
+          + fn;
+    } else {
+      if (resource.getInternalPath().length() == 0) {
+        return this.session_.getMostRelativeUrl(fn, true)
+            + "&request=resource&resource="
+            + Utils.urlEncode(resource.getId())
+            + "&ver="
+            + String.valueOf(resource.getVersion());
+      } else {
+        fn = resource.getInternalPath() + fn;
+        if (this.session_.getApplicationName().length() != 0 && fn.charAt(0) != '/') {
+          fn = '/' + fn;
+        }
+        return this.session_.getMostRelativeUrl(fn, true);
+      }
     }
   }
 
@@ -3013,6 +3032,29 @@ public class WApplication extends WObject {
       return true;
     } else {
       return false;
+    }
+  }
+
+  void exposeBotResources() {
+    for (Iterator<Map.Entry<String, WResource>> it_it =
+            this.exposedResources_.entrySet().iterator();
+        it_it.hasNext(); ) {
+      Map.Entry<String, WResource> it = it_it.next();
+      WResource resource = it.getValue();
+      if (resource != null) {
+        WResource botResource = resource.getBotResource();
+        if (botResource != null) {
+          try {
+            WtServlet.getInstance().addResource(botResource, resource.getUrl());
+          } catch (final RuntimeException e) {
+            logger.debug(
+                new StringWriter()
+                    .append("Failed to add private resource for bot at url: ")
+                    .append(resource.getUrl())
+                    .toString());
+          }
+        }
+      }
     }
   }
 
@@ -3098,7 +3140,7 @@ public class WApplication extends WObject {
       String scope =
           preamble.scope == JavaScriptScope.ApplicationScope
               ? this.getJavaScriptClass()
-              : "Wt4_12_1";
+              : "Wt4_12_2";
       if (preamble.type == JavaScriptObjectType.JavaScriptFunction) {
         out.append(scope)
             .append('.')
@@ -3144,6 +3186,13 @@ public class WApplication extends WObject {
     final Configuration conf = this.getEnvironment().getServer().getConfiguration();
     if (conf.getIdleTimeout() != -1) {
       this.idleTimeout();
+    }
+  }
+
+  void setAsFocus(final String id) {
+    WWidget w = this.getRoot().findById(id);
+    if (w != null) {
+      w.setFocus();
     }
   }
 

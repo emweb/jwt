@@ -7,7 +7,7 @@ and renders either using Ajax or plain HTML.
 
 Unlike JSF, there is no concept of a page and no split between page
 "views" and reusable "components", making reuse unpractical. Instead,
-everything is a widget that can be resued in other widgets.
+everything is a widget that can be reused in other widgets.
 
 For more information, see [the homepage](http://www.webtoolkit.eu/jwt
 "JWt homepage").
@@ -15,8 +15,8 @@ For more information, see [the homepage](http://www.webtoolkit.eu/jwt
 Dependencies
 ------------
 
-The library requires a Servlet 2.5 or 3.0 container. When deployed in a
-servlet 3.0 container, it is able to use asynchronous I/O functionality
+The library requires a Servlet 6.1 (`jakarta.servlet` namespace) container.
+It is able to use asynchronous I/O functionality
 to improve scalability when using server push features.
 
 If you want to use the PDF rendering support (the WPdfImage and
@@ -44,21 +44,22 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-3.3.2.jar -DpomFile=jwt-3.3.2.pom
-    mvn install:install-file -Dfile=dist/jwt-auth-3.3.2.jar -DpomFile=jwt-auth-3.3.2.pom
+    mvn install:install-file -Dfile=dist/jwt-4.12.2.jar -DpomFile=jwt-4.12.2.pom 
+    mvn install:install-file -Dfile=dist/jwt-auth-4.12.2.jar -DpomFile=jwt-auth-4.12.2.pom 
 
 The corresponding dependency blocks are:
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>3.3.2</version>
+      <version>4.12.2</version>
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.5</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
+      <scope>provided</scope>
     </dependency>
 
 There are a number of optional dependencies for JWt, needed only depending on what
@@ -68,7 +69,7 @@ features you use
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
-      <version>3.3.2</version>
+      <version>4.12.2</version>
     </dependency>
 
     <!-- optional, for PDF Rendering -->
@@ -101,8 +102,8 @@ features you use
 
     <!-- may be needed if your J2EE container doesn't provide this -->
     <dependency>
-      <groupId>org.apache.geronimo.javamail</groupId>
-      <artifactId>geronimo-javamail_1.4_mail</artifactId>
-      <version>1.8.1</version>
+      <groupId>org.eclipse.angus</groupId>
+      <artifactId>angus-mail</artifactId>
+      <version>2.0.3</version>
       <scope>provided</scope>
     </dependency>

@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +43,8 @@ public class WCompositeWidget extends WWidget {
   public WCompositeWidget(WContainerWidget parentContainer) {
     super();
     this.impl_ = null;
+    this.lastUnrelatedFocusId_ = "";
+    this.focusChangedConnection_ = new AbstractSignal.Connection();
     if (parentContainer != null) parentContainer.addWidget(this);
   }
   /**
@@ -64,6 +66,8 @@ public class WCompositeWidget extends WWidget {
   public WCompositeWidget(WWidget implementation, WContainerWidget parentContainer) {
     super();
     this.impl_ = null;
+    this.lastUnrelatedFocusId_ = "";
+    this.focusChangedConnection_ = new AbstractSignal.Connection();
     this.setImplementation(implementation);
     if (parentContainer != null) parentContainer.addWidget(this);
   }
@@ -567,11 +571,37 @@ public class WCompositeWidget extends WWidget {
   }
 
   protected void setParentWidget(WWidget parent) {
-    if (parent != null && !this.isDisabled()) {
+    if (parent != null && this.impl_ != null && !this.isDisabled()) {
       this.propagateSetEnabled(parent.isEnabled());
     }
     super.setParentWidget(parent);
   }
 
   private WWidget impl_;
+  private String lastUnrelatedFocusId_;
+  private AbstractSignal.Connection focusChangedConnection_;
+
+  void handleFocusOnHide(boolean hidden) {
+    WApplication app = WApplication.getInstance();
+    if (hidden) {
+      this.focusChangedConnection_.disconnect();
+      app.setAsFocus(this.lastUnrelatedFocusId_);
+    } else {
+      this.lastUnrelatedFocusId_ = app.getFocus();
+      this.focusChangedConnection_ =
+          app.focusChanged_.addListener(
+              this,
+              () -> {
+                WCompositeWidget.this.onFocusChanged();
+              });
+    }
+  }
+
+  private void onFocusChanged() {
+    WApplication app = WApplication.getInstance();
+    String newFocus = app.getFocus();
+    if (!newFocus.equals(this.lastUnrelatedFocusId_) && !(this.findById(newFocus) != null)) {
+      this.lastUnrelatedFocusId_ = newFocus;
+    }
+  }
 }

@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import eu.webtoolkit.jwt.WebSession.Handler;
 import eu.webtoolkit.jwt.servlet.UploadedFile;
 import eu.webtoolkit.jwt.servlet.WebRequest;
@@ -18,9 +21,9 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
 
 /**
  * An object which can be rendered in the HTTP protocol.
- * 
+ *
  * <h3>Usage</h3>
- * 
+ *
  * Besides the main page, other objects may be rendered as additional resources,
  * for example documents or images. Classes such as {@link WAnchor} or
  * {@link WImage} can use a resource instead of a URL to provide their contents.
@@ -36,9 +39,9 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
  * <p>
  * To serve resources that you create on the fly, you need to specialize this
  * class and reimplement {@link #handleRequest(WebRequest, WebResponse)}.
- * 
+ *
  * <h3>Concurrency issues</h3>
- * 
+ *
  * Because of the nature of the web, a resource may be requested one time or
  * multiple times at the discretion of the browser, and therefore your resource
  * should in general not have any side-effects except for what is needed to
@@ -46,7 +49,7 @@ import eu.webtoolkit.jwt.servlet.WebResponse;
  * resource requests are not serialized, but are handled concurrently. Therefore
  * you are not allowed to access or modify widget state from within the
  * resource, unless you provide your own locking mechanism for it.
- * 
+ *
  * @see WAnchor
  * @see WImage
  */
@@ -68,17 +71,22 @@ public abstract class WResource extends WObject {
 		 */
 		Inline
 	};
-	
+	private static Logger logger = LoggerFactory.getLogger(WResource.class);
+
 	private Signal dataChanged_ = new Signal(this);
 
 	private String suggestedFileName_;
 	private String currentUrl_;
 	private String internalPath_;
 	private String botUrl_ = "";
+	private String botResourceId_;
+	private boolean customBotResourceId_ = false;
 	private boolean trackUploadProgress_;
 	private DispositionType dispositionType_;
 	private int version_ = 0;
 	private boolean invalidAfterChanged_ = false;
+	private boolean generatingUrl_ = false;
+	private boolean allowAutoRemoval_ = false;
 
 	/**
 	 * Constructor.
@@ -87,6 +95,7 @@ public abstract class WResource extends WObject {
 		suggestedFileName_ = "";
 		internalPath_ = "";
 		dispositionType_ = DispositionType.NoDisposition;
+		botResourceId_ = getId();
 
 		generateUrl();
 	}
@@ -97,15 +106,16 @@ public abstract class WResource extends WObject {
 	 * The url is unique to assure that it is not cached by the web browser, and
 	 * can thus be used to refer to a new "version" of the resource, which can
 	 * be indicated by triggering the {@link #dataChanged()} signal.
-	 * 
+	 *
 	 * The old urls are not invalidated by calling this method, unless
 	 * you enable setInvalidAfterChanged().
-	 * 
+	 *
 	 * @return the url.
 	 */
 	public String generateUrl() {
+		generatingUrl_ = true;
 		WApplication app = WApplication.getInstance();
-		
+
 		if (app != null) {
 			if (!botUrl_.isEmpty() && app.getEnvironment().agentIsSpiderBot()) {
 				currentUrl_ = botUrl_;
@@ -115,6 +125,7 @@ public abstract class WResource extends WObject {
 					c.removeUploadProgressUrl(getUrl());
 				}
 				currentUrl_ = app.addExposedResource(this);
+
 				if (trackUploadProgress_) {
 					WtServlet c = WebSession.getInstance().getController();
 					c.addUploadProgressUrl(getUrl());
@@ -123,6 +134,7 @@ public abstract class WResource extends WObject {
 		} else {
 			currentUrl_ = internalPath_;
 		}
+		generatingUrl_ = false;
 		return currentUrl_;
 	}
 
@@ -137,7 +149,7 @@ public abstract class WResource extends WObject {
 	 * parameters and whether the request is a continuation request. In the
 	 * <i>response</i> object, you should set the mime type and stream the
 	 * output data.
-	 * 
+	 *
 	 * @param request
 	 *            The request information
 	 * @param response
@@ -212,7 +224,7 @@ public abstract class WResource extends WObject {
 	 * <p>
 	 * Widgets that reference the resource (such as anchors and images) will
 	 * make sure the new data is rendered.
-	 * 
+	 *
 	 * It is better to call {@link #setChanged()} than to trigger this signal
 	 * since that method generates a new URL for this resource to avoid caching problems
 	 * before emitting the signal.
@@ -226,7 +238,7 @@ public abstract class WResource extends WObject {
 	 * <p>
 	 * This is a utility method that allows you to write the resource to an
 	 * output stream, by using {@link #handleRequest(WebRequest, WebResponse)}.
-	 * 
+	 *
 	 * @param out
 	 *            The output stream.
 	 * @param parameterMap
@@ -244,13 +256,13 @@ public abstract class WResource extends WObject {
 		handleRequest(request, response);
 		response.flush();
 	}
-	
+
 	/**
 	 * Writes the resource to an output stream.
 	 * <p>
 	 * This is a utility method that allows you to write the resource to an
 	 * output stream, by using {@link #handleRequest(WebRequest, WebResponse)}.
-	 * 
+	 *
 	 * @param out
 	 *            The output stream.
 	 * @throws IOException
@@ -260,12 +272,28 @@ public abstract class WResource extends WObject {
 	}
 
 	/**
+	 * Writes the resource into a byte array.
+	 *
+	 * This is a convenience method to write the resource into a byte
+	 * array. This is especially useful if you want to convert the
+	 * resource into a WMemoryResource (when overriding botResource()
+	 * for instance).
+	 *
+	 * @return The byte array containing the resource data.
+	 */
+	public byte[] writeToMemory() throws IOException {
+		java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+		write(baos);
+		return baos.toByteArray();
+	}
+
+	/**
 	 * Suggests a filename to the user for the data streamed by this resource.
 	 * <p>
 	 * For resources, intended to be downloaded by the user, suggest a name used
 	 * for saving. The filename extension may also help the browser to identify
 	 * the correct program for opening the resource.
-	 * 
+	 *
 	 * The disposition type determines if the resource is intended to
 	 * be opened by a plugin in the browser (DispositionType#Inline), or to be saved to disk
 	 * (DispositionType#Attachment). DispositionType#NoDisposition is not a valid Content-Disposition when a
@@ -276,24 +304,24 @@ public abstract class WResource extends WObject {
 	public void suggestFileName(String name, DispositionType dispositionType) {
 		suggestedFileName_ = name;
 		dispositionType_ = dispositionType;
-		
+
 		generateUrl();
 	}
-	
+
 	/**
 	 * Suggests a filename to the user for the data streamed by this resource.
 	 * <p>
 	 * For resources, intended to be downloaded by the user, suggest a name used
 	 * for saving. The filename extension may also help the browser to identify
 	 * the correct program for opening the resource.
-	 * 
+	 *
 	 * The disposition type determines if the resource is intended to
 	 * be opened by a plugin in the browser (DispositionType#Inline), or to be saved to disk
 	 * (DispositionType#Attachment). DispositionType#NoDisposition is not a valid Content-Disposition when a
 	 * filename is suggested; this will be rendered as DispositionType#Attachment.
 	 *
 	 * @see WResource#setDispositionType(DispositionType dispositionType)
-	 * 
+	 *
 	 * Calls {@link #suggestFileName(String name, DispositionType dispositionType)
 	 * suggestFileName(name, DispositionType.Attachment) }
 	 */
@@ -303,7 +331,7 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Returns the suggested file name.
-	 * 
+	 *
 	 * @see #suggestFileName(String)
 	 */
 	public String getSuggestedFileName() {
@@ -348,17 +376,17 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Configures the Content-Disposition header
-	 * 
+	 *
 	 * The Content-Disposition header allows to instruct the browser that a
 	 * resource should be shown inline or as attachment. This function enables
 	 * you to set this property.
-	 * 
+	 *
 	 * This is often used in combination with
 	 * {@link #suggestFileName(String, DispositionType)}. The
 	 * Content-Disposition must not be DispositionType#NoDisposition
 	 * when a filename is given; if this case is encountered, None will be
 	 * rendered as DispositionType#Attachment.
-	 * 
+	 *
 	 * @see #suggestFileName(String, DispositionType)
 	 */
 	public void setDispositionType(DispositionType dispositionType) {
@@ -367,7 +395,7 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Returns the currently configured content disposition
-	 * 
+	 *
 	 * @see #setDispositionType(DispositionType cd)
 	 */
 	public DispositionType getDispositionType() {
@@ -384,7 +412,7 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Returns the internal path.
-	 * 
+	 *
 	 * @see #setInternalPath(String)
 	 */
 	public String getInternalPath() {
@@ -397,18 +425,22 @@ public abstract class WResource extends WObject {
 	 * you deploy using cookies for session tracking (not recommended), a
 	 * session identifier will be appended to the path.
 	 *
-	 * You should use internal paths that are different from internal paths 
+	 * You should use internal paths that are different from internal paths
 	 * handled by your application ({@link WApplication#setInternalPath(String)}), if you
 	 * do not want a conflict between these two when the browser does not use
 	 * AJAX (and thus url fragments for its internal paths).
 	 *
 	 * The default value is empty. By default the URL for a resource is
-	 * unspecified and a URL will be generated by the library. 
+	 * unspecified and a URL will be generated by the library.
 	 */
 	public void setInternalPath(String internalPath) {
 		this.internalPath_ = internalPath;
-		
-		generateUrl();
+
+		if (!generatingUrl_) {
+			generateUrl();
+		} else {
+			currentUrl_ = internalPath_;
+		}
 	}
 
 	/** Sets an alternative URL, given to bots, for this resource.
@@ -450,12 +482,12 @@ public abstract class WResource extends WObject {
 
 	/**
 	 * Indicate interest in upload progress.
-	 * 
+	 *
 	 * When supported, you can track upload progress using this signal. While
 	 * data is being received, and before {@link #handleRequest(WebRequest
 	 * request, WebResponse response)} is called, progress information is
 	 * indicated using {@link #dataReceived()}.
-	 * 
+	 *
 	 * The default value is false.
 	 */
 	public void setUploadProgress(boolean enabled) {
@@ -498,6 +530,37 @@ public abstract class WResource extends WObject {
 		return takesUpdateLock_;
 	}
 
+	/**
+	 * Sets whether this resource can be automatically removed.
+	 *
+	 * If enabled on a public resource, the resource will be counted as
+	 * an auto-removable resource.
+	 *
+	 * The total number of auto-removable resources is limited by the
+	 * configuration option
+	 * {@link Configuration#setMaxAutoRemovablePublicResources(int)}. If
+	 * the number of auto-removable resources exceeds this limit, the
+	 * oldest auto-removable resource will be removed from the public
+	 * resources.
+	 *
+	 * By default, this is set to false. Except for
+	 * {@link WSelfDeletingResource} for which it is true.
+	 *
+	 * @see #getBotResource()
+	 */
+	public void setAllowAutoRemoval(boolean allow) {
+		allowAutoRemoval_ = allow;
+	}
+
+	/**
+	 * @returns Whether this resource can be automatically removed.
+	 *
+	 * @see #setAllowAutoRemoval(boolean)
+	 */
+	public boolean isAllowAutoRemoval() {
+		return allowAutoRemoval_;
+	}
+
 	public int getVersion() {
 		return version_;
 	}
@@ -507,14 +570,92 @@ public abstract class WResource extends WObject {
 	}
 
 	/**
+	 * Sets the bot resource ID.
+	 *
+	 * This id will be appended to the resource path of the bot resource.
+	 *
+	 * This is useful to avoid storing the same resources multiple times
+	 * in memory since only one resource can be served at any given path.
+	 *
+	 * By default, returns {@link #id()}.
+	 *
+	 * @warning This means that every time the resource is exposed in a
+	 *          bot session, the bot resource created will be added to
+	 *          the server's  public resources. In that case, you should
+	 *          ensure that the resource is removed from the public
+	 *          resources once it is no longer needed.
+	 *
+	 * @see #getBotResource()
+	 * @see WSelfDeletingResource
+	 */
+	public void setBotResourceId(String id) {
+		botResourceId_ = id;
+		customBotResourceId_ = true;
+		generateUrl();
+	}
+
+	/**
+	 * @returns The bot resource ID.
+	 *
+	 * @see #setBotResourceId(String id)
+	 */
+	public String getBotResourceId() {
+		return botResourceId_;
+	}
+
+	/**
+	 * Returns a WResource that will be made public for bot sessions.
+	 *
+	 * When the <code>serve-private-resources-to-bots</code>
+	 * configuration option is set to true, this method is called
+	 * before the destruction of the {@link WApplication} if this
+	 * resource was exposed as a private resource for a bot session. The
+	 * returned resource will then be added to the server's public
+	 * resources, unless the returned value is a <code>null</code>.
+	 *
+	 * The path at which the resource will be made available will be
+	 * the value of the <code>bot-resources-path</code> option (specified
+	 * in the configuration), followed by
+	 * {@link #getBotResourceId()}) (separated from the path by
+	 * a slash).
+	 *
+	 * By default, this returns <code>null</code>.
+	 *
+	 * @note If the session is a bot session, the url of this resource
+	 *       will be the same as the url of the bot resource when this
+	 *       function is called.
+	 *
+	 * @warning You are responsible for removing the resource once it is
+	 *          no longer needed using
+	 *          {@link WtServlet#removeResource(WResource staticResource)}.
+	 *
+	 * @see #setBotResourceId(String id)
+	 * @see #useCustomBotResourceId()
+	 * @see WSelfDeletingResource
+	 */
+	public WResource getBotResource() {
+		return null;
+	}
+
+	/**
+	 * @return Whether the bot resource ID value was changed or not.
+   *
+   * @see #setBotResourceId(String id)
+   * @see #getBotResourceId()
+   */
+	protected boolean useCustomBotResourceId() {
+		return customBotResourceId_;
+	}
+
+	/**
 	 * Signal emitted when data has been received for this resource.
-	 * 
+	 *
 	 * When this signal is emitted, you have the update lock to modify the
 	 * application. Because there is however no corresponding request from the
 	 * browser, any update to the user interface is not immediately reflected in
 	 * the client. To update the client interface, you need to use a
 	 * {@link WTimer}.
-	 * 
+	 *
 	 * @see #setUploadProgress(boolean enabled)
 	 */
 	public Signal2<Long, Long> dataReceived() {

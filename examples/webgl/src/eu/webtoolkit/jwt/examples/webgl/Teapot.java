@@ -5,6 +5,8 @@ import eu.webtoolkit.jwt.WApplication;
 import eu.webtoolkit.jwt.WBreak;
 import eu.webtoolkit.jwt.WContainerWidget;
 import eu.webtoolkit.jwt.WEnvironment;
+import eu.webtoolkit.jwt.WImage;
+import eu.webtoolkit.jwt.WLink;
 import eu.webtoolkit.jwt.WMouseEvent;
 import eu.webtoolkit.jwt.WPushButton;
 import eu.webtoolkit.jwt.WTabWidget;
@@ -64,7 +66,7 @@ public class Teapot extends WtServlet {
 			paintWidget_.resize(500, 500);
 			paintWidget_.setShaders(vertexShaderText_.getText(),
 			fragmentShaderText_.getText());
-			/*paintWidget_.setAlternativeContent(new WImage("pics/nowebgl.png"));*/
+			paintWidget_.setAlternativeContent(new WImage(new WLink("pics/nowebgl.png")));
 		}
 		
 		private void resetShaders() {

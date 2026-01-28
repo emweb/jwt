@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import javax.servlet.ServletContext;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +64,7 @@ public class FileUtils {
 			WApplication app = WApplication.getInstance();
 			if (app != null) {
 				try {
-					ServletContext context = app.getEnvironment().getServer().getServletContext();
-					url = context.getResource(path);
+					url = app.getEnvironment().getServer().getServletContext().getResource(path);
 				} catch (Exception e) {
 					url = null;
 				}

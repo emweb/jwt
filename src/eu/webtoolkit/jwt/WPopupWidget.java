@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,8 +162,13 @@ public class WPopupWidget extends WCompositeWidget {
   }
 
   public void setHidden(boolean hidden, final WAnimation animation) {
-    if (WWebWidget.canOptimizeUpdates() && hidden == this.isHidden()) {
+    boolean hiddenChanged = hidden != this.isHidden();
+    if (WWebWidget.canOptimizeUpdates() && !hiddenChanged) {
       return;
+    }
+    WApplication app = WApplication.getInstance();
+    if (hiddenChanged) {
+      this.handleFocusOnHide(hidden);
     }
     super.setHidden(hidden, animation);
     if (!hidden && this.anchorWidget_ != null) {
@@ -262,7 +267,7 @@ public class WPopupWidget extends WCompositeWidget {
     app.loadJavaScript("js/WPopupWidget.js", wtjs1());
     StringBuilder jsObj = new StringBuilder();
     jsObj
-        .append("new Wt4_12_1.WPopupWidget(")
+        .append("new Wt4_12_2.WPopupWidget(")
         .append(app.getJavaScriptClass())
         .append(',')
         .append(this.getJsRef())

@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -883,7 +883,7 @@ public class WSuggestionPopup extends WPopupWidget {
     String autoSelect = this.isAutoSelectEnabled_ ? "true" : "false";
     this.setJavaScriptMember(
         " WSuggestionPopup",
-        "new Wt4_12_1.WSuggestionPopup("
+        "new Wt4_12_2.WSuggestionPopup("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()
@@ -940,7 +940,7 @@ public class WSuggestionPopup extends WPopupWidget {
 
   static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
     StringBuilder s = new StringBuilder();
-    s.append("new Wt4_12_1.WSuggestionPopupStdMatcher(")
+    s.append("new Wt4_12_2.WSuggestionPopupStdMatcher(")
         .append(WWebWidget.jsStringLiteral(options.highlightBeginTag))
         .append(", ")
         .append(WWebWidget.jsStringLiteral(options.highlightEndTag))

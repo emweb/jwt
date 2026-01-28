@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -749,7 +749,7 @@ public class WFileDropWidget extends WContainerWidget {
     if (this.isRendered()) {
       String result = this.getJsRef() + ".destructor();";
       if (!recursive) {
-        result += "Wt4_12_1.remove('" + this.getId() + "');";
+        result += "Wt4_12_2.remove('" + this.getId() + "');";
       }
       return result;
     } else {
@@ -773,14 +773,14 @@ public class WFileDropWidget extends WContainerWidget {
       if (this.updateFlags_.get(BIT_ACCEPTDROPS_CHANGED) || all) {
         this.doJavaScript(
             this.getJsRef() + ".setAcceptDrops(" + (this.acceptDrops_ ? "true" : "false") + ");");
+        this.doJavaScript(
+            this.getJsRef()
+                + ".setAcceptDirectories("
+                + (this.acceptDirectories_ ? "true" : "false")
+                + ", "
+                + (this.acceptDirectoriesRecursive_ ? "true" : "false")
+                + ");");
       }
-      this.doJavaScript(
-          this.getJsRef()
-              + ".setAcceptDirectories("
-              + (this.acceptDirectories_ ? "true" : "false")
-              + ", "
-              + (this.acceptDirectoriesRecursive_ ? "true" : "false")
-              + ");");
       if (this.updateFlags_.get(BIT_FILTERS_CHANGED) || all) {
         this.doJavaScript(
             this.getJsRef() + ".setFilters(" + jsStringLiteral(this.acceptAttributes_) + ");");
@@ -882,7 +882,7 @@ public class WFileDropWidget extends WContainerWidget {
     String maxFileSize = String.valueOf(WApplication.getInstance().getMaximumRequestSize());
     this.setJavaScriptMember(
         " WFileDropWidget",
-        "new Wt4_12_1.WFileDropWidget("
+        "new Wt4_12_2.WFileDropWidget("
             + app.getJavaScriptClass()
             + ","
             + this.getJsRef()

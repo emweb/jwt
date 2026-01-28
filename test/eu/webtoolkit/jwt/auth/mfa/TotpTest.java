@@ -1,11 +1,15 @@
 package eu.webtoolkit.jwt.auth.mfa;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Duration;
+
 import org.junit.Test;
 
+import eu.webtoolkit.jwt.WDate;
 import eu.webtoolkit.jwt.WException;
 import eu.webtoolkit.jwt.Utils;
 
@@ -240,6 +244,18 @@ public class TotpTest {
     code = Totp.generateCode(key, 8, time);
 
     assertEquals("65353130", code);
+  }
+
+  @Test
+  public void testValidateCurrentTimestampBoundaries() throws InterruptedException {
+    // Tests whether validateCode correctly rejects the code if validated before
+    // the 30s duration frame, but accepts it 30s later.
+    Duration currentTimestamp = Duration.ofSeconds(WDate.getCurrentServerDate().getDate().getTime() / 1000);
+    String code = Totp.generateCode("ABC", 6, currentTimestamp);
+
+    assertTrue(Totp.validateCode("ABC", code, 6, currentTimestamp.minus(Duration.ofSeconds(30))));
+    assertTrue(Totp.validateCode("ABC", code, 6, currentTimestamp));
+    assertTrue(Totp.validateCode("ABC", code, 6, currentTimestamp.plus(Duration.ofSeconds(30))));
   }
 }
 

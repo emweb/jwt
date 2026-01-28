@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -265,7 +265,7 @@ public class WTreeTable extends WCompositeWidget {
     app.loadJavaScript("js/WTreeTable.js", wtjs1());
     this.setJavaScriptMember(
         " WTreeTable",
-        "new Wt4_12_1.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
+        "new Wt4_12_2.WTreeTable(" + app.getJavaScriptClass() + "," + this.getJsRef() + ");");
   }
 
   static WJavaScriptPreamble wtjs1() {

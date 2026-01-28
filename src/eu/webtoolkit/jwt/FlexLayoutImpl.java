@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     this.flags_ = new BitSet();
     this.grid_ = grid;
     this.addedItems_ = new ArrayList<WLayoutItem>();
+    this.resizedItems_ = new ArrayList<WLayoutItem>();
     this.removedItems_ = new ArrayList<String>();
     this.childLayouts_ = new ArrayList<StdLayoutImpl>();
     this.elId_ = "";
@@ -128,6 +129,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
     List<Integer> orderedInserts = new ArrayList<Integer>();
     for (int i = 0; i < this.addedItems_.size(); ++i) {
       orderedInserts.add(this.indexOf(this.addedItems_.get(i), orientation));
+      this.resizedItems_.add(this.addedItems_.get(i));
     }
     Collections.sort(orderedInserts);
     int totalStretch = this.getTotalStretch(orientation);
@@ -147,8 +149,25 @@ class FlexLayoutImpl extends StdLayoutImpl {
       }
     }
     this.addedItems_.clear();
+    for (int i = 0; i < this.resizedItems_.size(); ++i) {
+      WWidget item = this.resizedItems_.get(i).getWidget();
+      StringBuilder method = new StringBuilder();
+      method
+          .append("layout.resizeItem(")
+          .append(item.getId())
+          .append(",")
+          .append('"')
+          .append(item.getWidth().getCssText())
+          .append("\",")
+          .append('"')
+          .append(item.getHeight().getCssText())
+          .append("\",")
+          .append(")");
+      div.callMethod(method.toString());
+    }
+    this.resizedItems_.clear();
     for (int i = 0; i < this.removedItems_.size(); ++i) {
-      div.callJavaScript("Wt4_12_1.remove('" + this.removedItems_.get(i) + "');", true);
+      div.callJavaScript("Wt4_12_2.remove('" + this.removedItems_.get(i) + "');", true);
     }
     this.removedItems_.clear();
     if (this.canAdjustLayout_) {
@@ -218,20 +237,29 @@ class FlexLayoutImpl extends StdLayoutImpl {
       result.addChild(el);
     }
     StringBuilder js = new StringBuilder();
-    js.append("layout=new Wt4_12_1.FlexLayout(")
+    js.append("layout=new Wt4_12_2.FlexLayout(")
         .append(app.getJavaScriptClass())
-        .append(",'")
+        .append(",")
+        .append("'")
         .append(this.elId_)
+        .append("',")
+        .append("'")
+        .append(this.getContainer().getId())
         .append("');");
     result.callMethod(js.toString());
     return result;
   }
 
   public boolean itemResized(WLayoutItem item) {
+    if (item != null) {
+      this.resizedItems_.add(item);
+    }
+    this.update();
     return true;
   }
 
   public boolean isParentResized() {
+    this.update();
     return false;
   }
 
@@ -247,6 +275,7 @@ class FlexLayoutImpl extends StdLayoutImpl {
   private BitSet flags_;
   private final Grid grid_;
   private List<WLayoutItem> addedItems_;
+  private List<WLayoutItem> resizedItems_;
   private List<String> removedItems_;
   private List<StdLayoutImpl> childLayouts_;
   private String elId_;
@@ -335,69 +364,92 @@ class FlexLayoutImpl extends StdLayoutImpl {
       el = wrapEl;
     }
     int[] m = {0, 0, 0, 0};
-    FlexLayoutImpl flexImpl = ObjectUtils.cast(getImpl(it.item_), FlexLayoutImpl.class);
-    if (flexImpl != null) {
-      Orientation elOrientation = flexImpl.getOrientation();
-      if (elOrientation == Orientation.Horizontal) {
-        m[3] -= flexImpl.grid_.horizontalSpacing_ / 2;
-        m[1] -= (flexImpl.grid_.horizontalSpacing_ + 1) / 2;
-      } else {
-        m[0] -= flexImpl.grid_.verticalSpacing_ / 2;
-        m[2] -= (flexImpl.grid_.horizontalSpacing_ + 1) / 2;
-      }
-    }
     AlignmentFlag hAlign =
         EnumUtils.enumFromSet(EnumUtils.mask(it.alignment_, AlignmentFlag.AlignHorizontalMask));
     AlignmentFlag vAlign =
         EnumUtils.enumFromSet(EnumUtils.mask(it.alignment_, AlignmentFlag.AlignVerticalMask));
     if (orientation == Orientation.Horizontal) {
-      if (hAlign != null) {
-        el.setProperty(Property.StyleFlex, "0 0 auto");
-        DomElement wrap = DomElement.createNew(DomElementType.DIV);
-        wrap.setId("w" + el.getId());
-        wrap.setProperty(Property.StyleDisplay, this.getStyleDisplay());
-        wrap.setProperty(Property.StyleFlexFlow, this.getStyleFlex());
-        wrap.addChild(el);
-        el = wrap;
-        switch (hAlign) {
-          case Left:
-            el.setProperty(Property.StyleJustifyContent, "flex-start");
-            break;
-          case Center:
-            el.setProperty(Property.StyleJustifyContent, "center");
-            break;
-          case Right:
-            el.setProperty(Property.StyleJustifyContent, "flex-end");
-          default:
-            break;
-        }
-      }
+      boolean noAlign = false;
+      String alignSelfStyle = "";
       if (vAlign != null) {
         switch (vAlign) {
           case Top:
-            el.setProperty(Property.StyleAlignSelf, "flex-start");
+            alignSelfStyle = "flex-start";
             break;
           case Middle:
-            el.setProperty(Property.StyleAlignSelf, "center");
+            alignSelfStyle = "center";
             break;
           case Bottom:
-            el.setProperty(Property.StyleAlignSelf, "flex-end");
+            alignSelfStyle = "flex-end";
             break;
           case Baseline:
-            el.setProperty(Property.StyleAlignSelf, "baseline");
+            alignSelfStyle = "baseline";
+            break;
+          default:
+            noAlign = true;
+            break;
+        }
+      } else {
+        noAlign = true;
+      }
+      if (noAlign) {
+        el.setProperty(Property.StyleFlex, "1 1 auto");
+        el = this.wrap(el, this.getStyleFlex());
+        el.setProperty(Property.StyleFlex, "1 1 auto");
+        el.setProperty(Property.StyleHeight, "100%");
+        el = this.wrap(el, this.getOtherStyleFlex());
+        el.addPropertyWord(Property.Class, "Wt-fill-height");
+      }
+      if (hAlign != null) {
+        el.setProperty(Property.StyleFlex, "0 1 auto");
+        el = this.wrap(el, this.getStyleFlex());
+        el.addPropertyWord(Property.Class, "Wt-justify-wrap");
+        switch (hAlign) {
+          case Left:
+            el.setProperty(Property.StyleJustifyContent, "flex-start");
+            break;
+          case Center:
+            el.setProperty(Property.StyleJustifyContent, "center");
+            break;
+          case Right:
+            el.setProperty(Property.StyleJustifyContent, "flex-end");
           default:
             break;
         }
       }
+      if (alignSelfStyle.length() != 0) {
+        el.setProperty(Property.StyleAlignSelf, alignSelfStyle);
+      }
     } else {
+      boolean noAlign = false;
+      String alignSelfStyle = "";
+      if (hAlign != null) {
+        switch (hAlign) {
+          case Left:
+            alignSelfStyle = "flex-start";
+            break;
+          case Center:
+            alignSelfStyle = "center";
+            break;
+          case Right:
+            alignSelfStyle = "flex-end";
+            break;
+          default:
+            noAlign = true;
+            break;
+        }
+      } else {
+        noAlign = true;
+      }
+      if (noAlign) {
+        el.setProperty(Property.StyleFlex, "1 1 auto");
+        el = this.wrap(el, this.getOtherStyleFlex());
+        el.addPropertyWord(Property.Class, "Wt-fill-width");
+      }
       if (vAlign != null) {
-        el.setProperty(Property.StyleFlex, "0 0 auto");
-        DomElement wrap = DomElement.createNew(DomElementType.DIV);
-        wrap.setId("w" + el.getId());
-        wrap.setProperty(Property.StyleDisplay, this.getStyleDisplay());
-        wrap.setProperty(Property.StyleFlexFlow, this.getStyleFlex());
-        wrap.addChild(el);
-        el = wrap;
+        el.setProperty(Property.StyleFlex, "0 1 auto");
+        el = this.wrap(el, this.getStyleFlex());
+        el.addPropertyWord(Property.Class, "Wt-justify-wrap");
         switch (vAlign) {
           case Top:
             el.setProperty(Property.StyleJustifyContent, "flex-start");
@@ -411,20 +463,8 @@ class FlexLayoutImpl extends StdLayoutImpl {
             break;
         }
       }
-      if (hAlign != null) {
-        switch (hAlign) {
-          case Left:
-            el.setProperty(Property.StyleAlignSelf, "flex-start");
-            break;
-          case Center:
-            el.setProperty(Property.StyleAlignSelf, "center");
-            break;
-          case Right:
-            el.setProperty(Property.StyleAlignSelf, "flex-end");
-            break;
-          default:
-            break;
-        }
+      if (alignSelfStyle.length() != 0) {
+        el.setProperty(Property.StyleAlignSelf, alignSelfStyle);
       }
     }
     {
@@ -462,18 +502,18 @@ class FlexLayoutImpl extends StdLayoutImpl {
         break;
       case TopToBottom:
         if (index != 0) {
-          m[0] += (this.grid_.horizontalSpacing_ + 1) / 2;
+          m[0] += (this.grid_.verticalSpacing_ + 1) / 2;
         }
         if (index != this.count(orientation) - 1) {
-          m[2] += this.grid_.horizontalSpacing_ / 2;
+          m[2] += this.grid_.verticalSpacing_ / 2;
         }
         break;
       case BottomToTop:
         if (index != 0) {
-          m[2] += (this.grid_.horizontalSpacing_ + 1) / 2;
+          m[2] += (this.grid_.verticalSpacing_ + 1) / 2;
         }
         if (index != this.count(orientation) - 1) {
-          m[0] += this.grid_.horizontalSpacing_ / 2;
+          m[0] += this.grid_.verticalSpacing_ / 2;
         }
         break;
     }
@@ -491,6 +531,15 @@ class FlexLayoutImpl extends StdLayoutImpl {
       el.setProperty(Property.StyleMargin, marginProperty.toString());
     }
     return el;
+  }
+
+  private DomElement wrap(DomElement el, final String flow) {
+    DomElement wrapper = DomElement.createNew(DomElementType.DIV);
+    wrapper.setId("w" + el.getId());
+    wrapper.setProperty(Property.StyleDisplay, this.getStyleDisplay());
+    wrapper.setProperty(Property.StyleFlexFlow, flow);
+    wrapper.addChild(el);
+    return wrapper;
   }
 
   private Orientation getOrientation() {
@@ -527,6 +576,20 @@ class FlexLayoutImpl extends StdLayoutImpl {
       case TopToBottom:
         return "column";
       case BottomToTop:
+        return "column-reverse";
+    }
+    return "";
+  }
+
+  private String getOtherStyleFlex() {
+    switch (this.getDirection()) {
+      case TopToBottom:
+        return "row";
+      case BottomToTop:
+        return "row-reverse";
+      case LeftToRight:
+        return "column";
+      case RightToLeft:
         return "column-reverse";
     }
     return "";
@@ -588,6 +651,6 @@ class FlexLayoutImpl extends StdLayoutImpl {
         JavaScriptScope.WtClassScope,
         JavaScriptObjectType.JavaScriptConstructor,
         "FlexLayout",
-        "(function(s,e){const t=s.WT;setTimeout((function(){const s=t.getElement(e);if(s)for(const e of s.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const s=t.css(e,\"overflow\");\"visible\"!==s&&\"\"!==s||(e.style.overflow=\"hidden\")}}),0);this.adjust=function(){setTimeout((function(){const s=t.getElement(e);if(!s)return;const o=s.childNodes;let n=0;for(const s of o){if(\"none\"===s.style.display||s.classList.contains(\"out\")||\"resize-sensor\"===s.className)continue;if(\"0\"===s.getAttribute(\"flg\"))continue;const e=t.css(s,\"flex-grow\");n+=parseFloat(e)}for(const s of o){if(\"none\"===s.style.display||s.classList.contains(\"out\")||\"resize-sensor\"===s.className)continue;s.resizeSensor&&s.resizeSensor.trigger();let e;if(0===n)e=1;else{if(\"0\"===s.getAttribute(\"flg\"))e=0;else{e=t.css(s,\"flex-grow\")}}s.style.flexGrow=e}}),0)}})");
+        "(function(t,e,s){const i=t.WT;function l(t,e){e.style.maxHeight=t.style.maxHeight;e.style.minHeight=t.style.minHeight;e.style.maxWidth=t.style.maxWidth;e.style.minWidth=t.style.minWidth}setTimeout((function(){const t=i.getElement(e);if(t){\"none\"===t.style.maxHeight||\"\"===t.style.maxHeight||\"auto\"!==t.style.height&&\"\"!==t.style.height||(t.style.height=\"fit-content\");\"none\"===t.style.maxWidth||\"\"===t.style.maxWidth||\"auto\"!==t.style.width&&\"\"!==t.style.width||(t.style.width=\"fit-content\");for(const e of t.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const t=i.css(e,\"overflow\");\"visible\"!==t&&\"\"!==t||(e.style.overflow=\"hidden\");const n=e.classList.contains(\"Wt-justify-wrap\")?e.childNodes[0]:e;if(n.classList.contains(\"Wt-fill-width\")){const t=n.children[0];n.style.flexBasis=t.style.height;t.style.height=\"auto\";l(t,n)}if(n.classList.contains(\"Wt-fill-height\")){const t=n.children[0],o=t.children[0];e.style.flexBasis=o.style.width;n.style.flexBasis=o.style.width;t.style.flexBasis=o.style.height;o.style.height=\"auto\";l(o,n);const c=i.getElement(s);setTimeout((function(){c&&\"fit-content\"!==c.style.width&&(o.style.width=\"auto\")}),0)}}}}),0);this.resizeItem=function(t,e,s){setTimeout(n,0,t,e,s)};function n(t,e,n){if(!t)return;let o=t.parentElement;if(o){if(o.classList.contains(\"Wt-fill-width\")){o.style.flexBasis=n;t.style.height=\"auto\";l(t,o)}o=o.parentElement;if(o&&o.classList.contains(\"Wt-fill-height\")){const c=o.parentElement;c&&c.classList.contains(\"Wt-justify-wrap\")&&(c.style.flexBasis=e);o.style.flexBasis=e;o.children[0].style.flexBasis=n;t.style.height=\"auto\";l(t,o);const a=i.getElement(s);setTimeout((function(){a&&\"fit-content\"!==a.style.width&&(t.style.width=\"auto\")}),0)}}}this.adjust=function(){setTimeout((function(){const t=i.getElement(e);if(!t)return;const l=t.childNodes;let n=0;for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;if(\"0\"===t.getAttribute(\"flg\"))continue;const e=i.css(t,\"flex-grow\");n+=parseFloat(e)}for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;t.resizeSensor&&t.resizeSensor.trigger();let e;if(0===n)e=1;else{if(\"0\"===t.getAttribute(\"flg\"))e=0;else{e=i.css(t,\"flex-grow\")}}t.style.flexGrow=e;const l=t.classList.contains(\"Wt-justify-wrap\")?t.childNodes[0]:t;if(l.classList.contains(\"Wt-fill-height\")){const t=i.getElement(s);if(t&&\"fit-content\"!==t.style.width){l.childNodes[0].childNodes[0].style.width=\"auto\"}}}}),0)}})");
   }
 }

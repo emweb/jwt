@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +29,14 @@ class WWidgetRasterPainter extends WWidgetPainter {
   }
 
   public WPaintDevice createPaintDevice(boolean paintUpdate) {
-    return new WRasterPaintDevice(
-        "png", new WLength(this.widget_.renderWidth_), new WLength(this.widget_.renderHeight_));
+    WPaintDevice res =
+        new WRasterPaintDevice(
+            "png", new WLength(this.widget_.renderWidth_), new WLength(this.widget_.renderHeight_));
+    String botResourceId = this.widget_.getBotResourceId();
+    if (botResourceId.length() != 0) {
+      (ObjectUtils.cast(res, WRasterPaintDevice.class)).setBotResourceId(botResourceId);
+    }
+    return res;
   }
 
   public WPaintDevice getPaintDevice(boolean paintUpdate) {
@@ -58,7 +64,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
     this.device_ = device;
     StringBuilder selectJS = new StringBuilder();
     selectJS
-        .append("Wt4_12_1")
+        .append("Wt4_12_2")
         .append(".$('")
         .append("i")
         .append(this.widget_.getId())
@@ -67,7 +73,7 @@ class WWidgetRasterPainter extends WWidgetPainter {
     WApplication.getInstance().doJavaScript(selectJS.toString());
     StringBuilder mouseJS = new StringBuilder();
     mouseJS
-        .append("Wt4_12_1")
+        .append("Wt4_12_2")
         .append(".$('")
         .append("i")
         .append(this.widget_.getId())

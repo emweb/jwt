@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -385,7 +385,7 @@ public class WBootstrap5Theme extends WTheme {
     this.loadValidationStyling(app);
     if (app.getEnvironment().hasAjax()) {
       StringBuilder js = new StringBuilder();
-      js.append("Wt4_12_1.setValidationState(")
+      js.append("Wt4_12_2.setValidationState(")
           .append(widget.getJsRef())
           .append(",")
           .append(validation.getState() == ValidationState.Valid)
@@ -482,7 +482,6 @@ public class WBootstrap5Theme extends WTheme {
         break;
       case WidgetThemeRole.PanelCollapseButton:
         {
-          WApplication app = WApplication.getInstance();
           WIconPair iconPair = ObjectUtils.cast(child, WIconPair.class);
           iconPair.getUriIcon1().setInline(false);
           iconPair.getUriIcon2().setInline(false);

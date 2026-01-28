@@ -1,0 +1,252 @@
+package eu.webtoolkit.jwt;
+
+import eu.webtoolkit.jwt.Configuration;
+
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import java.io.File;
+import java.io.IOException;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+
+public class ConfigurationTest {
+	// Checks whether widget gallery specific config is true
+	void checkWidgetGalleryConfigurationValues(Configuration config) {
+		assertEquals("Plain HTML version", config.getRedirectMessage());
+		assertEquals(0, config.getHttpHeaders().size());
+
+		assertEquals(true, config.isUseScriptNonce());
+		assertEquals(true, config.isServePrivateResourcesToBots());
+
+		assertEquals(5, config.getProperties().size());
+		Map<String, String> properties = Map.of("tinyMCEVersion", "6", "tinyMCEBaseURL", "wt-resources/tinymce6",
+		                                        "leafletJSURL", "https://unpkg.com/leaflet@1.5.1/dist/leaflet.js",
+		                                        "leafletCSSURL", "https://unpkg.com/leaflet@1.5.1/dist/leaflet.css",
+																						"resourcesURL", "/wt-resources/");
+		for (Map.Entry<String, String> property : properties.entrySet()) {
+			assertEquals(property.getValue(), config.getProperties().get(property.getKey()));
+		}
+	}
+	// Checks whether default non-widget gallery config is true
+	void checkNonWidgetGalleryConfigurationValues(Configuration config) {
+		// Custom comparison, since JUnit would rely on Object.equals. And the automatic translation does NOT correctly
+		// override this method.
+		List<HttpHeader> expected = Arrays.asList(new HttpHeader("X-Content-Type-Options", "nosniff"), new HttpHeader("Strict-Transport-Security", "max-age=15724800; includeSubDomains"), new HttpHeader("Referrer-Policy", "strict-origin-when-cross-origin"));
+		assertEquals(expected.size(), config.getHttpHeaders().size());
+		for (int i = 0; i < expected.size(); i++) {
+			assertTrue(expected.get(i).equals(config.getHttpHeaders().get(i)));
+		}
+
+		assertEquals(false, config.isUseScriptNonce());
+		assertEquals(false, config.isServePrivateResourcesToBots());
+
+		assertEquals(1, config.getProperties().size());
+		assertEquals("/wt-resources/", config.getProperty("resourcesURL"));
+	}
+
+	// Checks if values are equal to the default configuration
+	void checkDefaultConfigurationValues(Configuration config) {
+		assertEquals(600, config.getSessionTimeout());
+		assertEquals(-1, config.getIdleTimeout());
+		assertEquals(10, config.getBootstrapTimeout());
+		assertEquals(50, config.getServerPushTimeout());
+		assertEquals(90000, config.getAsyncContextTimeout());
+
+		assertEquals(false, config.debug());
+		assertEquals(Configuration.ErrorReporting.ErrorMessage, config.getErrorReporting());
+		assertEquals(Configuration.ClientSideErrorReportLevel.Framework, config.getClientSideErrorReportingLevel());
+
+		assertEquals(1024*1024, config.getMaxRequestSize());
+		assertEquals(1024*1024, config.getMaxFormDataSize());
+		assertEquals(1000, config.getMaxPendingEvents());
+
+		assertEquals(false, config.webSockets());
+		assertEquals(true, config.isWebglDetect());
+		assertEquals(true, config.isInlineCss());
+		assertEquals(500, config.getIndicatorTimeout());
+		assertEquals(200, config.getDoubleClickTimeout());
+
+		assertEquals(false, config.isAjaxAgentWhiteList());
+		assertEquals(0, config.getAjaxAgentList().size());
+		assertEquals(false, config.sendXHTMLMimeType());
+		assertEquals("", config.getUaCompatible());
+
+		assertEquals(false, config.progressiveBootstrap(""));
+		assertEquals(true, config.isDelayLoadAtBoot());
+
+		assertEquals(Collections.emptyList(), config.getMetaHeaders());
+		assertEquals(true, config.isUseXFrameSameOrigin());
+
+		assertEquals(false, config.isAllowedOrigin(""));
+
+		assertEquals(0, config.internalDeploymentSize());
+		assertEquals(false, config.isBehindReverseProxy());
+		assertEquals("X-Forwarded-For", config.getOriginalIPHeader());
+		assertEquals(Collections.emptyList(), config.getTrustedProxies());
+
+		assertEquals("/favicon.ico", config.getFavicon());
+
+		assertEquals("jwt-temp", config.getBotResourcesPath());
+		assertEquals(1000, config.getMaxAutoRemovablePublicResources());
+	}
+
+	@Test
+	public void testDefaultConfiguration() {
+		// Read default config
+		Configuration config = new Configuration();
+
+		checkNonWidgetGalleryConfigurationValues(config);
+		checkDefaultConfigurationValues(config);
+		assertEquals("Plain HTML version", config.getRedirectMessage());
+
+		assertEquals(9, config.getBotList().size());
+		assertEquals(Arrays.asList(".*bot.*", ".*Bot.*", ".*crawler.*",
+		                           ".*Crawler.*", ".*spider.*", ".*Spider.*",
+		                           ".*Slurp.*", ".*ia_archiver.*",
+		                           ".*Twiceler.*"), config.getBotList());
+		assertEquals(Collections.emptyList(), config.getHeadMatter());
+	}
+
+	@Test
+	public void testReadConfiguration() {
+		// Read global config
+		File configFile = new File("jwt_config.xml");
+		if (configFile == null) {
+			fail("Config file cannot be empty");
+		}
+
+		Configuration config = new Configuration(configFile);
+
+		checkNonWidgetGalleryConfigurationValues(config);
+		checkDefaultConfigurationValues(config);
+
+		assertEquals("Load basic HTML", config.getRedirectMessage());
+
+		assertEquals(12, config.getBotList().size());
+		assertEquals(Arrays.asList(".*bot.*", ".*Bot.*", ".*crawler.*",
+		                           ".*Crawler.*", ".*spider.*", ".*Spider.*",
+		                           ".*Slurp.*", ".*ia_archiver.*",
+		                           ".*Twiceler.*", ".*Yandex.*", ".*Nutch.*",
+		                           ".*Ezooms.*"), config.getBotList());
+		assertEquals(Collections.emptyList(), config.getHeadMatter());
+	}
+
+	class TestServlet extends WtServlet {
+		public TestServlet() {
+			super();
+		}
+
+		@Override
+		public WApplication createApplication(WEnvironment env) {
+			return new WApplication(env);
+		}
+	}
+
+	@Test
+	public void testInitParamConfigurationRelative() {
+		// Read global config
+		String jwtConfigPath = "jwt_config.xml";
+
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ServletConfig servletConfig = mock(ServletConfig.class);
+		ServletContext servletContext = mock(ServletContext.class);
+
+		when(request.getServletPath()).thenReturn("/test-sevlet");
+		when(request.getPathInfo()).thenReturn("/test-app");
+		when(servletConfig.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getInitParameter("jwt-config")).thenReturn(jwtConfigPath);
+		when(servletContext.getRealPath(jwtConfigPath)).thenReturn(jwtConfigPath);
+
+		TestServlet servlet = new TestServlet();
+		try {
+			servlet.init(servletConfig);
+		} catch (ServletException e) {
+			fail("Couldn't init servlet: " + e.toString());
+		}
+
+		Configuration config = servlet.getConfiguration();
+
+		checkNonWidgetGalleryConfigurationValues(config);
+		checkDefaultConfigurationValues(config);
+
+		assertEquals("Load basic HTML", config.getRedirectMessage());
+
+		assertEquals(12, config.getBotList().size());
+		assertEquals(Arrays.asList(".*bot.*", ".*Bot.*", ".*crawler.*",
+		                           ".*Crawler.*", ".*spider.*",
+		                           ".*Spider.*", ".*Slurp.*",
+		                           ".*ia_archiver.*", ".*Twiceler.*",
+		                           ".*Yandex.*", ".*Nutch.*",
+		                           ".*Ezooms.*"), config.getBotList());
+		assertEquals(Collections.emptyList(), config.getHeadMatter());
+	}
+
+	@Test
+	public void testInitParamConfigurationAbsolute() {
+		// Read widget gallery config
+		// Tests are run from the "project root/java" dir
+		String jwtConfigPath = System.getProperty("user.dir") + "/examples/widgetgallery/WebRoot/jwt_config.xml";
+
+		HttpServletRequest request = mock(HttpServletRequest.class);
+		HttpServletResponse response = mock(HttpServletResponse.class);
+		ServletConfig servletConfig = mock(ServletConfig.class);
+		ServletContext servletContext = mock(ServletContext.class);
+
+		when(request.getServletPath()).thenReturn("/test-sevlet");
+		when(request.getPathInfo()).thenReturn("/test-app");
+		when(servletConfig.getServletContext()).thenReturn(servletContext);
+		when(servletContext.getInitParameter("jwt-config")).thenReturn(jwtConfigPath);
+		when(servletContext.getRealPath(jwtConfigPath)).thenReturn(jwtConfigPath);
+
+		TestServlet servlet = new TestServlet();
+		try {
+			servlet.init(servletConfig);
+		} catch (ServletException e) {
+			fail("Couldn't init servlet: " + e.toString());
+		}
+
+		// Tests are run from the "project root/java" dir
+		String currentDir = System.getProperty("user.dir") + "/examples/widgetgallery/WebRoot/jwt_config.xml";
+
+		Configuration config = servlet.getConfiguration();
+
+		checkWidgetGalleryConfigurationValues(config);
+		checkDefaultConfigurationValues(config);
+
+		assertEquals(31, config.getBotList().size());
+		assertEquals(Arrays.asList(".*bot.*", ".*Bot.*", ".*crawl.*",
+		                           ".*Crawl.*", ".*spider.*", ".*Spider.*",
+		                           ".*Slurp.*", ".*ia_archiver.*",
+		                           ".*Twiceler.*", ".*Yandex.*", ".*Nutch.*",
+		                           ".*Ezooms.*", ".*Scrapy.*", ".*Buck.*",
+		                           ".*Barkrowler.*", ".*Censys.*",
+		                           ".*Blogtrottr.*",
+		                           ".*InternetMeasurement.*", ".*Owler.*",
+		                           ".*centuryb.o.t9.*", ".*Turnitin.*",
+		                           ".*MatchorySearch.*", ".*newspaper.*",
+		                           ".*Go-http-client.*", ".*Mojolicious.*",
+		                           ".*python-requests.*", ".*Python.*",
+		                           ".*python-urllib.*",
+		                           ".*Apache-HttpClient.*",
+		                           ".*com.apple.WebKit.Networking.*",
+		                           ".*NetworkingExtension.*"), config.getBotList());
+		assertEquals(Collections.emptyList(), config.getHeadMatter());
+	}
+}

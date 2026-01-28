@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,6 +135,8 @@ public class WGroupBox extends WContainerWidget {
         legend = DomElement.getForUpdate(this.getId() + "l", DomElementType.LEGEND);
       }
       legend.setProperty(Property.InnerHTML, escapeText(this.title_).toString());
+      legend.setProperty(Property.StyleWidth, "fit-content");
+      legend.setProperty(Property.StyleHeight, "fit-content");
       element.addChild(legend);
       this.titleChanged_ = false;
     }
@@ -152,8 +154,24 @@ public class WGroupBox extends WContainerWidget {
 
   private WString title_;
   private boolean titleChanged_;
+  private WLayout logicalLayout_;
 
   private void init() {
     this.setJavaScriptMember(WT_GETPS_JS, StdWidgetItemImpl.getSecondGetPSJS());
+    this.setJavaScriptMember(WT_GETEXTRAMS_JS, StdWidgetItemImpl.getSecondGetPSJS());
+    this.setLogicalLayout((WLayout) null);
+  }
+
+  void setLogicalLayout(WLayout layout) {
+    WVBoxLayout newLayout = new WVBoxLayout();
+    this.logicalLayout_ = layout;
+    if (layout != null) {
+      newLayout.addLayout(layout);
+    }
+    super.setLogicalLayout(newLayout);
+  }
+
+  WLayout getLogicalLayout() {
+    return this.logicalLayout_;
   }
 }

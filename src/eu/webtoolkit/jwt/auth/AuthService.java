@@ -10,13 +10,14 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.mail.MessagingException;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -630,7 +631,7 @@ public class AuthService {
    * @see AuthService#processEmailToken(String token, AbstractUserDatabase users)
    */
   public void verifyEmailAddress(final User user, final String address)
-      throws javax.mail.MessagingException, UnsupportedEncodingException, IOException {
+      throws MessagingException, UnsupportedEncodingException, IOException {
     user.setUnverifiedEmail(address);
     String random = MathUtils.randomId(this.tokenLength_);
     String hash = this.getTokenHashFunction().compute(random, "");
@@ -655,7 +656,7 @@ public class AuthService {
    * @see AuthService#processEmailToken(String token, AbstractUserDatabase users)
    */
   public void lostPassword(final String emailAddress, final AbstractUserDatabase users)
-      throws javax.mail.MessagingException, UnsupportedEncodingException, IOException {
+      throws MessagingException, UnsupportedEncodingException, IOException {
     User user = users.findWithEmail(emailAddress);
     if (user.isValid()) {
       String random = MathUtils.randomId(this.getRandomTokenLength());
@@ -774,16 +775,16 @@ public class AuthService {
    * the smtp.host and smpt.port JWt configuration variables (see {@link
    * Configuration#setProperties(HashMap properties)}).
    */
-  public void sendMail(final javax.mail.Message message)
-      throws javax.mail.MessagingException, UnsupportedEncodingException, IOException {
-    javax.mail.Message m = message;
+  public void sendMail(final jakarta.mail.Message message)
+      throws MessagingException, UnsupportedEncodingException, IOException {
+    jakarta.mail.Message m = message;
     if (MailUtils.isEmpty(m.getFrom())) {
       String senderName = "Wt Auth module";
       String senderAddress = "noreply-auth@www.webtoolkit.eu";
       senderName = WApplication.readConfigurationProperty("auth-mail-sender-name", senderName);
       senderAddress =
           WApplication.readConfigurationProperty("auth-mail-sender-address", senderAddress);
-      m.setFrom(new javax.mail.internet.InternetAddress(senderAddress, senderName));
+      m.setFrom(new jakarta.mail.internet.InternetAddress(senderAddress, senderName));
     }
     ByteArrayOutputStream ss = new ByteArrayOutputStream();
     m.writeTo(ss);
@@ -1106,26 +1107,29 @@ public class AuthService {
    * </ul>
    */
   protected void sendConfirmMail(final String address, final User user, final String token)
-      throws javax.mail.MessagingException, UnsupportedEncodingException, IOException {
-    javax.mail.Message message =
-        new javax.mail.internet.MimeMessage(
-            javax.mail.Session.getDefaultInstance(MailUtils.getDefaultProperties()));
+      throws MessagingException, UnsupportedEncodingException, IOException {
+    jakarta.mail.Message message =
+        new jakarta.mail.internet.MimeMessage(
+            jakarta.mail.Session.getDefaultInstance(MailUtils.getDefaultProperties()));
     String url = this.createRedirectUrl(token);
+    WString emailValidityStr = this.getEmailTokenValidityStr();
     message.addRecipient(
-        javax.mail.Message.RecipientType.TO, new javax.mail.internet.InternetAddress(address));
+        jakarta.mail.Message.RecipientType.TO, new jakarta.mail.internet.InternetAddress(address));
     message.setSubject(WString.tr("Wt.Auth.confirmmail.subject").toString());
     MailUtils.setBody(
         message,
         WString.tr("Wt.Auth.confirmmail.body")
             .arg(user.getIdentity(Identity.LoginName))
             .arg(token)
-            .arg(url));
+            .arg(url)
+            .arg(emailValidityStr));
     MailUtils.addHtmlBody(
         message,
         WString.tr("Wt.Auth.confirmmail.htmlbody")
             .arg(user.getIdentity(Identity.LoginName))
             .arg(token)
-            .arg(url));
+            .arg(url)
+            .arg(emailValidityStr));
     this.sendMail(message);
   }
   /**
@@ -1134,8 +1138,8 @@ public class AuthService {
    * <p>This sends a lost password email to the given <code>address</code>, with a given <code>token
    * </code>.
    *
-   * <p>The default implementation will call {@link AuthService#sendMail(javax.mail.Message message)
-   * sendMail()} with the following message:
+   * <p>The default implementation will call {@link AuthService#sendMail(jakarta.mail.Message
+   * message) sendMail()} with the following message:
    *
    * <ul>
    *   <li>tr(&quot;Wt.Auth.lost-password-mail.subject&quot;) as subject,
@@ -1146,26 +1150,29 @@ public class AuthService {
    * </ul>
    */
   protected void sendLostPasswordMail(final String address, final User user, final String token)
-      throws javax.mail.MessagingException, UnsupportedEncodingException, IOException {
-    javax.mail.Message message =
-        new javax.mail.internet.MimeMessage(
-            javax.mail.Session.getDefaultInstance(MailUtils.getDefaultProperties()));
+      throws MessagingException, UnsupportedEncodingException, IOException {
+    jakarta.mail.Message message =
+        new jakarta.mail.internet.MimeMessage(
+            jakarta.mail.Session.getDefaultInstance(MailUtils.getDefaultProperties()));
     String url = this.createRedirectUrl(token);
+    WString emailValidityStr = this.getEmailTokenValidityStr();
     message.addRecipient(
-        javax.mail.Message.RecipientType.TO, new javax.mail.internet.InternetAddress(address));
+        jakarta.mail.Message.RecipientType.TO, new jakarta.mail.internet.InternetAddress(address));
     message.setSubject(WString.tr("Wt.Auth.lostpasswordmail.subject").toString());
     MailUtils.setBody(
         message,
         WString.tr("Wt.Auth.lostpasswordmail.body")
             .arg(user.getIdentity(Identity.LoginName))
             .arg(token)
-            .arg(url));
+            .arg(url)
+            .arg(emailValidityStr));
     MailUtils.addHtmlBody(
         message,
         WString.tr("Wt.Auth.lostpasswordmail.htmlbody")
             .arg(user.getIdentity(Identity.LoginName))
             .arg(token)
-            .arg(url));
+            .arg(url)
+            .arg(emailValidityStr));
     this.sendMail(message);
   }
 
@@ -1197,4 +1204,18 @@ public class AuthService {
   private String mfaTokenCookieName_;
   private String mfaTokenCookieDomain_;
   private boolean mfaThrottleEnabled_;
+
+  private WString getEmailTokenValidityStr() {
+    int hours = this.emailTokenValidity_ / 60;
+    int minutes = this.emailTokenValidity_ % 60;
+    WString validityStr =
+        hours != 0 && minutes != 0 ? WString.tr("Wt.Auth.and") : new WString("{1}");
+    if (hours != 0) {
+      validityStr.arg(WString.trn("Wt.Auth.time.hours-only", hours).arg(hours));
+    }
+    if (minutes != 0) {
+      validityStr.arg(WString.trn("Wt.Auth.time.minutes-only", minutes).arg(minutes));
+    }
+    return validityStr;
+  }
 }

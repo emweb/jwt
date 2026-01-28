@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +118,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
     this.areaImage_ = null;
     this.renderWidth_ = 0;
     this.renderHeight_ = 0;
+    this.botResourceId_ = "";
     this.repaintSlot_ =
         new JSlot("function() {var o=" + this.getObjJsRef() + ";if(o){o.repaint();}}", this);
     this.jsObjects_ = new WJavaScriptObjectStorage(this);
@@ -276,6 +277,29 @@ public abstract class WPaintedWidget extends WInteractWidget {
     return this.areaImage_ != null
         ? this.areaImage_.getAreas()
         : (List<WAbstractArea>) new ArrayList<WAbstractArea>();
+  }
+  /**
+   * Sets the potential bot resource ID.
+   *
+   * <p>In case the {@link WPaintDevice} of this {@link WPaintedWidget} paints a {@link WResource},
+   * this allows to set the bot resource ID that {@link WResource}.
+   *
+   * <p>
+   *
+   * @see WResource#getBotResourceId()
+   */
+  public void setBotResourceId(final String id) {
+    this.botResourceId_ = id;
+  }
+  /**
+   * Returns the potential bot resource ID.
+   *
+   * <p>
+   *
+   * @see WPaintedWidget#setBotResourceId(String id)
+   */
+  public String getBotResourceId() {
+    return this.botResourceId_;
   }
   /**
    * A JavaScript slot that repaints the widget when triggered.
@@ -586,6 +610,7 @@ public abstract class WPaintedWidget extends WInteractWidget {
   WImage areaImage_;
   int renderWidth_;
   int renderHeight_;
+  private String botResourceId_;
   private JSlot repaintSlot_;
   WJavaScriptObjectStorage jsObjects_;
   private boolean jsDefined_;

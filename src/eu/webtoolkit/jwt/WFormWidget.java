@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -340,7 +340,7 @@ public abstract class WFormWidget extends WInteractWidget {
       this.setJavaScriptMember("wtValidate", validateJS);
       if (!(this.validateJs_ != null)) {
         this.validateJs_ = new JSlot();
-        this.validateJs_.setJavaScript("function(o){Wt4_12_1.validate(o)}");
+        this.validateJs_.setJavaScript("function(o){Wt4_12_2.validate(o)}");
         this.keyWentUp().addListener(this.validateJs_);
         this.changed().addListener(this.validateJs_);
         if (this.getDomElementType() != DomElementType.SELECT) {
@@ -358,7 +358,7 @@ public abstract class WFormWidget extends WInteractWidget {
       }
       StringUtils.replace(inputFilter, '/', "\\/");
       this.filterInput_.setJavaScript(
-          "function(o,e){Wt4_12_1.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
+          "function(o,e){Wt4_12_2.filter(o,e," + jsStringLiteral(inputFilter) + ")}");
     } else {
       if (this.filterInput_ != null) {
         this.keyPressed().removeListener(this.filterInput_);
@@ -409,7 +409,7 @@ public abstract class WFormWidget extends WInteractWidget {
       app.loadJavaScript("js/WFormWidget.js", wtjs1());
       this.setJavaScriptMember(
           " WFormWidget",
-          "new Wt4_12_1.WFormWidget("
+          "new Wt4_12_2.WFormWidget("
               + app.getJavaScriptClass()
               + ","
               + this.getJsRef()

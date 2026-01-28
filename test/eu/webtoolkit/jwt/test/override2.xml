@@ -1,0 +1,4 @@
+<messages>
+  <message id="key">This is the content of the second override case</message>
+  <message id="key_override">This tests that the bundle is actually used</message>
+</messages>

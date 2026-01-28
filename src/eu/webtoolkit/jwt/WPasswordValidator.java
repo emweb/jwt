@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -141,7 +141,7 @@ public class WPasswordValidator extends WRegExpValidator {
   public String getJavaScriptValidate() {
     WApplication.getInstance().loadJavaScript("js/WPasswordValidator.js", wtjs1());
     StringBuilder js = new StringBuilder();
-    js.append("new Wt4_12_1.WPasswordValidator(")
+    js.append("new Wt4_12_2.WPasswordValidator(")
         .append(this.isMandatory())
         .append(",")
         .append(this.getMinLength())

@@ -10,14 +10,14 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -109,8 +109,7 @@ class WebSession {
     if (this.controller_.getConfiguration().sessionIdCookie()) {
       this.sessionIdCookie_ = MathUtils.randomId();
       this.sessionIdCookieChanged_ = true;
-      javax.servlet.http.Cookie cookie =
-          new javax.servlet.http.Cookie("Wt" + this.sessionIdCookie_, "1");
+      Cookie cookie = new Cookie("Wt" + this.sessionIdCookie_, "1");
       cookie.setSecure(this.env_.getUrlScheme().equals("https"));
       cookie.setHttpOnly(true);
       this.getRenderer().setCookie(cookie);
@@ -757,12 +756,16 @@ class WebSession {
     return this.pagePathInfo_;
   }
 
-  public String getMostRelativeUrl(final String internalPath) {
-    return this.appendSessionQuery(this.getBookmarkUrl(internalPath));
+  public String getMostRelativeUrl(final String internalPath, boolean excludeBot) {
+    return this.appendSessionQuery(this.getBookmarkUrl(internalPath), excludeBot);
   }
 
   public final String getMostRelativeUrl() {
-    return getMostRelativeUrl("");
+    return getMostRelativeUrl("", false);
+  }
+
+  public final String getMostRelativeUrl(final String internalPath) {
+    return getMostRelativeUrl(internalPath, false);
   }
 
   public String appendInternalPath(final String baseUrl, final String internalPath) {
@@ -789,9 +792,9 @@ class WebSession {
     }
   }
 
-  public String appendSessionQuery(final String url) {
+  public String appendSessionQuery(final String url, boolean force) {
     String result = url;
-    if (this.env_.isTreatLikeBot()) {
+    if (this.env_.isTreatLikeBot() && !force) {
       return result;
     }
     int questionPos = result.indexOf('?');
@@ -808,14 +811,24 @@ class WebSession {
       result = this.applicationUrl_ + result;
     }
     if (WebSession.Handler.getInstance().getResponse() != null) {
-      return WebSession.Handler.getInstance().getResponse().encodeURL(result);
-    } else {
-      questionPos = result.indexOf('?');
-      return result.substring(0, 0 + questionPos)
-          + ";jsessionid="
-          + this.getSessionId()
-          + result.substring(questionPos);
+      try {
+        return WebSession.Handler.getInstance().getResponse().encodeURL(result);
+      } catch (final RuntimeException e) {
+        logger.error(
+            new StringWriter()
+                .append("appendSessionQuery(): could not encode URL using response")
+                .toString());
+      }
     }
+    questionPos = result.indexOf('?');
+    return result.substring(0, 0 + questionPos)
+        + ";jsessionid="
+        + this.getSessionId()
+        + result.substring(questionPos);
+  }
+
+  public final String appendSessionQuery(final String url) {
+    return appendSessionQuery(url, false);
   }
 
   public String ajaxCanonicalUrl(final WebResponse request) {
@@ -985,7 +998,7 @@ class WebSession {
       if (url.length() != 0
           && url.charAt(0) == '.'
           && (url.length() == 1 || url.charAt(1) != '.')) {
-        return this.absoluteBaseUrl_ + (url.charAt(1));
+        return this.absoluteBaseUrl_ + url.substring(1);
       } else {
         if (url.length() == 0 || url.charAt(0) != '/') {
           return this.absoluteBaseUrl_ + url;
@@ -1719,7 +1732,7 @@ class WebSession {
     this.setState(WebSession.State.Loaded, this.controller_.getConfiguration().getSessionTimeout());
     if (wasSuspended) {
       if (this.env_.hasAjax() && this.controller_.getConfiguration().reloadIsNewSession()) {
-        this.app_.doJavaScript("Wt4_12_1.history.removeSessionId()");
+        this.app_.doJavaScript("Wt4_12_2.history.removeSessionId()");
         this.sessionIdInUrl_ = false;
       }
       this.app_.unsuspended().trigger();
@@ -2115,7 +2128,7 @@ class WebSession {
               String hashE = request.getParameter(se + "_");
               if (hashE != null) {
                 this.changeInternalPath(hashE, handler.getResponse());
-                this.app_.doJavaScript("Wt4_12_1.scrollHistory();");
+                this.app_.doJavaScript("Wt4_12_2.scrollHistory();");
               } else {
                 this.changeInternalPath("", handler.getResponse());
               }
@@ -2279,7 +2292,8 @@ class WebSession {
   }
 
   private String getSessionQuery() {
-    String result = "?wtd=" + DomElement.urlEncodeS(this.sessionId_);
+    String wtd = this.env_.agentIsSpiderBot() ? "bot" : this.sessionId_;
+    String result = "?wtd=" + DomElement.urlEncodeS(wtd);
     if (this.getType() == EntryPointType.WidgetSet) {
       result += "&wtt=widgetset";
     }

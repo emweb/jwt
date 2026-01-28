@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.*;
 import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -3081,7 +3081,7 @@ public class WCartesianChart extends WAbstractChart {
       int selectedCurve =
           this.selectedSeries_ != null ? this.getSeriesIndexOf(this.selectedSeries_) : -1;
       int followCurve = this.followCurve_ != null ? this.getSeriesIndexOf(this.followCurve_) : -1;
-      ss.append("new Wt4_12_1.WCartesianChart(")
+      ss.append("new Wt4_12_2.WCartesianChart(")
           .append(app.getJavaScriptClass())
           .append(",")
           .append(this.getJsRef())
@@ -5872,8 +5872,8 @@ public class WCartesianChart extends WAbstractChart {
     if (app != null && (this.isInteractive() || this.hasDeferredToolTips_)) {
       app.loadJavaScript("js/ChartCommon.js", wtjs2());
       app.doJavaScript(
-          "if (!Wt4_12_1.chartCommon) {Wt4_12_1.chartCommon = new "
-              + "Wt4_12_1.ChartCommon("
+          "if (!Wt4_12_2.chartCommon) {Wt4_12_2.chartCommon = new "
+              + "Wt4_12_2.ChartCommon("
               + app.getJavaScriptClass()
               + "); }",
           false);

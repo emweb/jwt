@@ -10,13 +10,13 @@ import eu.webtoolkit.jwt.auth.mfa.*;
 import eu.webtoolkit.jwt.chart.*;
 import eu.webtoolkit.jwt.servlet.*;
 import eu.webtoolkit.jwt.utils.*;
+import jakarta.servlet.*;
+import jakarta.servlet.http.*;
 import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.*;
 import java.util.regex.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -572,7 +572,7 @@ public class WStandardItem {
    * @see WStandardItem#setRowCount(int rows)
    */
   public int getRowCount() {
-    return this.columns_ != null ? this.columns_.get(0).size() : 0;
+    return this.columns_ != null && !this.columns_.isEmpty() ? this.columns_.get(0).size() : 0;
   }
   /**
    * Sets the column count.
@@ -637,6 +637,13 @@ public class WStandardItem {
    * @see WStandardItem#insertRow(int row, List items)
    */
   public void insertColumn(int column, List<WStandardItem> items) {
+    if (column > this.getColumnCount()) {
+      throw new WException(
+          "Column to insert to is too large: "
+              + String.valueOf(column)
+              + " > "
+              + String.valueOf(this.getColumnCount()));
+    }
     int rc = this.getRowCount();
     if (!(this.columns_ != null)) {
       this.setRowCount(items.size());
@@ -701,6 +708,13 @@ public class WStandardItem {
    * @see WStandardItem#insertColumn(int column, List items)
    */
   public void insertRow(int row, List<WStandardItem> items) {
+    if (row > this.getRowCount()) {
+      throw new WException(
+          "Row to insert to is too large: "
+              + String.valueOf(row)
+              + " > "
+              + String.valueOf(this.getRowCount()));
+    }
     if (!(this.columns_ != null)) {
       this.setColumnCount(1);
     }
@@ -736,6 +750,13 @@ public class WStandardItem {
    * @see WStandardItem#insertRows(int row, int count)
    */
   public void insertColumns(int column, int count) {
+    if (column > this.getColumnCount()) {
+      throw new WException(
+          "Column to insert to is too large: "
+              + String.valueOf(column)
+              + " > "
+              + String.valueOf(this.getColumnCount()));
+    }
     if (count > 0) {
       if (this.model_ != null) {
         this.model_.beginInsertColumns(this.getIndex(), column, column + count - 1);
@@ -746,7 +767,10 @@ public class WStandardItem {
       }
       for (int i = 0; i < count; ++i) {
         List<WStandardItem> c = new ArrayList<WStandardItem>();
-        CollectionUtils.resize(c, rc);
+        for (int j = 0; j < rc; ++j) {
+          c.add(new WStandardItem());
+          this.adoptChild(j, column, c.get(j));
+        }
         this.columns_.add(0 + column + i, c);
       }
       this.renumberColumns(column + count);
@@ -765,6 +789,13 @@ public class WStandardItem {
    * @see WStandardItem#insertColumns(int column, int count)
    */
   public void insertRows(int row, int count) {
+    if (row > this.getRowCount()) {
+      throw new WException(
+          "Row to insert to is too large: "
+              + String.valueOf(row)
+              + " > "
+              + String.valueOf(this.getRowCount()));
+    }
     if (count > 0) {
       if (this.model_ != null) {
         this.model_.beginInsertRows(this.getIndex(), row, row + count - 1);
@@ -776,7 +807,11 @@ public class WStandardItem {
       for (int i = 0; i < cc; ++i) {
         final List<WStandardItem> c = this.columns_.get(i);
         for (int j = 0; j < count; ++j) {
-          c.add(0 + row + j, null);
+          c.add(0 + row + j, new WStandardItem());
+          this.adoptChild(row, i, c.get(row + j));
+          if (this.model_ != null) {
+            c.get(row + j).setModel(this.model_);
+          }
         }
       }
       this.renumberRows(row + count);
@@ -940,6 +975,17 @@ public class WStandardItem {
    * @see WStandardItem#getChild(int row, int column)
    */
   public WStandardItem takeChild(int row, int column) {
+    if (row < 0 || column < 0 || row >= this.getRowCount() || column >= this.getColumnCount()) {
+      logger.warn(
+          new StringWriter()
+              .append("Trying to take an invalid item, with index: (")
+              .append(String.valueOf(row))
+              .append(", ")
+              .append(String.valueOf(column))
+              .append(")")
+              .toString());
+      return null;
+    }
     WStandardItem item = this.getChild(row, column);
     WStandardItem result = null;
     if (item != null) {
@@ -968,6 +1014,14 @@ public class WStandardItem {
    * @see WStandardItem#removeColumn(int column)
    */
   public List<WStandardItem> takeColumn(int column) {
+    if (column < 0 || column >= this.getColumnCount()) {
+      logger.warn(
+          new StringWriter()
+              .append("Trying to take an invalid column, with index: ")
+              .append(String.valueOf(column))
+              .toString());
+      return new ArrayList<WStandardItem>();
+    }
     if (this.model_ != null) {
       this.model_.beginRemoveColumns(this.getIndex(), column, column);
     }
@@ -997,6 +1051,14 @@ public class WStandardItem {
    * @see WStandardItem#removeRow(int row)
    */
   public List<WStandardItem> takeRow(int row) {
+    if (row < 0 || row >= this.getRowCount()) {
+      logger.warn(
+          new StringWriter()
+              .append("Trying to take an invalid row, with index: ")
+              .append(String.valueOf(row))
+              .toString());
+      return new ArrayList<WStandardItem>();
+    }
     if (this.model_ != null) {
       this.model_.beginRemoveRows(this.getIndex(), row, row);
     }
@@ -1049,6 +1111,12 @@ public class WStandardItem {
    * @see WStandardItem#removeRows(int row, int count)
    */
   public void removeColumns(int column, int count) {
+    if (column >= this.getColumnCount()) {
+      return;
+    }
+    if (column + count > this.getColumnCount()) {
+      count = this.getColumnCount() - column;
+    }
     if (this.model_ != null) {
       this.model_.beginRemoveColumns(this.getIndex(), column, column + count - 1);
     }
@@ -1094,13 +1162,24 @@ public class WStandardItem {
    * @see WStandardItem#removeColumns(int column, int count)
    */
   public void removeRows(int row, int count) {
+    if (row >= this.getRowCount()) {
+      return;
+    }
+    if (row + count > this.getRowCount()) {
+      count = this.getRowCount() - row;
+    }
     if (this.model_ != null) {
       this.model_.beginRemoveRows(this.getIndex(), row, row + count - 1);
     }
-    for (int i = 0; i < this.getColumnCount(); ++i) {
+    List<Integer> columnsToRemove = new ArrayList<Integer>();
+    for (int i = this.getColumnCount() - 1; i >= 0; --i) {
       final List<WStandardItem> c = this.columns_.get(i);
       for (int ii = 0; ii < (0 + row + count) - (0 + row); ++ii) c.remove(0 + row);
       ;
+      if (c.isEmpty()) {
+        columnsToRemove.add(i);
+        this.columns_.remove(0 + i);
+      }
     }
     this.renumberRows(row);
     if (this.model_ != null) {
