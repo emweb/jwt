@@ -31,13 +31,13 @@
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
       <version>4.12.2</version>
-      <classifier></classifier>
+      <classifier>javax</classifier>
     </dependency>
 
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.1.0</version>
+      <version>4.0.4</version>
     </dependency>
   </dependencies>
 </project>

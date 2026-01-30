@@ -15,7 +15,8 @@ For more information, see [the homepage](http://www.webtoolkit.eu/jwt
 Dependencies
 ------------
 
-The library requires a Servlet 6.1 (`jakarta.servlet` namespace) container.
+The library requires a Servlet 3.0 or 4.0 (`javax.servlet` namespace),
+or 6.1 (`jakarta.servlet` namespace) container.
 It is able to use asynchronous I/O functionality
 to improve scalability when using server push features.
 
@@ -26,9 +27,17 @@ PdfJet[http://pdfjet.com/] to your project.
 Building
 --------
 
-It can be as simple as:
+If you are using a Servlet with `javax.servlet` namespace, it can be as
+simple as:
 
+    make all
     ant
+
+If you are using a Servlet with `jakarta.servlet` namespace, you will
+need to specify it as a parameter for make. Your make command will
+then look like this:
+
+    make javax=jakarta all
 
 Demos, examples
 ---------------
@@ -44,21 +53,24 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-4.12.2.jar -DpomFile=jwt-4.12.2.pom 
-    mvn install:install-file -Dfile=dist/jwt-auth-4.12.2.jar -DpomFile=jwt-auth-4.12.2.pom 
+    mvn install:install-file -Dfile=dist/jwt-4.12.2.jar -DpomFile=jwt-4.12.2.pom
+    mvn install:install-file -Dfile=dist/jwt-auth-4.12.2.jar -DpomFile=jwt-auth-4.12.2.pom
 
-The corresponding dependency blocks are:
+The corresponding dependency blocks will depends on the Servlet
+namespace. Here is the what it will look like when using the
+`javax.servlet` namespace:
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
       <version>4.12.2</version>
+      <classifier>javax</classifier>
     </dependency>
 
     <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <version>6.1.0</version>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>4.0.4</version>
       <scope>provided</scope>
     </dependency>
 
@@ -70,6 +82,7 @@ features you use
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
       <version>4.12.2</version>
+      <classifier>javax</classifier>
     </dependency>
 
     <!-- optional, for PDF Rendering -->
@@ -102,8 +115,15 @@ features you use
 
     <!-- may be needed if your J2EE container doesn't provide this -->
     <dependency>
+      <!-- if using javax.servlet -->
+      <groupId>org.apache.geronimo.javamail</groupId>
+      <artifactId>geronimo-javamail_1.4_mail</artifactId>
+      <version>1.8.1</version>
+
+      <!-- if using jakarta.servlet -->
       <groupId>org.eclipse.angus</groupId>
       <artifactId>angus-mail</artifactId>
       <version>2.0.3</version>
+
       <scope>provided</scope>
     </dependency>

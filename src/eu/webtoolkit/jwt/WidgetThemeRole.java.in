@@ -1,0 +1,70 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+
+Enumeration for the role of a subwidget (for theme support) 
+        
+<p>
+
+@see WTheme#apply(WWidget  widget, WWidget  child, int widgetRole)
+
+
+        
+*/
+public class WidgetThemeRole {
+  public final static int MenuItemIcon = 100;
+  public final static int MenuItemCheckBox = 101;
+  public final static int MenuItemClose = 102;
+  public final static int DialogCoverWidget = 200;
+  public final static int DialogTitleBar = 201;
+  public final static int DialogBody = 202;
+  public final static int DialogFooter = 203;
+  public final static int DialogCloseIcon = 204;
+  public final static int DialogContent = 205;
+  public final static int TableViewRowContainer = 300;
+  public final static int DatePickerPopup = 400;
+  public final static int DatePickerIcon = 401;
+  public final static int TimePickerPopup = 410;
+  public final static int TimePickerPopupContent = 411;
+  public final static int PanelTitleBar = 500;
+  public final static int PanelCollapseButton = 501;
+  public final static int PanelTitle = 502;
+  public final static int PanelBody = 503;
+  public final static int PanelBodyContent = 504;
+  public final static int AuthWidgets = 600;
+  public final static int InPlaceEditing = 700;
+  public final static int InPlaceEditingButtonsContainer = 701;
+  public final static int InPlaceEditingButton = 702;
+  public final static int Navbar = 800;
+  public final static int NavCollapse = 801;
+  public final static int NavBrand = 802;
+  public final static int NavbarForm = 803;
+  public final static int NavbarSearchForm = 804;
+  public final static int NavbarSearchInput = 805;
+  public final static int NavbarMenu = 806;
+  public final static int NavbarBtn = 807;
+  public final static int NavbarAlignLeft = 808;
+  public final static int NavbarAlignRight = 809;
+}
