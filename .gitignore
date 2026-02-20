@@ -1,6 +1,7 @@
 build
 dist
 *.in
+!*.pom.in
 *.prefs
 *.classpath
 *.project
