@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -3230,7 +3230,7 @@ if (   this.hasDeferredToolTips_ && !   this.jsDefined_) {
      StringBuilder ss  = new StringBuilder();
      int selectedCurve =    this.selectedSeries_ != null?  this.getSeriesIndexOf(   this.selectedSeries_): - 1;
      int followCurve =    this.followCurve_ != null?  this.getSeriesIndexOf(   this.followCurve_): - 1;
-    ss.append("new Wt4_12_2.WCartesianChart(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",{curveManipulation:").append(StringUtils.asString(  this.curveManipulationEnabled_).toString()).append(",seriesSelection:").append(StringUtils.asString(  this.seriesSelectionEnabled_).toString()).append(",selectedCurve:").append(selectedCurve).append(",isHorizontal:").append(StringUtils.asString(  this.getOrientation() == Orientation.Horizontal).toString()).append(",zoom:").append(StringUtils.asString(  this.zoomEnabled_).toString()).append(",pan:").append(StringUtils.asString(  this.panEnabled_).toString()).append(",crosshair:").append(StringUtils.asString(  this.crosshairEnabled_).toString()).append(",crosshairXAxis:").append(  this.crosshairXAxis_).append(",crosshairYAxis:").append(  this.crosshairYAxis_).append(",crosshairColor:").append(jsStringLiteral (  this.crosshairColor_.getCssText(true))).append(",followCurve:").append(followCurve).append(",xTransforms:[");
+    ss.append("new Wt4_12_3.WCartesianChart(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",{curveManipulation:").append(StringUtils.asString(  this.curveManipulationEnabled_).toString()).append(",seriesSelection:").append(StringUtils.asString(  this.seriesSelectionEnabled_).toString()).append(",selectedCurve:").append(selectedCurve).append(",isHorizontal:").append(StringUtils.asString(  this.getOrientation() == Orientation.Horizontal).toString()).append(",zoom:").append(StringUtils.asString(  this.zoomEnabled_).toString()).append(",pan:").append(StringUtils.asString(  this.panEnabled_).toString()).append(",crosshair:").append(StringUtils.asString(  this.crosshairEnabled_).toString()).append(",crosshairXAxis:").append(  this.crosshairXAxis_).append(",crosshairYAxis:").append(  this.crosshairYAxis_).append(",crosshairColor:").append(jsStringLiteral (  this.crosshairColor_.getCssText(true))).append(",followCurve:").append(followCurve).append(",xTransforms:[");
 for ( int i =0; 
     i <  this.getXAxisCount();++ i) {
       if ( i != 0) {
@@ -5676,7 +5676,7 @@ if ( ! (axis.getTitle().length()==0) &&  axis.getTitleOrientation() == Orientati
    WApplication  app =WApplication.getInstance();
   if (  app != null && (   this.isInteractive () ||   this.hasDeferredToolTips_)) { 
      app.loadJavaScript ("js/ChartCommon.js", wtjs2 ());
-  app.doJavaScript (   "if (!Wt4_12_2.chartCommon) {Wt4_12_2.chartCommon = new " + "Wt4_12_2.ChartCommon(" +  app.getJavaScriptClass() + "); }", false);
+  app.doJavaScript (   "if (!Wt4_12_3.chartCommon) {Wt4_12_3.chartCommon = new " + "Wt4_12_3.ChartCommon(" +  app.getJavaScriptClass() + "); }", false);
   app.loadJavaScript ("js/WCartesianChart.js", wtjs1 ());
   this.jsDefined_ = true;
 }

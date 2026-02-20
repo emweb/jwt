@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -339,7 +339,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
     return "null";
   }
   else  {
-    return   "Wt4_12_2.getElement('" +   this.mediaId_ + "')";
+    return   "Wt4_12_3.getElement('" +   this.mediaId_ + "')";
   }
   }
   protected void getDomChanges(final List<DomElement> result, WApplication  app) {
@@ -349,7 +349,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
 if (  this.sourcesChanged_) {
       for ( int i =0; 
       i <   this.sourcesRendered_;++ i) { 
-         media.callJavaScript (    "Wt4_12_2.remove('" +   this.mediaId_ + "s" + String.valueOf(i) + "');", true);
+         media.callJavaScript (    "Wt4_12_3.remove('" +   this.mediaId_ + "s" + String.valueOf(i) + "');", true);
 }  
       this.sourcesRendered_ = 0;
 for ( int i =0; 
@@ -443,7 +443,7 @@ return result;
    void updateMediaDom(final DomElement element, boolean all) {
   if ( all &&    this.alternative_ != null) {
      StringBuilder errorJS  = new StringBuilder();
-    errorJS.append("Wt4_12_2").append(".$('").append( this.getId()).append("').onerror = ").append("function() {").append("if(event.target.error && event.target.error.code==").append("event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED) {").append("while (this.hasChildNodes()) {").append("if (").append("Wt4_12_2").append(".hasTag(this.firstChild,'SOURCE')) {").append("this.removeChild(this.firstChild);").append("} else {").append("this.parentNode.insertBefore(this.firstChild, this);").append("}").append("}").append("this.style.display= 'none';").append("}").append("};");
+    errorJS.append("Wt4_12_3").append(".$('").append( this.getId()).append("').onerror = ").append("function() {").append("if(event.target.error && event.target.error.code==").append("event.target.error.MEDIA_ERR_SRC_NOT_SUPPORTED) {").append("while (this.hasChildNodes()) {").append("if (").append("Wt4_12_3").append(".hasTag(this.firstChild,'SOURCE')) {").append("this.removeChild(this.firstChild);").append("} else {").append("this.parentNode.insertBefore(this.firstChild, this);").append("}").append("}").append("this.style.display= 'none';").append("}").append("};");
   WApplication.getInstance().doJavaScript (errorJS.toString());
 }
   if ( all ||   this.flagsChanged_) {
@@ -557,12 +557,12 @@ if (!  source.type.equals("")) {
 }
   if ( isLast &&    this.alternative_ != null) {
      StringBuilder errorJS  = new StringBuilder();
-    errorJS.append("Wt4_12_2").append(".$('").append( element.getId()).append("').onerror = ").append("function() {").append("var media = this.parentNode;").append("if(media) {").append("while (media && media.children.length)").append("if (").append("Wt4_12_2").append(".hasTag(media.firstChild,'SOURCE')) {").append("media.removeChild(media.firstChild);").append("} else {").append("media.parentNode.insertBefore(media.firstChild, media);").append("}").append("media.style.display= 'none';").append("};").append("};");
+    errorJS.append("Wt4_12_3").append(".$('").append( element.getId()).append("').onerror = ").append("function() {").append("var media = this.parentNode;").append("if(media) {").append("while (media && media.children.length)").append("if (").append("Wt4_12_3").append(".hasTag(media.firstChild,'SOURCE')) {").append("media.removeChild(media.firstChild);").append("} else {").append("media.parentNode.insertBefore(media.firstChild, media);").append("}").append("media.style.display= 'none';").append("};").append("};");
   WApplication.getInstance().doJavaScript (errorJS.toString());
 }
   else  {
      StringBuilder errorJS  = new StringBuilder();
-    errorJS.append("Wt4_12_2").append(".$('").append( element.getId()).append("').onerror = null;");
+    errorJS.append("Wt4_12_3").append(".$('").append( element.getId()).append("').onerror = null;");
   WApplication.getInstance().doJavaScript (errorJS.toString());
 }
   }
@@ -590,7 +590,7 @@ if (!  source.type.equals("")) {
   if ( this.getJavaScriptMember(" WAbstractMedia").length()==0) {
      WApplication  app =WApplication.getInstance(); 
      app.loadJavaScript ("js/WAbstractMedia.js", wtjs1 ());
-  this.setJavaScriptMember (" WAbstractMedia",     "new Wt4_12_2.WAbstractMedia(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
+  this.setJavaScriptMember (" WAbstractMedia",     "new Wt4_12_3.WAbstractMedia(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
 }
   }
    static WJavaScriptPreamble wtjs1() {

@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -540,7 +540,7 @@ if (    this.progressBar_ != null &&   this.flags_.get(BIT_UPLOADING)) {
 }
   }
   private void onDataExceeded(long dataExceeded) { 
-   this.doJavaScript (    "Wt4_12_2.$('if" +  this.getId() + "').src='" +    this.fileUploadTarget_.getUrl() + "';");
+   this.doJavaScript (    "Wt4_12_3.$('if" +  this.getId() + "').src='" +    this.fileUploadTarget_.getUrl() + "';");
 if (  this.flags_.get(BIT_UPLOADING)) {
       this.flags_.clear(BIT_UPLOADING);
   this.handleFileTooLarge (dataExceeded);
@@ -568,7 +568,7 @@ if (  this.flags_.get(BIT_UPLOADING)) {
   if (    this.fileUploadTarget_ != null &&   this.flags_.get(BIT_DO_UPLOAD)) { 
     element.setAttribute ("action",     this.fileUploadTarget_.generateUrl ());
  String maxFileSize  = String.valueOf( WApplication.getInstance().getMaximumRequestSize());
-     String command  =         "{var submit = true;var x = Wt4_12_2.$('in" +  this.getId() + "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > " + maxFileSize + ") {submit = false;" +    this.fileTooLarge ().createCall ("f.size") + ";break;}}}if (submit)" +  this.getJsRef() + ".submit(); }"; 
+     String command  =         "{var submit = true;var x = Wt4_12_3.$('in" +  this.getId() + "');if (x.files != null) {for (var i = 0; i < x.files.length; i++) {var f = x.files[i];if (f.size > " + maxFileSize + ") {submit = false;" +    this.fileTooLarge ().createCall ("f.size") + ";break;}}}if (submit)" +  this.getJsRef() + ".submit(); }"; 
     element.callJavaScript (command);
   this.flags_.clear(BIT_DO_UPLOAD);
 if (containsProgress) {
@@ -696,9 +696,9 @@ result.add(plainE);
    String renderRemoveJs(boolean recursive) {
    boolean isIE =  WApplication.getInstance().getEnvironment().agentIsIE ();
   if (   this.isRendered () && isIE) {
-     String result  =   "Wt4_12_2.$('if" +  this.getId() + "').innerHTML = \"\";";
+     String result  =   "Wt4_12_3.$('if" +  this.getId() + "').innerHTML = \"\";";
     if (! recursive) { 
-      result+=    "Wt4_12_2.remove('" +  this.getId() + "');";
+      result+=    "Wt4_12_3.remove('" +  this.getId() + "');";
 }
     return result;
   }

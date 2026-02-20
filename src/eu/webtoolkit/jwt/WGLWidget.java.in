@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -546,7 +546,7 @@ break;
       throw new WException("JavaScriptMatrix4x4: matrix not initialized");
 }
      WGLWidget.JavaScriptMatrix4x4 copy  =  this.clone(); 
-     copy.jsRef_=    "Wt4_12_2.glMatrix.mat4.inverse(" +   this.jsRef_ + ", Wt4_12_2.glMatrix.mat4.create())";
+     copy.jsRef_=    "Wt4_12_3.glMatrix.mat4.inverse(" +   this.jsRef_ + ", Wt4_12_3.glMatrix.mat4.create())";
  copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.INVERT);
 return copy;
     }
@@ -555,7 +555,7 @@ return copy;
       throw new WException("JavaScriptMatrix4x4: matrix not initialized");
 }
      WGLWidget.JavaScriptMatrix4x4 copy  =  this.clone(); 
-     copy.jsRef_=    "Wt4_12_2.glMatrix.mat4.transpose(" +   this.jsRef_ + ", Wt4_12_2.glMatrix.mat4.create())";
+     copy.jsRef_=    "Wt4_12_3.glMatrix.mat4.transpose(" +   this.jsRef_ + ", Wt4_12_3.glMatrix.mat4.create())";
  copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.TRANSPOSE);
 return copy;
     }
@@ -565,10 +565,10 @@ return copy;
 }
      WGLWidget.JavaScriptMatrix4x4 copy  =  this.clone();
      StringWriter ss  = new StringWriter();
-    ss.append("Wt4_12_2.glMatrix.mat4.multiply(").append(  this.jsRef_).append(",");
+    ss.append("Wt4_12_3.glMatrix.mat4.multiply(").append(  this.jsRef_).append(",");
  javax.vecmath.Matrix4f t  = WebGLUtils.transpose(m);
     WebGLUtils.renderfv(ss,t,     this.context_.pImpl_.getArrayType());
-ss.append(", Wt4_12_2.glMatrix.mat4.create())");
+ss.append(", Wt4_12_3.glMatrix.mat4.create())");
   copy.jsRef_=  ss.toString();
  copy.operations_.add(WGLWidget.JavaScriptMatrix4x4.op.MULTIPLY);
  copy.matrices_.add(m);

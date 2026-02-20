@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -609,7 +609,7 @@ if ( xAxis.getLabelAngle() < - ANGLE2) {
   if (   this.getMethod () == RenderMethod.HtmlCanvas) {
      WApplication  app =WApplication.getInstance();
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_12_2.WAxisSliderWidget(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",").append("{chart:").append(  this.getChart().getCObjJsRef()).append(",transform:").append(  this.transform_.getJsRef()).append(",rect:function(){return ").append(rect.getJsRef()).append("},drawArea:").append(drawArea.getJsRef()).append(",series:").append(  this.getChart().getSeriesIndexOf(   this.series_)).append(",updateYAxis:").append(StringUtils.asString(  this.yAxisZoomEnabled_).toString()).append("});");
+    ss.append("new Wt4_12_3.WAxisSliderWidget(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",").append("{chart:").append(  this.getChart().getCObjJsRef()).append(",transform:").append(  this.transform_.getJsRef()).append(",rect:function(){return ").append(rect.getJsRef()).append("},drawArea:").append(drawArea.getJsRef()).append(",series:").append(  this.getChart().getSeriesIndexOf(   this.series_)).append(",updateYAxis:").append(StringUtils.asString(  this.yAxisZoomEnabled_).toString()).append("});");
   this.doJavaScript (ss.toString());
 } 
    xAxis.segments_.clear ();

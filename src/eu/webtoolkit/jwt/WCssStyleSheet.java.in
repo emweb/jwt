@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -204,7 +204,7 @@ if (all) {
   if (! all) {
     for ( int i =0; 
     i <    this.rulesRemoved_.size ();++ i) {
-      js.append("Wt4_12_2.removeCssRule(");
+      js.append("Wt4_12_3.removeCssRule(");
 DomElement.jsStringLiteral (js,   this.rulesRemoved_.get(i), '\'');
 js.append(");");
 } 
@@ -212,7 +212,7 @@ js.append(");");
 for ( Iterator<WCssRule> i_it =  this.rulesModified_.iterator(); 
     i_it.hasNext ();) {
       WCssRule i = i_it.next();
-      js.append("{ var d= Wt4_12_2.getCssRule(");
+      js.append("{ var d= Wt4_12_3.getCssRule(");
 DomElement.jsStringLiteral (js,  i.getSelector(), '\'');
 js.append(");if(d){");
  DomElement  d =DomElement.updateGiven ("d", DomElementType.SPAN);
@@ -231,7 +231,7 @@ js.append(");if(d){");
       for ( int i =0; 
       i <  toProcess.size ();++ i) {
          WCssRule  rule =toProcess.get(i);
-        js.append("Wt4_12_2.addCss('").append( rule.getSelector()).append("',");
+        js.append("Wt4_12_3.addCss('").append( rule.getSelector()).append("',");
 DomElement.jsStringLiteral (js,  rule.getDeclarations(), '\'');
 js.append(");\n");
 }
@@ -241,7 +241,7 @@ js.append(");\n");
       for ( int i =0; 
       i <  toProcess.size ();++ i) {
          final WCssRule  rule =toProcess.get(i);
-        js.append("Wt4_12_2.addCss('").append( rule.getSelector()).append("',");
+        js.append("Wt4_12_3.addCss('").append( rule.getSelector()).append("',");
 DomElement.jsStringLiteral (js,  rule.getDeclarations(), '\'');
 js.append(");\n");
 }
@@ -255,7 +255,7 @@ if (all) {
      StringBuilder css  = new StringBuilder(); 
      this.cssText (css, all);
 if (! (css.length() == 0)) {
-      js.append("Wt4_12_2.addCssText(");
+      js.append("Wt4_12_3.addCssText(");
 DomElement.jsStringLiteral (js, css.toString(), '\'');
 js.append(");\n");
 }

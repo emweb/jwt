@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -60,10 +60,10 @@ import org.slf4j.LoggerFactory;
   result.addChild (img);
    this.device_=  device;
  StringBuilder selectJS  = new StringBuilder();
-  selectJS.append("Wt4_12_2").append(".$('").append("i").append(   this.widget_.getId()).append("').onselectstart = ").append("function() { return false; };");
+  selectJS.append("Wt4_12_3").append(".$('").append("i").append(   this.widget_.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
  StringBuilder mouseJS  = new StringBuilder();
-  mouseJS.append("Wt4_12_2").append(".$('").append("i").append(   this.widget_.getId()).append("').onmousedown = ").append("function() { return false; };");
+  mouseJS.append("Wt4_12_3").append(".$('").append("i").append(   this.widget_.getId()).append("').onmousedown = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (mouseJS.toString());
 }
   public void updateContents(final List<DomElement> result, WPaintDevice device) {

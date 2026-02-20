@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -847,7 +847,7 @@ first = false;
 first = false;
 }
     ss.append('}').append("});");
-ss.append("new Wt4_12_2.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
+ss.append("new Wt4_12_3.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
   this.doJavaScript (ss.toString());
   this.boundSignals_ = 0;
   this.boundSignalsDouble_ = 0;

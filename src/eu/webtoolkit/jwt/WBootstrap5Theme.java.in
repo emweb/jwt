@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -383,7 +383,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_12_2.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_12_3.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {

@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -1377,7 +1377,7 @@ WebGLUtils.renderfv(  this.js_,m,JsArrayType.Float32Array);
  mat.initialize ();
 }
   public void setJavaScriptMatrix4(final WGLWidget.JavaScriptMatrix4x4 jsm, final javax.vecmath.Matrix4f m) {
-    this.js_.append("Wt4_12_2.glMatrix.mat4.set(");
+    this.js_.append("Wt4_12_3.glMatrix.mat4.set(");
  javax.vecmath.Matrix4f t  = WebGLUtils.transpose(m);
   WebGLUtils.renderfv(  this.js_,t,JsArrayType.Float32Array);
   this.js_.append(", ").append(jsm.getJsRef()).append(");");
@@ -1480,7 +1480,7 @@ tmp.append("o.initialized = false;}");
   public void render(final String jsRef, EnumSet<RenderFlag> flags) {
   if (flags.contains(RenderFlag.Full)) {
      StringWriter tmp  = new StringWriter();
-    tmp.append("{\nvar o = new Wt4_12_2.WGLWidget(").append( WApplication.getInstance().getJavaScriptClass()).append(",").append(jsRef).append(");\no.discoverContext(function(){").append(   this.webglNotAvailable_.createCall ()).append("}, ").append(     this.glInterface_.renderOptions_.contains(GLRenderOption.AntiAliasing)? "true": "false").append(");\n");
+    tmp.append("{\nvar o = new Wt4_12_3.WGLWidget(").append( WApplication.getInstance().getJavaScriptClass()).append(",").append(jsRef).append(");\no.discoverContext(function(){").append(   this.webglNotAvailable_.createCall ()).append("}, ").append(     this.glInterface_.renderOptions_.contains(GLRenderOption.AntiAliasing)? "true": "false").append(");\n");
   this.initializeGL (jsRef, tmp);
 tmp.append("}\n");
   WApplication.getInstance().doJavaScript (tmp.toString());

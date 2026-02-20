@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -137,7 +137,7 @@ if (    this.slider_.getPositionScheme() == PositionScheme.Static) {
    boolean horizontal = o == Orientation.Horizontal;
    char[] buf = new char[30];
    StringBuilder mouseDownJS  = new StringBuilder();
-  mouseDownJS.append("obj.setAttribute('down', Wt4_12_2").append(".widgetCoordinates(obj, event).").append(u).append(");");
+  mouseDownJS.append("obj.setAttribute('down', Wt4_12_3").append(".widgetCoordinates(obj, event).").append(u).append(");");
  StringBuilder computeD  = new StringBuilder();
   computeD.append("var objh = ").append(   this.handle_.getJsRef()).append(",").append("objf = ").append(   this.fill_.getJsRef()).append(",").append("objb = ").append(   this.slider_.getJsRef()).append(",").append("minVal = ").append(   this.slider_.getMinimum()).append(",").append("maxVal = ").append(   this.slider_.getMaximum()).append(",").append("stepVal = ").append(   this.slider_.getStep()).append(",").append("page_u = WT.pageCoordinates(event).").append(u).append(",").append("widget_page_u = WT.widgetPageCoordinates(objb).").append(u).append(",").append("pos = page_u - widget_page_u,").append("rtl = ").append(rtl).append(",").append("horizontal = ").append(horizontal).append(";").append("if (rtl && horizontal)");
 computeD.append("pos = ").append(MathUtils.roundJs(l, 3)).append(" - pos;");
@@ -156,7 +156,7 @@ computeD.append("d = highDelta *signD;");
 computeD.append("}");
 computeD.append("d = d * scaleFactor;");
  StringBuilder mouseMovedJS  = new StringBuilder();
-  mouseMovedJS.append("var down = obj.getAttribute('down');").append("var WT = Wt4_12_2;").append("if (down != null && down != '') {").append(computeD.toString());
+  mouseMovedJS.append("var down = obj.getAttribute('down');").append("var WT = Wt4_12_3;").append("if (down != null && down != '') {").append(computeD.toString());
 mouseMovedJS.append("d = Math.max(0, Math.min(d, ").append(MathUtils.roundJs(max, 3)).append("));");
 mouseMovedJS.append("var v = Math.round(d/").append(MathUtils.roundJs(pixelsPerUnit, 3)).append(");");
 mouseMovedJS.append("var intd = v*").append(MathUtils.roundJs(pixelsPerUnit, 3)).append(";");
@@ -181,7 +181,7 @@ if (     this.slider_.sliderMoved ().needsUpdate (true)) {
 }
   mouseMovedJS.append("}").append("}");
  StringBuilder mouseUpJS  = new StringBuilder();
-  mouseUpJS.append("var down = obj.getAttribute('down');").append("var WT = Wt4_12_2;").append("if (down != null && down != '') {").append(computeD.toString()).append("d += ").append(    this.slider_.getHandleWidth() / 2).append(";").append(   this.sliderReleased_.createCall ("Math.round(d)")).append("obj.removeAttribute('down');").append("}");
+  mouseUpJS.append("var down = obj.getAttribute('down');").append("var WT = Wt4_12_3;").append("if (down != null && down != '') {").append(computeD.toString()).append("d += ").append(    this.slider_.getHandleWidth() / 2).append(";").append(   this.sliderReleased_.createCall ("Math.round(d)")).append("obj.removeAttribute('down');").append("}");
  boolean enabled =!     this.slider_.isDisabled (); 
     this.mouseDownJS_.setJavaScript (  "function(obj, event) {" + ( enabled? mouseDownJS.toString(): "") + "}");
    this.mouseMovedJS_.setJavaScript (  "function(obj, event) {" + ( enabled? mouseMovedJS.toString(): "") + "}");

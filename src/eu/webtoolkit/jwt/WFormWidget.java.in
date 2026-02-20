@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -400,7 +400,7 @@ if (    this.validator_ != null &&  textFormat == TextFormat.Plain) {
   this.setJavaScriptMember ("wtValidate", validateJS);
 if (! (   this.validateJs_ != null)) {
         this.validateJs_ = new JSlot();
-    this.validateJs_.setJavaScript ("function(o){Wt4_12_2.validate(o)}");
+    this.validateJs_.setJavaScript ("function(o){Wt4_12_3.validate(o)}");
   this.keyWentUp ().addListener(  this.validateJs_);
   this.changed ().addListener(  this.validateJs_);
 if (  this.getDomElementType() != DomElementType.SELECT) {
@@ -418,7 +418,7 @@ if (  this.getDomElementType() != DomElementType.SELECT) {
   this.keyPressed ().addListener(  this.filterInput_);
 }
     StringUtils.replace(inputFilter, '/', "\\/");
-    this.filterInput_.setJavaScript (  "function(o,e){Wt4_12_2.filter(o,e," + jsStringLiteral (inputFilter) + ")}");
+    this.filterInput_.setJavaScript (  "function(o,e){Wt4_12_3.filter(o,e," + jsStringLiteral (inputFilter) + ")}");
 }
   else  {
     if (   this.filterInput_ != null) {
@@ -463,7 +463,7 @@ if (!   this.isRendered ()) {
     }
      WApplication  app =WApplication.getInstance(); 
      app.loadJavaScript ("js/WFormWidget.js", wtjs1 ());
-  this.setJavaScriptMember (" WFormWidget",       "new Wt4_12_2.WFormWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + WString.toWString(  this.emptyText_).getJsStringLiteral() + ");");
+  this.setJavaScriptMember (" WFormWidget",       "new Wt4_12_3.WFormWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + WString.toWString(  this.emptyText_).getJsStringLiteral() + ");");
 }
   }
   private  final void defineJavaScript()  {

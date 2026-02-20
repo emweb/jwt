@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -2471,8 +2471,8 @@ if (name.length()==0) {
   this.loadingIndicator_ = indicator;
 if (   this.loadingIndicator_ != null) { 
        this.domRoot_.addWidget (indicator);
-   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_12_2.inline('" +    this.loadingIndicator_.getId() + "');}");
-   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_12_2.hide('" +    this.loadingIndicator_.getId() + "');}");
+   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_12_3.inline('" +    this.loadingIndicator_.getId() + "');}");
+   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_12_3.hide('" +    this.loadingIndicator_.getId() + "');}");
     this.loadingIndicator_.hide ();
 }
   }
@@ -2954,7 +2954,7 @@ if (   this.session_.isUseUglyInternalPaths()) {
 if (   this.domRoot2_ != null) { 
        this.domRoot2_.enableAjax ();
 } 
-   this.doJavaScript (  "Wt4_12_2.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+   this.doJavaScript (  "Wt4_12_3.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
 }
   /**
   
@@ -3351,7 +3351,7 @@ if (!   this.internalPathValid_) {
   for ( int i =    this.javaScriptPreamble_.size () -   this.newJavaScriptPreamble_; 
   i <    this.javaScriptPreamble_.size ();++ i) {
      final WJavaScriptPreamble preamble =  this.javaScriptPreamble_.get(i);
-     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_12_2";
+     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_12_3";
     if (  preamble.type == JavaScriptObjectType.JavaScriptFunction) {
       out.append(scope).append('.').append(  preamble.name).append(" = function() { return (").append(  preamble.src).append(").apply(").append(scope).append(", arguments) };\n");
 }

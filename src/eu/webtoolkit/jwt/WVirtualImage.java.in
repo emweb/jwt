@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -141,8 +141,8 @@ if ( parentContainer != null) parentContainer.addWidget (this);
           
   */
   public void enableDragging() {
-      this.impl_.mouseWentDown ().addListener("function(obj, event) {  var pc = Wt4_12_2.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
-    this.impl_.mouseMoved ().addListener(  "function(obj, event) {var WT= Wt4_12_2;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = " +    this.contents_.getJsRef() + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
+      this.impl_.mouseWentDown ().addListener("function(obj, event) {  var pc = Wt4_12_3.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+    this.impl_.mouseMoved ().addListener(  "function(obj, event) {var WT= Wt4_12_3;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = " +    this.contents_.getJsRef() + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
     this.impl_.mouseWentUp ().addListener(  "function(obj, event) {" +    this.impl_.getJsRef() + ".removeAttribute('dsx');}");
     this.impl_.mouseWentUp ().addListener(this, (WMouseEvent e1) -> {
   	WVirtualImage.this.mouseUp(e1);

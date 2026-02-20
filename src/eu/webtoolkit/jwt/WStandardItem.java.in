@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -933,7 +933,7 @@ if (   this.model_ != null) {
       for ( int j =0; 
       j < rc;++ j) {
         c.add(new WStandardItem());
-  this.adoptChild (j, column, c.get(j));
+  this.adoptChild (j,  column + i, c.get(j));
 }
          this.columns_.add(  0 + column + i, c);
 } 
@@ -975,7 +975,7 @@ if (   this.model_ != null) {
       for ( int j =0; 
       j < count;++ j) {
         c.add(  0 + row + j, new WStandardItem());
-  this.adoptChild (row, i, c.get( row + j));
+  this.adoptChild ( row + j, i, c.get( row + j));
 if (   this.model_ != null) { 
            c.get( row + j).setModel (  this.model_);
 }
@@ -1389,16 +1389,11 @@ if (   this.model_ != null) {
   if (   this.model_ != null) { 
        this.model_.beginRemoveRows ( this.getIndex(), row,   row + count - 1);
 }
-   List<Integer> columnsToRemove  = new ArrayList<Integer>();
-  for ( int i =  this.getColumnCount() - 1; 
-  i >= 0;-- i) {
+  for ( int i =0; 
+  i <  this.getColumnCount();++ i) {
      final List<WStandardItem> c =  this.columns_.get(i);
     for (int ii=0; ii < (  0 + row + count) - ( 0 + row); ++ii) c.remove( 0 + row);;
-if (c.isEmpty()) {
-      columnsToRemove.add(i);
-   this.columns_.remove( 0 + i);
-}
-  } 
+} 
    this.renumberRows (row);
 if (   this.model_ != null) { 
        this.model_.endRemoveRows ();

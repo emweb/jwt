@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
   this.addedItems_ = new ArrayList<WLayoutItem>();
   this.resizedItems_ = new ArrayList<WLayoutItem>();
   this.removedItems_ = new ArrayList<String>();
-  this.childLayouts_ = new ArrayList<StdLayoutImpl>();
+  this.childLayouts_ = new ArrayList<WLayoutItem>();
   this.elId_ = "";
   this.canAdjustLayout_ = false;
    String  THIS_JS ="js/FlexLayoutImpl.js";
@@ -93,17 +93,14 @@ import org.slf4j.LoggerFactory;
     this.addedItems_.add(item);
  StdLayoutImpl  child =getStdLayoutImpl (item);
   if ( child != null) {
-      this.childLayouts_.add(child);
+      this.childLayouts_.add(item);
 } 
    this.update ();
 }
   public void itemRemoved(WLayoutItem  item) {
     this.addedItems_.remove(item);
- StdLayoutImpl  child =getStdLayoutImpl (item);
-  if ( child != null) {
-      this.childLayouts_.remove(child);
-}
-    this.removedItems_.add( getImpl (item).getId());
+  this.childLayouts_.remove(item);
+  this.removedItems_.add( getImpl (item).getId());
   this.update ();
 }
   public void updateDom(final DomElement parent) {
@@ -143,14 +140,16 @@ import org.slf4j.LoggerFactory;
   for ( int i =0; 
   i <    this.childLayouts_.size ();++ i) {
      boolean justAdded =false;
-     WLayoutItem  childItem =   this.childLayouts_.get(i).getLayoutItem();
     for ( int j =0;  
     j <    this.addedItems_.size () && ! justAdded;++ j) {
-      justAdded =  childItem ==   this.addedItems_.get(j);
+      justAdded =    this.childLayouts_.get(i) ==   this.addedItems_.get(j);
 }
-    if (! justAdded) { 
-         this.childLayouts_.get(i).updateDom ( div);
+    if (! justAdded) {
+       StdLayoutImpl  item =getStdLayoutImpl (  this.childLayouts_.get(i));
+      if ( item != null) { 
+         item.updateDom ( div);
 }
+    }
   } 
     this.addedItems_.clear ();
 for ( int i =0; 
@@ -163,7 +162,7 @@ for ( int i =0;
     this.resizedItems_.clear ();
 for ( int i =0; 
   i <    this.removedItems_.size ();++ i) { 
-     div.callJavaScript (  "Wt4_12_2.remove('" +   this.removedItems_.get(i) + "');", true);
+     div.callJavaScript (  "Wt4_12_3.remove('" +   this.removedItems_.get(i) + "');", true);
 } 
     this.removedItems_.clear ();
 if (  this.canAdjustLayout_) { 
@@ -212,6 +211,8 @@ result = parent;
    this.elId_=   this.getId();
   result.setId (  this.elId_);
   result.setProperty (Property.StyleDisplay,  this.getStyleDisplay());
+ Property overflow =    this.getOrientation () == Orientation.Horizontal? Property.StyleOverflowX: Property.StyleOverflowY; 
+     result.setProperty (overflow, "hidden");
 if ( this.getObjectName().length()!=0) { 
        result.setAttribute ("data-object-name",  this.getObjectName());
 }
@@ -231,7 +232,7 @@ if ( this.getObjectName().length()!=0) {
      result.addChild (el);
 }
    StringBuilder js  = new StringBuilder();
-  js.append("layout=new Wt4_12_2.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
+  js.append("layout=new Wt4_12_3.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
   result.callMethod (js.toString());
 return result;
   }
@@ -259,7 +260,7 @@ return false;
   private List<WLayoutItem> addedItems_ ;
   private List<WLayoutItem> resizedItems_ ;
   private List<String> removedItems_ ;
-  private List<StdLayoutImpl> childLayouts_ ;
+  private List<WLayoutItem> childLayouts_ ;
   private String elId_ ;
   private boolean canAdjustLayout_ ;
   private int minimumHeightForRow(int row) {
@@ -614,6 +615,6 @@ return wrapper;
   }
   }
    static WJavaScriptPreamble wtjs1() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "FlexLayout", "(function(t,e,s){const i=t.WT;function l(t,e){e.style.maxHeight=t.style.maxHeight;e.style.minHeight=t.style.minHeight;e.style.maxWidth=t.style.maxWidth;e.style.minWidth=t.style.minWidth}setTimeout((function(){const t=i.getElement(e);if(t){\"none\"===t.style.maxHeight||\"\"===t.style.maxHeight||\"auto\"!==t.style.height&&\"\"!==t.style.height||(t.style.height=\"fit-content\");\"none\"===t.style.maxWidth||\"\"===t.style.maxWidth||\"auto\"!==t.style.width&&\"\"!==t.style.width||(t.style.width=\"fit-content\");for(const e of t.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const t=i.css(e,\"overflow\");\"visible\"!==t&&\"\"!==t||(e.style.overflow=\"hidden\");const n=e.classList.contains(\"Wt-justify-wrap\")?e.childNodes[0]:e;if(n.classList.contains(\"Wt-fill-width\")){const t=n.children[0];n.style.flexBasis=t.style.height;t.style.height=\"auto\";l(t,n)}if(n.classList.contains(\"Wt-fill-height\")){const t=n.children[0],o=t.children[0];e.style.flexBasis=o.style.width;n.style.flexBasis=o.style.width;t.style.flexBasis=o.style.height;o.style.height=\"auto\";l(o,n);const c=i.getElement(s);setTimeout((function(){c&&\"fit-content\"!==c.style.width&&(o.style.width=\"auto\")}),0)}}}}),0);this.resizeItem=function(t,e,s){setTimeout(n,0,t,e,s)};function n(t,e,n){if(!t)return;let o=t.parentElement;if(o){if(o.classList.contains(\"Wt-fill-width\")){o.style.flexBasis=n;t.style.height=\"auto\";l(t,o)}o=o.parentElement;if(o&&o.classList.contains(\"Wt-fill-height\")){const c=o.parentElement;c&&c.classList.contains(\"Wt-justify-wrap\")&&(c.style.flexBasis=e);o.style.flexBasis=e;o.children[0].style.flexBasis=n;t.style.height=\"auto\";l(t,o);const a=i.getElement(s);setTimeout((function(){a&&\"fit-content\"!==a.style.width&&(t.style.width=\"auto\")}),0)}}}this.adjust=function(){setTimeout((function(){const t=i.getElement(e);if(!t)return;const l=t.childNodes;let n=0;for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;if(\"0\"===t.getAttribute(\"flg\"))continue;const e=i.css(t,\"flex-grow\");n+=parseFloat(e)}for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;t.resizeSensor&&t.resizeSensor.trigger();let e;if(0===n)e=1;else{if(\"0\"===t.getAttribute(\"flg\"))e=0;else{e=i.css(t,\"flex-grow\")}}t.style.flexGrow=e;const l=t.classList.contains(\"Wt-justify-wrap\")?t.childNodes[0]:t;if(l.classList.contains(\"Wt-fill-height\")){const t=i.getElement(s);if(t&&\"fit-content\"!==t.style.width){l.childNodes[0].childNodes[0].style.width=\"auto\"}}}}),0)}})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "FlexLayout", "(function(t,e,s){const i=t.WT;i.LayoutUninitialized?i.LayoutUninitialized+=1:i.LayoutUninitialized=1;function n(t,e){e.style.maxHeight=t.style.maxHeight;e.style.minHeight=t.style.minHeight;e.style.maxWidth=t.style.maxWidth;e.style.minWidth=t.style.minWidth}setTimeout((function(){const t=i.getElement(e);if(t){\"none\"===t.style.maxHeight||\"\"===t.style.maxHeight||\"auto\"!==t.style.height&&\"\"!==t.style.height||(t.style.height=\"fit-content\");\"none\"===t.style.maxWidth||\"\"===t.style.maxWidth||\"auto\"!==t.style.width&&\"\"!==t.style.width||(t.style.width=\"fit-content\");for(const e of t.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const t=i.css(e,\"overflow\");\"visible\"!==t&&\"\"!==t||(e.style.overflow=\"hidden\");const l=e.classList.contains(\"Wt-justify-wrap\")?e.childNodes[0]:e;if(l.classList.contains(\"Wt-fill-width\")){const t=l.children[0];l.style.flexBasis=t.style.height;t.style.height=\"auto\";n(t,l)}if(l.classList.contains(\"Wt-fill-height\")){const t=l.children[0],o=t.children[0];e.style.flexBasis=o.style.width;l.style.flexBasis=o.style.width;t.style.flexBasis=o.style.height;o.style.height=\"auto\";n(o,l);const a=i.getElement(s);setTimeout((function(){a&&\"fit-content\"!==a.style.width&&(o.style.width=\"auto\")}),0)}}i.LayoutUninitialized-=1}else i.LayoutUninitialized-=1}),0);this.resizeItem=function(t,e,s){setTimeout(l,0,t,e,s)};function l(t,e,l){if(!t)return;let o=t.parentElement;if(o){if(o.classList.contains(\"Wt-fill-width\")){o.style.flexBasis=l;t.style.height=\"auto\";n(t,o)}o=o.parentElement;if(o&&o.classList.contains(\"Wt-fill-height\")){const a=o.parentElement;a&&a.classList.contains(\"Wt-justify-wrap\")&&(a.style.flexBasis=e);o.style.flexBasis=e;o.children[0].style.flexBasis=l;t.style.height=\"auto\";n(t,o);const c=i.getElement(s);setTimeout((function(){c&&\"fit-content\"!==c.style.width&&(t.style.width=\"auto\")}),0)}}}this.adjust=function(){setTimeout((function(){const t=i.getElement(e);if(!t)return;const n=t.childNodes;let l=0;for(const t of n){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;if(\"0\"===t.getAttribute(\"flg\"))continue;const e=i.css(t,\"flex-grow\");l+=parseFloat(e)}for(const t of n){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;t.resizeSensor&&t.resizeSensor.trigger();let e;if(0===l)e=1;else{if(\"0\"===t.getAttribute(\"flg\"))e=0;else{e=i.css(t,\"flex-grow\")}}t.style.flexGrow=e;const n=t.classList.contains(\"Wt-justify-wrap\")?t.childNodes[0]:t;if(n.classList.contains(\"Wt-fill-height\")){const t=i.getElement(s);if(t&&\"fit-content\"!==t.style.width){n.childNodes[0].childNodes[0].style.width=\"auto\"}}}}),0)}})");
   }
 }

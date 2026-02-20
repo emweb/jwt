@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -62,13 +62,13 @@ import org.slf4j.LoggerFactory;
    WApplication  app =WApplication.getInstance(); 
   {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_12_2.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_12_3.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
   el.callJavaScript (ss.toString());
 }
    String updateAreasJs  = "";
   if (hasJsObjects) {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_12_2.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_12_3.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
      this.widget_.jsObjects_.updateJs (ss, true);
   el.callJavaScript (ss.toString());
 if (     this.widget_.areaImage_ != null) { 

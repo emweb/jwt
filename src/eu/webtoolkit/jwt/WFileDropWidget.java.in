@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -822,7 +822,7 @@ if (   this.currentFileIdx_ ==    this.uploads_.size ()) {
   if (  this.isRendered ()) {
      String result  =   this.getJsRef() + ".destructor();";
     if (! recursive) { 
-      result+=    "Wt4_12_2.remove('" +  this.getId() + "');";
+      result+=    "Wt4_12_3.remove('" +  this.getId() + "');";
 }
     return result;
   }
@@ -937,7 +937,7 @@ if (   this.currentFileIdx_ ==    this.uploads_.size ()) {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WFileDropWidget.js", wtjs1 ());
  String maxFileSize  = String.valueOf( WApplication.getInstance().getMaximumRequestSize()); 
-   this.setJavaScriptMember (" WFileDropWidget",       "new Wt4_12_2.WFileDropWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + maxFileSize + ");");
+   this.setJavaScriptMember (" WFileDropWidget",       "new Wt4_12_3.WFileDropWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + maxFileSize + ");");
   this.dropSignal_.addListener(this, (String e1) -> {
   	WFileDropWidget.this.handleDrop(e1);
   });

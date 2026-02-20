@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -309,7 +309,7 @@ return u8String;
    super.render (flags);
  WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WEmailEdit.js", wtjs1 ());
-  super.setJavaScriptMember ("wtEncodeValue", "Wt4_12_2.encodeEmailValue");
+  super.setJavaScriptMember ("wtEncodeValue", "Wt4_12_3.encodeEmailValue");
 }
    void updateDom(final DomElement element, boolean all) { 
    super.updateDom (element, all);

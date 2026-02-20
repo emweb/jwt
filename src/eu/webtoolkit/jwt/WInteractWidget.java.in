@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -633,7 +633,7 @@ if (! (   this.dragSlot_ != null)) {
   }
   public void setPopup(boolean popup) {
   if ( popup &&  WApplication.getInstance().getEnvironment().hasAjax()) {
-      this.clicked ().addListener("function(o,e) {  if (Wt4_12_2.WPopupWidget && o.wtPopup) {Wt4_12_2.WPopupWidget.popupClicked = o;document.dispatchEvent(new MouseEvent('click', e));Wt4_12_2.WPopupWidget.popupClicked = null; }}");
+      this.clicked ().addListener("function(o,e) {  if (Wt4_12_3.WPopupWidget && o.wtPopup) {Wt4_12_3.WPopupWidget.popupClicked = o;document.dispatchEvent(new MouseEvent('click', e));Wt4_12_3.WPopupWidget.popupClicked = null; }}");
    this.clicked ().preventPropagation ();
 } 
    super.setPopup (popup);
@@ -719,7 +719,7 @@ if (updateKeyDown) {
    boolean updateMouseMove =   mouseMove != null &&   mouseMove.needsUpdate (all) ||   mouseDrag != null &&   mouseDrag.needsUpdate (all);
    boolean updateMouseDown =   mouseDown != null &&   mouseDown.needsUpdate (all) || updateMouseMove;
    boolean updateMouseUp =   mouseUp != null &&   mouseUp.needsUpdate (all) || updateMouseMove;
-   String HandlerChecks  =      "if(o.classList.contains('" +   app.getTheme().getDisabledClass() + "')){Wt4_12_2.cancelEvent(e);return;}" + "if(o.classList.contains('" + noDefault + "')){e.preventDefault();}";
+   String HandlerChecks  =      "if(o.classList.contains('" +   app.getTheme().getDisabledClass() + "')){Wt4_12_3.cancelEvent(e);return;}" + "if(o.classList.contains('" + noDefault + "')){e.preventDefault();}";
   if (updateMouseDown) {
      StringBuilder js  = new StringBuilder();
     js.append(HandlerChecks);
@@ -727,10 +727,10 @@ if (  mouseUp != null &&   mouseUp.isConnected ()) {
       js.append( app.getJavaScriptClass()).append("._p_.saveDownPos(event);");
 }
     if (   mouseDrag != null &&   mouseDrag.isConnected () ||    mouseDown != null &&   mouseDown.isConnected () && (   mouseUp != null &&   mouseUp.isConnected () ||   mouseMove != null &&   mouseMove.isConnected ())) {
-      js.append("Wt4_12_2.capture(this);");
+      js.append("Wt4_12_3.capture(this);");
 }
     if (   mouseMove != null &&   mouseMove.isConnected () ||   mouseDrag != null &&   mouseDrag.isConnected ()) {
-      js.append("Wt4_12_2.mouseDown(e);");
+      js.append("Wt4_12_3.mouseDown(e);");
 }
     if ( mouseDown != null) {
       js.append( mouseDown.getJavaScript());
@@ -745,7 +745,7 @@ if (  mouseUp != null &&   mouseUp.isConnected ()) {
      StringBuilder js  = new StringBuilder();
     js.append(HandlerChecks);
 if (   mouseMove != null &&   mouseMove.isConnected () ||   mouseDrag != null &&   mouseDrag.isConnected ()) {
-      js.append("Wt4_12_2.mouseUp(e);");
+      js.append("Wt4_12_3.mouseUp(e);");
 }
     if ( mouseUp != null) {
       js.append( mouseUp.getJavaScript());
@@ -763,7 +763,7 @@ if (   mouseMove != null &&   mouseMove.isConnected () ||   mouseDrag != null &&
   mouseMove.updateOk ();
 }
     if ( mouseDrag != null) {
-      actions.add(new DomElement.EventAction("Wt4_12_2.buttons",   mouseDrag.getJavaScript() + "Wt4_12_2.drag(e);",   mouseDrag.encodeCmd (),   mouseDrag.isExposedSignal ()));
+      actions.add(new DomElement.EventAction("Wt4_12_3.buttons",   mouseDrag.getJavaScript() + "Wt4_12_3.drag(e);",   mouseDrag.encodeCmd (),   mouseDrag.isExposedSignal ()));
   mouseDrag.updateOk ();
 } 
     element.setEvent ("mousemove", actions);
@@ -781,7 +781,7 @@ if (  touchEnd != null &&   touchEnd.isConnected ()) {
       js.append( app.getJavaScriptClass()).append("._p_.saveDownPos(event);");
 }
     if (   touchStart != null &&   touchStart.isConnected () && (   touchEnd != null &&   touchEnd.isConnected () ||   touchMove != null &&   touchMove.isConnected ())) {
-      js.append("Wt4_12_2.capture(this);");
+      js.append("Wt4_12_3.capture(this);");
 }
     if ( touchStart != null) {
       js.append( touchStart.getJavaScript());
@@ -817,12 +817,12 @@ if ( touchEnd != null) {
      StringBuilder js  = new StringBuilder();
     js.append(HandlerChecks);
 if ( mouseDrag != null) {
-      js.append("if (Wt4_12_2.dragged()) return;");
+      js.append("if (Wt4_12_3.dragged()) return;");
 }
     if (  mouseDblClick != null &&   mouseDblClick.needsUpdate (all)) {
       if ( mouseClick != null) {
         if (  mouseClick.isDefaultActionPrevented() ||  mouseClick.isPropagationPrevented()) {
-          js.append("Wt4_12_2.cancelEvent(e");
+          js.append("Wt4_12_3.cancelEvent(e");
 if (  mouseClick.isDefaultActionPrevented() &&  mouseClick.isPropagationPrevented()) {
             js.append(");");
 }
@@ -836,12 +836,12 @@ if (  mouseClick.isDefaultActionPrevented() &&  mouseClick.isPropagationPrevente
           }
         }
       }
-      js.append("if(Wt4_12_2.isDblClick(o, e)) {").append( mouseDblClick.getJavaScript());
+      js.append("if(Wt4_12_3.isDblClick(o, e)) {").append( mouseDblClick.getJavaScript());
 if (  mouseDblClick.isExposedSignal ()) {
         js.append( app.getJavaScriptClass()).append("._p_.update(o,'").append(  mouseDblClick.encodeCmd ()).append("',e,true);");
 } 
        mouseDblClick.updateOk ();
-js.append("}else{if (Wt4_12_2.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
+js.append("}else{if (Wt4_12_3.isIElt9 && document.createEventObject) e = document.createEventObject(e);o.wtE1 = e;o.wtClickTimeout = setTimeout(function() {o.wtClickTimeout = null; o.wtE1 = null;");
 if ( mouseClick != null) {
         js.append( mouseClick.getJavaScript());
 if (  mouseClick.isExposedSignal ()) {

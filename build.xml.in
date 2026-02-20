@@ -15,7 +15,7 @@
   <property name="javadoc.jwt-auth.dir" value="doc/auth/javadoc"/>
   <property name="javadoc.thirdparty.dir" value="doc/thirdparty/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
-  <property name="proj.version" value="4.12.2-CLASSIFIER"/>
+  <property name="proj.version" value="4.12.3-CLASSIFIER"/>
   <property name="lib.servlet.dir" value="CLASSIFIER"/>
   <property name="src.servlet.dir" value="${src.java.dir}-CLASSIFIER"/>
 

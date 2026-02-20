@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -236,7 +236,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.setOffsets (new WLength (- 10000), EnumSet.of (Side.Left, Side.Top));
  String canAdjustX  =    this.adjustFlags_.contains(Orientation.Horizontal)? "true": "false";
    String canAdjustY  =    this.adjustFlags_.contains(Orientation.Vertical)? "true": "false"; 
-   this.doJavaScript (          "Wt4_12_2.positionXY('" +  this.getId() + "'," + String.valueOf(p.getX()) + "," + String.valueOf(p.getY()) + "," + canAdjustX + "," + canAdjustY + ");");
+   this.doJavaScript (          "Wt4_12_3.positionXY('" +  this.getId() + "'," + String.valueOf(p.getX()) + "," + String.valueOf(p.getY()) + "," + canAdjustX + "," + canAdjustY + ");");
 }
   /**
   
@@ -630,7 +630,7 @@ if (    this.cancel_.isConnected () ||   WApplication.getInstance().getSession()
 }
    String renderRemoveJs(boolean recursive) {
    String result =  super.renderRemoveJs (true); 
-  result+=    "Wt4_12_2.remove('" +  this.getId() + "');";
+  result+=    "Wt4_12_3.remove('" +  this.getId() + "');";
 return result;
   }
   private static final int BIT_WILL_POPUP =0;
@@ -711,7 +711,7 @@ if (   this.result_ != null) {
   if (!    this.cancel_.isConnected ()) { 
      app.loadJavaScript ("js/WPopupMenu.js", wtjs1 ());
  StringBuilder s  = new StringBuilder();
-    s.append("new Wt4_12_2.WPopupMenu(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(',').append(  this.autoHideDelay_).append(',').append(   this.autoHideBehaviour_.getValue ()).append(");");
+    s.append("new Wt4_12_3.WPopupMenu(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(',').append(  this.autoHideDelay_).append(',').append(   this.autoHideBehaviour_.getValue ()).append(");");
   this.setJavaScriptMember (" WPopupMenu", s.toString());
   this.cancel_.addListener(this, () -> {
     	WPopupMenu.this.cancel();

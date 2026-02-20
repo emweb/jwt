@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.12.1</title>
+<title>JWt 4.12.3</title>
 </head>
 <body>
 
@@ -24,6 +24,94 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to verison.
+
+<h2>Release 4.12.3 (February 20, 2026)</h2>
+
+<p> Wt 4.12.3 is a patch release that addresses the following issues: </p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14065" target="_blank">Issue #14065</a>:
+    fixed segfault happening when calling
+    <a href="eu/webtoolkit/jwt/WTableView.html#itemWidget(eu.webtoolkit.jwt.WModelIndex)" target="_blank">WTableView.itemWidget()</a>
+    in a session without ajax support.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14311" target="_blank">Issue #14311</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> not taking the removal of the widgets in
+    its title bar into account, leading to segfaults when trying to access those widgets after they were removed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14302" target="_blank">Issue #14302</a>:
+    fixed fatal error happening when changing the
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html" target="_blank">LayoutImplementation</a> of a sublayout in a flex layout.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12393" target="_blank">Issue #12393</a>:
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html" target="_blank">WLeafletMap</a>
+    no longer causes a JavaScript error when reloading the session after panning.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14300" target="_blank">Issue #14300</a>:
+    reverted empty columns in
+    <a href="eu/webtoolkit/jwt/WStandardItemModel.html" target="_blank">WStandardItemModel</a> being automatically removed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14285" target="_blank">Issue #14285</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WStandardItem.html#getRow()" target="_blank">WStandardItem.getRow()</a> and
+    <a href="eu/webtoolkit/jwt/WStandardItem.html#getColumn()" target="_blank">WStandardItem.getColumn()</a> being incorrect
+    for most of the newly added items when adding multiple rows or columns at once to a
+    <a href="eu/webtoolkit/jwt/WStandardItemModel.html" target="_blank">WStandardItemModel</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11875" target="_blank">Issue #11875</a>:
+    fixed <a href="eu/webtoolkit/jwt/WTreeView.html" target="_blank">WTreeView</a>
+    taking all the available width when inside of a layout with
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">Wt::LayoutImplementation::Flex</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14094" target="_blank">Issue #14094</a>:
+    fixed vertical scrollbar being missplaced in
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14346" target="_blank">Issue #14346</a>:
+    ensured a <a href="eu/webtoolkit/jwt/WSuggestionPopup.html" target="_blank">WSuggestionPopup</a>
+    no longer scrolls the page on selection.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14291" target="_blank">Issue #14291</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WCheckBox.html" target="_blank">WCheckBox</a> and
+    <a href="eu/webtoolkit/jwt/WRadioButton.html" target="_blank">WRadioButton</a> state sometimes being
+    momentarily considered set to <code>Unchecked</code> on the server side when added to the page.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13855" target="_blank">Issue #13855</a>:
+    avoided a useless HTTP request being sent when the
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a>
+    is rendered, if the signal is not connected. The resulting error log, coming from the
+    <a href="eu/webtoolkit/jwt/WApplication.html" target="_blank">WApplication</a>
+    trying to interpret the signal, is now avoided.
+  </li>
+</ul>
+
+<p> Wt 4.12.3 also comes with the following improvements: </p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14226" target="_blank">Issue #14226</a>:
+    clicking a collapse/expand button inside a
+    <a href="eu/webtoolkit/jwt/WTreeView.html" target="_blank">WTreeView</a> will not select the row anymore.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14347" target="_blank">Issue #14347</a>:
+    increased the clickable area of the dropdown button in <a href="eu/webtoolkit/jwt/WSuggestionPopup.html" target="_blank">WSuggestionPopup</a>
+    for Bootstrap 2 and 3 themes, to better match the actual size of the button.
+  </li>
+</ul>
 
 <h2>Release 4.12.2 (January 28, 2026)</h2>
 

@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -478,7 +478,7 @@ if (   this.isRendered () &&   this.inputMask_.length()!=0) {
   public void setSelection(int start, int length) {
    String s  = String.valueOf(start);
    String e  = String.valueOf( start + length); 
-   this.doJavaScript (      "Wt4_12_2.setUnicodeSelectionRange(" +  this.getJsRef() + "," + s + "," + e + ")");
+   this.doJavaScript (      "Wt4_12_3.setUnicodeSelectionRange(" +  this.getJsRef() + "," + s + "," + e + ")");
 }
   /**
   
@@ -882,7 +882,7 @@ hadIgnoredChar = true;
    app.loadJavaScript ("js/WLineEdit.js", wtjs1 ());
  String space  = ""; 
   space+=    this.spaceChar_;
- String jsObj  =                 "new Wt4_12_2.WLineEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + WWebWidget.jsStringLiteral (  this.mask_) + "," + WWebWidget.jsStringLiteral (  this.raw_) + "," + WWebWidget.jsStringLiteral (  this.displayContent_) + "," + WWebWidget.jsStringLiteral (  this.case_) + "," + WWebWidget.jsStringLiteral (space) + "," + (   this.inputMaskFlags_.contains(InputMaskFlag.KeepMaskWhileBlurred)? "0x1": "0x0") + ");"; 
+ String jsObj  =                 "new Wt4_12_3.WLineEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + WWebWidget.jsStringLiteral (  this.mask_) + "," + WWebWidget.jsStringLiteral (  this.raw_) + "," + WWebWidget.jsStringLiteral (  this.displayContent_) + "," + WWebWidget.jsStringLiteral (  this.case_) + "," + WWebWidget.jsStringLiteral (space) + "," + (   this.inputMaskFlags_.contains(InputMaskFlag.KeepMaskWhileBlurred)? "0x1": "0x0") + ");"; 
    this.setJavaScriptMember (" WLineEdit", jsObj);
  final AbstractEventSignal b =  this.mouseMoved ();
    final AbstractEventSignal c =  this.keyWentDown (); 

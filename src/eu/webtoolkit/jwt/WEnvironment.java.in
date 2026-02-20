@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -64,7 +64,7 @@ public class WEnvironment {
           
   */
   public static String getJavaScriptWtScope() {
-  return "Wt4_12_2";
+  return "Wt4_12_3";
   }
   /**
   
@@ -628,7 +628,7 @@ public class WEnvironment {
           
   */
   public static String getLibraryVersion() {
-  return "4.12.2";
+  return "4.12.3";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int major, final bad java simple ref int minor) ;
   /**

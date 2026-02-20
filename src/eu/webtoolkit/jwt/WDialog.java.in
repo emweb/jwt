@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -89,6 +89,8 @@ public class WDialog extends WPopupWidget {
   */
   public  WDialog() {
   super (new WTemplate(tr ("Wt.WDialog.template"), (WContainerWidget)null));
+  this.caption_ = null;
+  this.closeIcon_ = null;
   this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {};
   this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {};
   this.zIndexChanged_ = new JSignal1<Integer>(this, "zIndexChanged") {};
@@ -111,6 +113,8 @@ public class WDialog extends WPopupWidget {
   */
   public  WDialog(final CharSequence windowTitle) {
   super (new WTemplate(tr ("Wt.WDialog.template"), (WContainerWidget)null));
+  this.caption_ = null;
+  this.closeIcon_ = null;
   this.moved_ = new JSignal2<Integer, Integer>(this, "moved") {};
   this.resized_ = new JSignal2<Integer, Integer>(this, "resized") {};
   this.zIndexChanged_ = new JSignal1<Integer>(this, "zIndexChanged") {};
@@ -141,12 +145,24 @@ super.remove();
   The window title is displayed in the title bar.
   
   <p>
+  
+  <p><i><b>Note: </b>See the note of {@link WDialog#getTitleBar() getTitleBar()}.
+  </i></p>
+  
   @see WDialog#setTitleBarEnabled(boolean enable)
   
   
           
   */
-  public void setWindowTitle(final CharSequence windowTitle) { 
+  public void setWindowTitle(final CharSequence windowTitle) {
+  if (    this.titleBar_.getLayout() != null) {
+    logger.warn(new StringWriter().append("Cannot set window title when a layout is set on the title bar").toString());
+return ;
+  }
+  if (! (   this.caption_ != null)) { 
+      this.caption_=  new WTemplate(tr ("Wt.WDialog.titlebar"),(WContainerWidget)   this.titleBar_);
+    this.caption_.addFunction ("block", WTemplate.Functions.block);
+} 
      this.caption_.bindString ("title", windowTitle, TextFormat.Plain);
 }
   /**
@@ -161,7 +177,7 @@ super.remove();
           
   */
   public WString getWindowTitle() {
-  return     this.caption_.resolveStringValue ("title");
+  return     this.caption_ != null?     this.caption_.resolveStringValue ("title"): new WString();
   }
   /**
   
@@ -195,7 +211,14 @@ super.remove();
           
   <p>
   
-  The title bar contains a single text that contains the caption. You may customize the title bar by for example adding other content. 
+  The title bar contains a single text that contains the caption. You may customize the title bar by for example adding other content.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Some functionality of {@link WDialog} such as {@link WDialog#setWindowTitle(CharSequence windowTitle) setWindowTitle()} and {@link WDialog#setClosable(boolean closable) setClosable()} rely on widgets being added to the title bar. These widgets are automatically created by JWt, if no custom layout is specified. When the title bar is cleared (e.g. by adding a layout to it), these functionalities will be disabled. 
+  </i></p>
+  
+  
           
   */
   public WContainerWidget  getTitleBar() {
@@ -457,7 +480,7 @@ if (resizable) {
 }
     if (  this.resizable_) {
       Resizable.loadJavaScript (WApplication.getInstance());
-  this.setJavaScriptMember (" Resizable",     "(new Wt4_12_2.Resizable(Wt4_12_2," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
+  this.setJavaScriptMember (" Resizable",     "(new Wt4_12_3.Resizable(Wt4_12_3," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
 }
   }
   }
@@ -510,20 +533,31 @@ if (resizable) {
           
   <p>
   
-  The close button is shown in the title bar. Clicking the close button will reject the dialog. 
+  The close button is shown in the title bar. Clicking the close button will reject the dialog.
+  
+  <p>
+  
+  <p><i><b>Note: </b>See the note of {@link WDialog#getTitleBar() getTitleBar()}. 
+  </i></p>
+  
+  
           
   */
   public void setClosable(boolean closable) {
   if ( closable ==  this.isClosable()) {
     return ;
   }
+  if (    this.titleBar_.getLayout() != null) {
+    logger.warn(new StringWriter().append("Cannot make the dialog closable when a layout is set on the title bar").toString());
+return ;
+  }
   if (closable) {
      WTheme theme = WApplication.getInstance().getTheme();
-    if ( ObjectUtils.cast(theme, WBootstrap5Theme.class) != null) {  
-      this.closeIcon_ = new WPushButton((WContainerWidget)   this.titleBar_);
+    if ( ObjectUtils.cast(theme, WBootstrap5Theme.class) != null) { 
+        this.closeIcon_=  new WPushButton((WContainerWidget)   this.titleBar_);
 }
-    else  {  
-      this.closeIcon_ = new WText();
+    else  { 
+        this.closeIcon_=  new WText();
     this.titleBar_.insertWidget (0,   this.closeIcon_);
 } 
      theme.apply (this,   this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
@@ -535,8 +569,8 @@ if (resizable) {
     {
     WWidget toRemove = WidgetUtils.remove(   this.titleBar_,   this.closeIcon_);
     if (toRemove != null) toRemove.remove();}
-  
-    this.closeIcon_ = null;
+ 
+      this.closeIcon_=  (WInteractWidget)null;
 }
   }
   /**
@@ -803,7 +837,7 @@ if ( WApplication.getInstance().getEnvironment().hasJavaScript()) {
 }
       }
     } 
-     this.doJavaScript (                   "new Wt4_12_2.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
+     this.doJavaScript (                   "new Wt4_12_3.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
 for ( int i =0; 
     i <    this.delayedJs_.size ();++ i) { 
        this.doJavaScript (  this.delayedJs_.get(i));
@@ -823,10 +857,12 @@ StringUtils.replace(js, "$centerY",  centerY? "1": "0");
     this.impl_.setCondition ("if:theme-style-disabled", !   this.isThemeStyleEnabled ());
 if (  this.isThemeStyleEnabled ()) { 
          this.layoutContainer_.toggleStyleClass ("movable",   this.movable_);
-} 
-       this.caption_.setCondition ("if:theme-style-enabled",   this.isThemeStyleEnabled ());
+}
+    if (   this.caption_ != null) { 
+         this.caption_.setCondition ("if:theme-style-enabled",   this.isThemeStyleEnabled ());
     this.caption_.setCondition ("if:theme-style-disabled", !   this.isThemeStyleEnabled ());
 }
+  }
   if (!   this.isModal ()) {
         this.impl_.mouseWentDown ().addListener(this, (WMouseEvent e1) -> {
     	WDialog.this.bringToFront(e1);
@@ -842,8 +878,8 @@ if (  this.isThemeStyleEnabled ()) {
   protected void onPathChange() {
   }
   private WTemplate  impl_ ;
-  private WTemplate  caption_ ;
-  private WInteractWidget  closeIcon_ ;
+  private WTemplate caption_ ;
+  private WInteractWidget closeIcon_ ;
   private WContainerWidget  titleBar_ ;
   private WContainerWidget  contents_ ;
    WContainerWidget  layoutContainer_ ;
@@ -864,8 +900,8 @@ if (  this.isThemeStyleEnabled ()) {
   private AbstractSignal.Connection escapeConnection2_ ;
   private AbstractSignal.Connection enterConnection1_ ;
   private AbstractSignal.Connection enterConnection2_ ;
-  private void create() {  
-  this.closeIcon_ = null;
+  private void create() { 
+    this.closeIcon_=  (WInteractWidget)null;
   this.footer_ = null;
   this.modal_ = true;
   this.resizable_ = false;
@@ -903,7 +939,7 @@ if (!  app.getEnvironment().hasAjax()) {
     this.impl_.bindWidget ("layout", layoutContainer);
   this.titleBar_ = new WContainerWidget();
   this.scheduleThemeStyleApply ( app.getTheme(),   this.titleBar_, WidgetThemeRole.DialogTitleBar);
-  this.caption_ = new WTemplate(tr ("Wt.WDialog.titlebar"),(WContainerWidget)   this.titleBar_);
+   this.caption_=  new WTemplate(tr ("Wt.WDialog.titlebar"),(WContainerWidget)   this.titleBar_);
     this.caption_.addFunction ("block", WTemplate.Functions.block);
   this.contents_ = new WContainerWidget();
   this.scheduleThemeStyleApply ( app.getTheme(),   this.contents_, WidgetThemeRole.DialogBody);

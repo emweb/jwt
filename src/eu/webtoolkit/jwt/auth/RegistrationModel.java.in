@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -601,7 +601,7 @@ if ( exists &&   this.getConfirmIsExistingUser() == IdentityConfirmationMethod.C
   return  !  this.getOAuth().isEmpty() && !    this.idpIdentity_.isValid ();
   }
   public static void validatePasswordsMatchJS(WLineEdit  password, WLineEdit  password2, WText  info2) {
-    password2.keyWentUp ().addListener(        "function(o) {var i=" +  info2.getJsRef() + ",o1=" +  password.getJsRef() + ";if (!o1.classList.contains('Wt-invalid')) {if (o.value == o1.value) {o.classList.remove('Wt-invalid');Wt4_12_2.setHtml(i," + WString.toWString(WString.tr ("Wt.Auth.valid")).getJsStringLiteral() + ");} else {o.classList.remove('Wt-valid');Wt4_12_2.setHtml(i," + WString.toWString(WString.tr ("Wt.Auth.repeat-password-info")).getJsStringLiteral() + ");}}}");
+    password2.keyWentUp ().addListener(        "function(o) {var i=" +  info2.getJsRef() + ",o1=" +  password.getJsRef() + ";if (!o1.classList.contains('Wt-invalid')) {if (o.value == o1.value) {o.classList.remove('Wt-invalid');Wt4_12_3.setHtml(i," + WString.toWString(WString.tr ("Wt.Auth.valid")).getJsStringLiteral() + ");} else {o.classList.remove('Wt-valid');Wt4_12_3.setHtml(i," + WString.toWString(WString.tr ("Wt.Auth.repeat-password-info")).getJsStringLiteral() + ");}}}");
 }
   private final Login login_ ;
   private int minLoginNameLength_ ;

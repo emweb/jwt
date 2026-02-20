@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -157,7 +157,7 @@ public class OAuthProcess extends WObject {
   public void connectStartAuthenticate(final AbstractEventSignal s) {
   if (  WApplication.getInstance().getEnvironment().hasJavaScript() &&   this.service_.isPopupEnabled()) {
      StringBuilder js  = new StringBuilder();
-    js.append("function(object, event) {").append("Wt4_12_2.PopupWindow(Wt4_12_2").append(",").append(WWebWidget.jsStringLiteral ( this.getAuthorizeUrl())).append(", ").append(  this.service_.getPopupWidth()).append(", ").append(  this.service_.getPopupHeight()).append(");").append("}");
+    js.append("function(object, event) {").append("Wt4_12_3.PopupWindow(Wt4_12_3").append(",").append(WWebWidget.jsStringLiteral ( this.getAuthorizeUrl())).append(", ").append(  this.service_.getPopupWidth()).append(", ").append(  this.service_.getPopupHeight()).append(");").append("}");
 s.addListener(js.toString());
 }
   s.addListener(this, () -> {

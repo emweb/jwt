@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -328,7 +328,7 @@ public class WIntValidator extends WValidator {
   public String getJavaScriptValidate() {
   loadJavaScript (WApplication.getInstance());
  StringBuilder js  = new StringBuilder();
-  js.append("new Wt4_12_2.WIntValidator(").append(  this.isMandatory ()).append(',');
+  js.append("new Wt4_12_3.WIntValidator(").append(  this.isMandatory ()).append(',');
 if (   this.bottom_ != Integer.MIN_VALUE) {
     js.append(  this.bottom_);
 }

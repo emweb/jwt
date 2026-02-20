@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -104,6 +104,7 @@ return result;
   public void init(WApplication  app) { 
    app.getBuiltinLocalizedStrings().useBuiltin (WtServlet.BootstrapTheme_xml);
   app.getBuiltinLocalizedStrings().useBuiltin (WtServlet.Bootstrap2Theme_xml);
+  app.loadJavaScript ("js/Bootstrap2Theme.js", wtjs3 ());
 }
   public void apply(WWidget  widget, final DomElement element, int elementRole) {
    final boolean creating = element.getMode() == DomElement.Mode.Create;
@@ -337,7 +338,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_12_2.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_12_3.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {
@@ -456,5 +457,8 @@ break;
   }
    static WJavaScriptPreamble wtjs2() {
   return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "setValidationState", "(function(t,e,s,l){const o=e&&0!=(2&l),i=!e&&0!=(1&l);let a=\"Wt-valid\",c=\"Wt-invalid\";const n=this.theme;if(\"object\"==typeof n){a=n.classes.valid;c=n.classes.invalid}t.classList.toggle(a,o);t.classList.toggle(c,i);let u,f,d;u=t.closest(\".control-group\");if(u){f=\"success\";d=\"error\"}else{u=t.closest(\".form-group\");if(u){f=\"has-success\";d=\"has-error\"}}if(u){const l=u.querySelectorAll(\".Wt-validation-message\");for(const o of l)o.textContent=e?t.defaultTT:s;u.classList.toggle(f,o);u.classList.toggle(d,i)}e?t.setAttribute(\"title\",t.defaultTT):t.setAttribute(\"title\",s)})");
+  }
+   static WJavaScriptPreamble wtjs3() {
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptObject, "theme", "{type:\"bootstrap\",version:2}");
   }
 }

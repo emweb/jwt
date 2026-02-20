@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -325,7 +325,7 @@ public class WDoubleValidator extends WValidator {
   public String getJavaScriptValidate() {
   loadJavaScript (WApplication.getInstance());
  StringBuilder js  = new StringBuilder();
-  js.append("new Wt4_12_2.WDoubleValidator(").append(  this.isMandatory ()).append(',').append(  this.ignoreTrailingSpaces_).append(',');
+  js.append("new Wt4_12_3.WDoubleValidator(").append(  this.isMandatory ()).append(',').append(  this.ignoreTrailingSpaces_).append(',');
 if (    this.bottom_ != - Double.MAX_VALUE &&    this.bottom_ != - Double.POSITIVE_INFINITY) {
     js.append(  this.bottom_);
 }

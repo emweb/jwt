@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -1823,7 +1823,7 @@ if ( leafletJSURL.length()!=0 && leafletCSSURL.length()!=0) {
  String optionsStr  =   this.options_.toString();
    StringBuilder ss  = new StringBuilder();
    EscapeOStream es  = new EscapeOStream(ss);
-  es.append("new Wt4_12_2.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
+  es.append("new Wt4_12_3.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
  es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 es.append(optionsStr);
  es.popEscape ();
@@ -1833,8 +1833,13 @@ es.append("',");
 es.append(MathUtils.roundJs(  this.position_.getLongitude(), 16)).append(",");
 es.append(MathUtils.roundJs(  this.zoomLevel_, 16)).append(",");
 es.append(  app.getEnvironment().getServer().getConfiguration().getDoubleClickTimeout()).append(");");
-  this.setJavaScriptMember (" WLeafletMap", ss.toString());
-  this.setJavaScriptMember (WT_RESIZE_JS,   this.getJsRef() + ".wtObj.wtResize");
+ String oldMap = this.getJavaScriptMember(" WLeafletMap"); 
+   this.setJavaScriptMember (" WLeafletMap", ss.toString());
+if ( oldMap.length()!=0 && ! oldMap.equals(ss.toString())) { 
+     this.setJavaScriptMember (WT_RESIZE_JS, "");
+}
+  ; 
+   this.setJavaScriptMember (WT_RESIZE_JS,   this.getJsRef() + ".wtObj.wtResize");
 }
   private void addTileLayerJS(final StringBuilder ss, final WLeafletMap.TileLayer layer) {
    String optionsStr  =  layer.options.toString();

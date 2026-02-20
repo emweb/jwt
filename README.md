@@ -53,8 +53,8 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-4.12.2.jar -DpomFile=jwt-4.12.2.pom
-    mvn install:install-file -Dfile=dist/jwt-auth-4.12.2.jar -DpomFile=jwt-auth-4.12.2.pom
+    mvn install:install-file -Dfile=dist/jwt-4.12.3.jar -DpomFile=jwt-4.12.3.pom
+    mvn install:install-file -Dfile=dist/jwt-auth-4.12.3.jar -DpomFile=jwt-auth-4.12.3.pom
 
 The corresponding dependency blocks will depends on the Servlet
 namespace. Here is the what it will look like when using the
@@ -63,7 +63,7 @@ namespace. Here is the what it will look like when using the
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>4.12.2</version>
+      <version>4.12.3</version>
       <classifier>javax</classifier>
     </dependency>
 
@@ -81,7 +81,7 @@ features you use
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
-      <version>4.12.2</version>
+      <version>4.12.3</version>
       <classifier>javax</classifier>
     </dependency>
 

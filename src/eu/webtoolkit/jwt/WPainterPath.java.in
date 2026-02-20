@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -871,7 +871,7 @@ break;
   public WPainterPath getCrisp() {
    WPainterPath result  = new WPainterPath();
   if (  this.isJavaScriptBound ()) { 
-    result.assignBinding ( this,   "Wt4_12_2.gfxUtils.path_crisp(" +  this.getJsRef() + ')');
+    result.assignBinding ( this,   "Wt4_12_3.gfxUtils.path_crisp(" +  this.getJsRef() + ')');
 }
   for ( int i =0; 
   i <    this.segments_.size ();++ i) {

@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
   if (  this.isRendered ()) {
      String result  =     this.player_.getJsPlayerRef() + ".jPlayer('destroy');";
     if (! recursive) { 
-      result+=    "Wt4_12_2.remove('" +  this.getId() + "');";
+      result+=    "Wt4_12_3.remove('" +  this.getId() + "');";
 }
     return result;
   }

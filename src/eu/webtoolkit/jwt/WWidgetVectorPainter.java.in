@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
   public void updateContents(final List<DomElement> result, WPaintDevice device) {
    WVectorImage  vectorDevice =ObjectUtils.cast(device, WVectorImage.class);
   if (    this.widget_.repaintFlags_.contains(PaintFlag.Update)) {
-     DomElement  painter =DomElement.updateGiven (  "Wt4_12_2.getElement('p" +    this.widget_.getId() + "').firstChild", DomElementType.DIV); 
+     DomElement  painter =DomElement.updateGiven (  "Wt4_12_3.getElement('p" +    this.widget_.getId() + "').firstChild", DomElementType.DIV); 
      painter.setProperty (Property.AddedInnerHTML,  vectorDevice.getRendered());
  WApplication  app =WApplication.getInstance();
     if (  app.getEnvironment().agentIsOpera ()) { 

@@ -11,7 +11,7 @@ import java.io.*;
 import java.lang.ref.*;
 import java.time.*;
 import java.util.concurrent.locks.ReentrantLock;
-import m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
 import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
 import eu.webtoolkit.jwt.*;
 import eu.webtoolkit.jwt.auth.*;
@@ -136,6 +136,10 @@ return ;
          this.nodeWidget_.bindEmpty ("no-expand");
 expandButton = new ToggleButton(    this.view_.expandConfig_);
     this.nodeWidget_.bindWidget ("expand", expandButton);
+   expandButton.mouseWentDown ().preventPropagation ();
+   expandButton.mouseWentUp ().preventPropagation ();
+   expandButton.clicked ().preventPropagation ();
+   expandButton.doubleClicked ().preventPropagation ();
 if (  WApplication.getInstance().getEnvironment().agentIsIE ()) { 
          expandButton.setWidth (new WLength (19));
 }
