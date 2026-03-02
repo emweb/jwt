@@ -275,7 +275,7 @@ if (   this.jsValueChanged ().isConnected ()) {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WSpinBox.js", wtjs1 ());
  StringBuilder ss  = new StringBuilder();
-  ss.append("new Wt4_12_3.WSpinBox(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getDecimals()).append(",").append(WString.toWString( this.getPrefix()).getJsStringLiteral()).append(",").append(WString.toWString( this.getSuffix()).getJsStringLiteral()).append(",").append( this.getJsMinMaxStep()).append(",").append(jsStringLiteral (LocaleUtils.getDecimalPoint(LocaleUtils.getCurrentLocale()))).append(",").append(jsStringLiteral (LocaleUtils.getGroupSeparator(LocaleUtils.getCurrentLocale()))).append(");");
+  ss.append("new Wt4_12_4.WSpinBox(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getDecimals()).append(",").append(WString.toWString( this.getPrefix()).getJsStringLiteral()).append(",").append(WString.toWString( this.getSuffix()).getJsStringLiteral()).append(",").append( this.getJsMinMaxStep()).append(",").append(jsStringLiteral (LocaleUtils.getDecimalPoint(LocaleUtils.getCurrentLocale()))).append(",").append(jsStringLiteral (LocaleUtils.getGroupSeparator(LocaleUtils.getCurrentLocale()))).append(");");
   this.setJavaScriptMember (" WSpinBox", ss.toString());
 }
   private void connectJavaScript(final AbstractEventSignal s, final String methodName) {

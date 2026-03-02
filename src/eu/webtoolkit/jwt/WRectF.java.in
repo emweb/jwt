@@ -538,7 +538,7 @@ h = -   this.height_;
 }
    WRectF result  = new WRectF(x, y, w, h);
   if (  this.isJavaScriptBound ()) { 
-    result.assignBinding ( this,   "Wt4_12_3.gfxUtils.rect_normalized(" +  this.getJsRef() + ')');
+    result.assignBinding ( this,   "Wt4_12_4.gfxUtils.rect_normalized(" +  this.getJsRef() + ')');
 }
   return result;
   }

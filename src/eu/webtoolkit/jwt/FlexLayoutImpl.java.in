@@ -162,7 +162,7 @@ for ( int i =0;
     this.resizedItems_.clear ();
 for ( int i =0; 
   i <    this.removedItems_.size ();++ i) { 
-     div.callJavaScript (  "Wt4_12_3.remove('" +   this.removedItems_.get(i) + "');", true);
+     div.callJavaScript (  "Wt4_12_4.remove('" +   this.removedItems_.get(i) + "');", true);
 } 
     this.removedItems_.clear ();
 if (  this.canAdjustLayout_) { 
@@ -232,7 +232,7 @@ if ( this.getObjectName().length()!=0) {
      result.addChild (el);
 }
    StringBuilder js  = new StringBuilder();
-  js.append("layout=new Wt4_12_3.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
+  js.append("layout=new Wt4_12_4.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
   result.callMethod (js.toString());
 return result;
   }

@@ -258,7 +258,7 @@ break;
   public String getJavaScriptValidate() {
   loadJavaScript (WApplication.getInstance());
  StringBuilder js  = new StringBuilder();
-  js.append("new Wt4_12_3.WEmailValidator(").append(  this.isMandatory ()).append(',').append( this.isMultiple()).append(',').append( (  this.pattern_.length()==0)? "null": WWebWidget.jsStringLiteral (  this.pattern_)).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidBlankText())).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidNotAnEmailAddressText())).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidNotMatchingText())).append(");");
+  js.append("new Wt4_12_4.WEmailValidator(").append(  this.isMandatory ()).append(',').append( this.isMultiple()).append(',').append( (  this.pattern_.length()==0)? "null": WWebWidget.jsStringLiteral (  this.pattern_)).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidBlankText())).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidNotAnEmailAddressText())).append(',').append(WWebWidget.jsStringLiteral ( this.getInvalidNotMatchingText())).append(");");
 return js.toString();
   }
   private WString pattern_ ;

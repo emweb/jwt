@@ -147,7 +147,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
           
   */
   public String getJsFlashRef() {
-  return   "Wt4_12_3.getElement('" +  this.getId() + "_flash')";
+  return   "Wt4_12_4.getElement('" +  this.getId() + "_flash')";
   }
   /**
   

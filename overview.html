@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.12.3</title>
+<title>JWt 4.12.4</title>
 </head>
 <body>
 
@@ -23,7 +23,48 @@ for <a href="https://www.webtoolkit.eu/jwt">JWt</a>.
 This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
-behaviour. It also indicates the main changes from version to verison.
+behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.12.4 (March 2, 2026)</h2>
+
+<p>JWt 4.12.4 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14355" target="_blank">Issue #14355</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WRadioButton.html" target="_blank">WRadioButton</a> inside a
+    <a href="eu/webtoolkit/jwt/WButtonGroup.html" target="_blank">WButtonGroup</a> not being
+    updated on the server side when changed on the client side.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11505" target="_blank">Issue #11505</a>:
+    <a href="eu/webtoolkit/jwt/WStandardItemModel.html#setHeaderData(int,eu.webtoolkit.jwt.Orientation,java.lang.Object,eu.webtoolkit.jwt.ItemDataRole)" target="_blank">WStandardItemModel.setHeaderData()</a> will now
+    correctly return false instead of making Wt crash when given a wrong section. An error will be logged to let
+    the developer know a wrong section was given.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/13019" target="_blank">Issue #13019</a>:
+    Widgets in
+    <a href="eu/webtoolkit/jwt/WTemplate.html" target="_blank">WTemplate</a> should now correctly be deleted when
+    <a href="eu/webtoolkit/jwt/WTemplate.html#clear()" target="_blank">WTemplate.clear()</a> or
+    <a href="eu/webtoolkit/jwt/WTemplate.html#remove()" target="_blank">WTemplate.remove()</a> are called.
+  </li>
+</ul>
+
+<p>JWt 4.12.4 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13498" target="_blank">Issue #13498</a>:
+    <a href="eu/webtoolkit/jwt/auth/AuthModel.html" target="_blank">Auth.AuthModel</a> will now change session id on logout as recommended by
+    <a href="https://owasp.org/" target="_blank">OWASP</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14205" target="_blank">Issue #14205</a>:
+    allowed more Unicode characters to be correctly parsed. Namely those using the surrogate ranges.
+  </li>
+</ul>
 
 <h2>Release 4.12.3 (February 20, 2026)</h2>
 

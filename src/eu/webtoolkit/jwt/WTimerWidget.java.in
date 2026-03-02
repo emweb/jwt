@@ -64,7 +64,7 @@ super.remove();
   return DomElementType.SPAN;
   }
    String renderRemoveJs(boolean recursive) {
-  return     "{var obj=" +  this.getJsRef() + ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt4_12_3.remove('" +  this.getId() + "');}";
+  return     "{var obj=" +  this.getJsRef() + ";if (obj && obj.timer) {clearTimeout(obj.timer);obj.timer = null;}Wt4_12_4.remove('" +  this.getId() + "');}";
   }
   protected void enableAjax() {
   if (    this.timer_.isActive ()) {  

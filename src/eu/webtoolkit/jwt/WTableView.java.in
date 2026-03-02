@@ -1843,7 +1843,7 @@ return     this.headerColumnsTable_.getCount() +    this.table_.getCount();
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WTableView.js", wtjs1 ());
  StringBuilder s  = new StringBuilder();
-  s.append("new Wt4_12_3.WTableView(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(',').append(   this.contentsContainer_.getJsRef()).append(',').append(  this.viewportTop_).append(',').append(   this.headerContainer_.getJsRef()).append(',').append(   this.headerColumnsContainer_.getJsRef()).append(",'").append(  WApplication.getInstance().getTheme().getActiveClass()).append("');");
+  s.append("new Wt4_12_4.WTableView(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(',').append(   this.contentsContainer_.getJsRef()).append(',').append(  this.viewportTop_).append(',').append(   this.headerContainer_.getJsRef()).append(',').append(   this.headerColumnsContainer_.getJsRef()).append(",'").append(  WApplication.getInstance().getTheme().getActiveClass()).append("');");
   this.setJavaScriptMember (" WTableView", s.toString());
 if (!    this.dropEvent_.isConnected ()) {
       this.dropEvent_.addListener(this, (Integer e1, Integer e2, String e3, String e4, WMouseEvent e5) -> {

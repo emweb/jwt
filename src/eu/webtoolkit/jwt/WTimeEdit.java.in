@@ -587,7 +587,7 @@ if (! (currentValue!=null && currentValue.isValid())) {
   private void defineJavaScript() {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WTimeEdit.js", wtjs1 ());
- String jsObj  =       "new Wt4_12_3.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
+ String jsObj  =       "new Wt4_12_4.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
    this.setJavaScriptMember (" WTimeEdit", jsObj);
  final AbstractEventSignal b =  this.mouseMoved ();
    final AbstractEventSignal c =  this.keyWentDown (); 

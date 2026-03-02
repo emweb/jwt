@@ -377,12 +377,11 @@ public class StdXMLReader
       throws IOException, XMLParseException
    {
       int ch = this.currentReader.pbReader.read();
-      
-      if (ch < 0 || (ch == 0x9) ||
-              (ch == 0xA) ||
-              (ch == 0xD) ||
-              ((ch >= 0x20) && (ch <= 0xD7FF)) ||
-              ((ch >= 0xE000) && (ch <= 0xFFFD)) ||
+
+      if (ch < 0 || (ch == 0x9) || // tab
+              (ch == 0xA) || // newline
+              (ch == 0xD) || // carriage return
+              ((ch >= 0x20) && (ch <= 0xFFFD)) || // space until non-chars
               ((ch >= 0x10000) && (ch <= 0x10FFFF))) {
 	      while (ch < 0) {
 	         if (this.readers.empty()) {

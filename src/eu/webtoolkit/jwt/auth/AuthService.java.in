@@ -993,7 +993,7 @@ MailUtils.sendMail (m);
   If this is set to <code>true</code>, a second factor (defaulting to TOTP) will be required on login. Instead of logging the {@link User} in with the {@link LoginState#Strong} (when authenticating with a password), the state will be set to {@link LoginState#RequiresMfa}.
   
   <p>
-  This will only take effect is {@link AuthService#isMfaEnabled() isMfaEnabled()} is <code>true</code> as well (and thus if an MFA provider has been configured ({@link AuthService#setMfaProvider(String provider) setMfaProvider()}). If this is the case, all users will be enforced to verify their login with an extra step, for more security.
+  This will only take effect if {@link AuthService#isMfaEnabled() isMfaEnabled()} is <code>true</code> as well (and thus if an MFA provider has been configured ({@link AuthService#setMfaProvider(String provider) setMfaProvider()})). If this is the case, all users will be enforced to verify their login with an extra step, for more security.
   
   <p>
   By JWt&apos;s default implementation this will boil down to providing a TOTP code. Either this will be the first time they do this. In which case they will be given the secret key both in QR code format (using Mfa::AbstractMfaWidgget::createSetupView()), and as a string. When they enter a correct generated code, the secret will be attached to the {@link User} record as an {@link Identity}, and will be used for subsequent login attempts (using {@link AbstractMfaProcess#createInputView()}).
@@ -1192,7 +1192,7 @@ MailUtils.sendMail (m);
   This can be configured by the developer, or otherwise uses the same name as {@link AuthService#getAuthTokenCookieDomain() getAuthTokenCookieDomain()}. If nothing is changed, the default is an empty string.
   
   <p>
-  This should best be used if multiple applications are living on the same 
+  This should best be used if multiple applications are living on the same domain. 
           
   */
   public void setMfaTokenCookieDomain(final String domain) { 
@@ -1263,6 +1263,7 @@ MailUtils.sendMail (m);
   
   <p>
   @see AuthService#isMfaThrottleEnabled()
+  @see AbstractMfaProcess#setMfaThrottle(AuthThrottle authThrottle)
   
   
           

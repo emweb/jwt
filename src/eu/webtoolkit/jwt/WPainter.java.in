@@ -383,16 +383,8 @@ return true;
     this.width_ = width;
     this.height_ = height;
     this.useOld_ = true;
-    this.info_ = (WAbstractDataInfo)null;
-     WDataInfo info  = new WDataInfo();
-    if (DataUri.isDataUri (url)) { 
-       info.setDataUri (url);
-}
-    else  { 
-       info.setUrl (url);
-} 
-      this.info_=  info;
-}
+    this.info_ = new FromStringDataInfo(url);
+    }
     /**
     
     Creates an image. 
@@ -409,7 +401,7 @@ return true;
     
             
     */
-    public  Image(WAbstractDataInfo info, int width, int height) {
+    public  Image(final WAbstractDataInfo info, int width, int height) {
     this.width_ = width;
     this.height_ = height;
     this.useOld_ = false;
@@ -426,17 +418,8 @@ return true;
     */
     public  Image(final String url, final String fileName) {
     this.useOld_ = true;
-    this.info_ = (WAbstractDataInfo)null;
-     WDataInfo info  = new WDataInfo(); 
-     info.setFilePath (fileName);
-if (DataUri.isDataUri (url)) { 
-       info.setDataUri (url);
-}
-    else  { 
-       info.setUrl (url);
-} 
-      this.info_=  info;
-  this.evaluateSize ();
+    this.info_ = new FromStringDataInfo(url,fileName); 
+     this.evaluateSize ();
 }
     /**
     
@@ -454,7 +437,7 @@ if (DataUri.isDataUri (url)) {
     
             
     */
-    public  Image(WAbstractDataInfo info) {
+    public  Image(final WAbstractDataInfo info) {
     this.useOld_ = false;
     this.info_ = info; 
      this.evaluateSize ();
@@ -503,7 +486,7 @@ if (DataUri.isDataUri (url)) {
     private int width_ ;
     private int height_ ;
     private boolean useOld_ ;
-    private WAbstractDataInfo info_ ;
+    private final WAbstractDataInfo info_ ;
     private void evaluateSize() {
     if (    this.info_.hasDataUri ()) {
        DataUri uri  = new DataUri(   this.info_.getDataUri());

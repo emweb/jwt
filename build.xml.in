@@ -15,7 +15,7 @@
   <property name="javadoc.jwt-auth.dir" value="doc/auth/javadoc"/>
   <property name="javadoc.thirdparty.dir" value="doc/thirdparty/javadoc"/>
   <property name="userguide.dir" value="doc/userguide"/>
-  <property name="proj.version" value="4.12.3-CLASSIFIER"/>
+  <property name="proj.version" value="4.12.4-CLASSIFIER"/>
   <property name="lib.servlet.dir" value="CLASSIFIER"/>
   <property name="src.servlet.dir" value="${src.java.dir}-CLASSIFIER"/>
 
@@ -62,7 +62,7 @@
 
   <target name="all" depends="dist">
   </target>
-  
+
   <!-- Clean up -->
   <target name="clean">
     <delete dir="${build.dir}" />
@@ -94,6 +94,7 @@
       <src path="${src.java.dir}"/>
       <src path="${src.servlet.dir}"/>
       <classpath refid="project.classpath"/>
+      <compilerarg line="-encoding UTF-8"/>
     </javac>
 
     <copy todir="${build.dir}/eu/webtoolkit/jwt/skeletons">
@@ -137,6 +138,7 @@
        debug="on"
        release="11">
       <classpath refid="project.classpath.test"/>
+      <compilerarg line="-encoding UTF-8"/>
     </javac>
     <mkdir dir="${report.dir}"/>
     <junit printsummary="yes" haltonfailure="no">
@@ -155,7 +157,7 @@
       </batchtest>
     </junit>
   </target>
-  
+
   <target name="javadoc" depends="dist">
     <javadoc
        access="protected"
@@ -195,7 +197,7 @@
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
     </copy>
   </target>
-  
+
   <target name="mvn-javadoc" depends="dist">
     <mkdir dir="${mvn.dir}"/>
     <javadoc
@@ -223,11 +225,11 @@
 	<exclude name="eu/webtoolkit/jwt/ServletApi6.java"/>
       </fileset>
     </javadoc>
-    <copy 
+    <copy
        todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/doc-files"/>
     </copy>
-    <copy 
+    <copy
        todir="${mvn.dir}/${javadoc.jwt.dir}/eu/webtoolkit/jwt/chart/doc-files">
       <fileset dir="${src.java.dir}/eu/webtoolkit/jwt/chart/doc-files"/>
     </copy>
@@ -339,7 +341,7 @@
         excludes=".git/**,.git*,${archives.dir}/**" />
     </tar>
   </target>
-    
+
 
   <target name="release" depends="dist,javadoc,asciidoc,archive" >
   </target>

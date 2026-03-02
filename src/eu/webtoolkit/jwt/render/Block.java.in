@@ -374,14 +374,7 @@ break;
        double height =  this.cssHeight (renderer.getFontScale());
        String src  =   this.attributeValue ("src");
       if (  width <= 0 ||  height <= 0) {
-         WDataInfo imgInfo  = new WDataInfo();
-        if (DataUri.isDataUri (src)) { 
-           imgInfo.setDataUri (src);
-}
-        else  { 
-           imgInfo.setUrl (src);
-  imgInfo.setFilePath (src);
-}
+         FromStringDataInfo imgInfo  = new FromStringDataInfo(src);
          WPainter.Image image  = new WPainter.Image(imgInfo);
         if ( height <= 0) {
           height = image.getHeight();
@@ -610,14 +603,7 @@ for ( int i =0;
      double height = bb.height;
      WRectF rect  = new WRectF(left, top, width, height);
      String src  =   this.attributeValue ("src");
-     WDataInfo imgInfo  = new WDataInfo();
-    if (DataUri.isDataUri (src)) { 
-       imgInfo.setDataUri (src);
-}
-    else  { 
-       imgInfo.setUrl (src);
-  imgInfo.setFilePath (src);
-} 
+     FromStringDataInfo imgInfo  = new FromStringDataInfo(src); 
     painter.drawImage (rect, new WPainter.Image(imgInfo,  (int) width,  (int) height));
 }
   else  {
@@ -1815,14 +1801,7 @@ break;
 h =   this.cssHeight (renderer.getFontScale());
  String src  =   this.attributeValue ("src");
           if (  w <= 0 ||  h <= 0) {
-             WDataInfo imgInfo  = new WDataInfo();
-            if (DataUri.isDataUri (src)) { 
-               imgInfo.setDataUri (src);
-}
-            else  { 
-               imgInfo.setUrl (src);
-  imgInfo.setFilePath (src);
-}
+             FromStringDataInfo imgInfo  = new FromStringDataInfo(src);
              WPainter.Image image  = new WPainter.Image(imgInfo);
             if ( w <= 0) {
               w = image.getWidth();

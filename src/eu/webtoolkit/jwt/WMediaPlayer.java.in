@@ -847,7 +847,7 @@ first = false;
 first = false;
 }
     ss.append('}').append("});");
-ss.append("new Wt4_12_3.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
+ss.append("new Wt4_12_4.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
   this.doJavaScript (ss.toString());
   this.boundSignals_ = 0;
   this.boundSignalsDouble_ = 0;

@@ -612,6 +612,10 @@ public class WStandardItemModel extends WAbstractItemModel {
   }
   public boolean setHeaderData(int section, Orientation orientation, final Object value, ItemDataRole role) {
    final List<Map<ItemDataRole, Object> > header =  orientation == Orientation.Horizontal?   this.columnHeaderData_:   this.rowHeaderData_;
+  if (  section < 0 ||   header.size () <= section) {
+    logger.error(new StringWriter().append("Cannot set header of ").append(  orientation == Orientation.Horizontal? "column ": "row ").append(String.valueOf(section)).append(" because it does not exist.").toString());
+return false;
+  }
    final Map<ItemDataRole, Object> d =header.get(section);
   if (role.equals(ItemDataRole.Edit)) { 
     role=  ItemDataRole.Display;

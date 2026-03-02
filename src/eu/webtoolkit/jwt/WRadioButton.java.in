@@ -171,7 +171,7 @@ if (   this.buttonGroup_ != null) {
   }
   if (! ( formData.values.length == 0)) {
      final String value =   formData.values[0];
-    if (value.equals( this.getId())) {
+    if (value.equals("1")) {
       if (   this.buttonGroup_ != null) { 
            this.buttonGroup_.uncheckOthers (this);
   this.state_ = CheckState.Checked;
