@@ -1,0 +1,82 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+Internal class. 
+    
+<p>
+
+DataInfo created from a string like before DataInfo existed. 
+    
+*/
+public class FromStringDataInfo extends WAbstractDataInfo {
+  private static Logger logger = LoggerFactory.getLogger(FromStringDataInfo.class);
+  
+  public  FromStringDataInfo(final String url) {
+  super ();
+  this.uri_ = url;
+  this.filePath_ = "";
+  this.isDataUri_ = DataUri.isDataUri (url);
+  if (!   this.isDataUri_) { 
+      this.filePath_=  url;
+}
+  }
+  public  FromStringDataInfo(final String url, final String filePath) {
+  super ();
+  this.uri_ = url;
+  this.filePath_ = filePath;
+  this.isDataUri_ = DataUri.isDataUri (url);
+  }
+  public String getFilePath() {
+  if (  this.hasFilePath ()) {
+    return   this.filePath_;
+  }
+  return  super.getFilePath();
+  }
+  public String getUrl() {
+  if (  this.hasUrl ()) {
+    return   this.uri_;
+  }
+  return  super.getUrl();
+  }
+  public String getDataUri() {
+  if (  this.hasDataUri ()) {
+    return   this.uri_;
+  }
+  return  super.getDataUri();
+  }
+  public boolean hasFilePath() {
+  return   this.filePath_.length()!=0;
+  }
+  public boolean hasUrl() {
+  return !   this.isDataUri_;
+  }
+  public boolean hasDataUri() {
+  return   this.isDataUri_;
+  }
+  private String uri_ ;
+  private String filePath_ ;
+  private boolean isDataUri_ ;
+}
