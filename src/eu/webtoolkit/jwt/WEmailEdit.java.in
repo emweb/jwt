@@ -309,7 +309,7 @@ return u8String;
    super.render (flags);
  WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WEmailEdit.js", wtjs1 ());
-  super.setJavaScriptMember ("wtEncodeValue", "Wt4_12_4.encodeEmailValue");
+  super.setJavaScriptMember ("wtEncodeValue", "Wt4_12_5.encodeEmailValue");
 }
    void updateDom(final DomElement element, boolean all) { 
    super.updateDom (element, all);

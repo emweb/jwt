@@ -141,8 +141,8 @@ if ( parentContainer != null) parentContainer.addWidget (this);
           
   */
   public void enableDragging() {
-      this.impl_.mouseWentDown ().addListener("function(obj, event) {  var pc = Wt4_12_4.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
-    this.impl_.mouseMoved ().addListener(  "function(obj, event) {var WT= Wt4_12_4;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = " +    this.contents_.getJsRef() + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
+      this.impl_.mouseWentDown ().addListener("function(obj, event) {  var pc = Wt4_12_5.pageCoordinates(event);  obj.setAttribute('dsx', pc.x);  obj.setAttribute('dsy', pc.y);}");
+    this.impl_.mouseMoved ().addListener(  "function(obj, event) {var WT= Wt4_12_5;var lastx = obj.getAttribute('dsx');var lasty = obj.getAttribute('dsy');if (lastx != null && lastx != '') {var nowxy = WT.pageCoordinates(event);var img = " +    this.contents_.getJsRef() + ";img.style.left = (WT.pxself(img, 'left')+nowxy.x-lastx) + 'px';img.style.top = (WT.pxself(img, 'top')+nowxy.y-lasty) + 'px';obj.setAttribute('dsx', nowxy.x);obj.setAttribute('dsy', nowxy.y);}}");
     this.impl_.mouseWentUp ().addListener(  "function(obj, event) {" +    this.impl_.getJsRef() + ".removeAttribute('dsx');}");
     this.impl_.mouseWentUp ().addListener(this, (WMouseEvent e1) -> {
   	WVirtualImage.this.mouseUp(e1);

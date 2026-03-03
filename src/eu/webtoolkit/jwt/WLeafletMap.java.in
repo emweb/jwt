@@ -1823,7 +1823,7 @@ if ( leafletJSURL.length()!=0 && leafletCSSURL.length()!=0) {
  String optionsStr  =   this.options_.toString();
    StringBuilder ss  = new StringBuilder();
    EscapeOStream es  = new EscapeOStream(ss);
-  es.append("new Wt4_12_4.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
+  es.append("new Wt4_12_5.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
  es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 es.append(optionsStr);
  es.popEscape ();

@@ -525,7 +525,7 @@ if (  count != 0 && ! ( oldCount != 0)) {
  boolean useStyleLeft =   app.getEnvironment().agentIsWebKit () ||   app.getEnvironment().agentIsOpera ();
     if (useStyleLeft) {
        boolean rtl =  app.getLayoutDirection() == LayoutDirection.RightToLeft; 
-        this.tieRowsScrollJS_.setJavaScript (    "function(obj, event) {Wt4_12_4.getCssRule('#" +  this.getId() + " .Wt-tv-rowc').style.left= -obj.scrollLeft " + ( rtl? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)": "") + "+ 'px';}");
+        this.tieRowsScrollJS_.setJavaScript (    "function(obj, event) {Wt4_12_5.getCssRule('#" +  this.getId() + " .Wt-tv-rowc').style.left= -obj.scrollLeft " + ( rtl? "+ (obj.firstChild.offsetWidth - obj.offsetWidth)": "") + "+ 'px';}");
 }
     else  { 
         this.tieRowsScrollJS_.setJavaScript (  "function(obj, event) {document.querySelectorAll('#" +  this.getId() + " .Wt-tv-rowc').forEach(function(elem){if (elem.parentElement) elem.parentElement.scrollLeft = obj.scrollLeft;});}");
@@ -757,7 +757,7 @@ styleSheet.addRule( styleSheet.removeRule (  this.c0StyleRule_));
     return ;
   } 
    app.loadJavaScript ("js/WTreeView.js", wtjs1 ());
-  this.setJavaScriptMember (" WTreeView",             "new Wt4_12_4.WTreeView(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.contentsContainer_.getJsRef() + "," +    this.headerContainer_.getJsRef() + "," + String.valueOf( this.getRowHeaderCount()) + ",'" +   WApplication.getInstance().getTheme().getActiveClass() + "');");
+  this.setJavaScriptMember (" WTreeView",             "new Wt4_12_5.WTreeView(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.contentsContainer_.getJsRef() + "," +    this.headerContainer_.getJsRef() + "," + String.valueOf( this.getRowHeaderCount()) + ",'" +   WApplication.getInstance().getTheme().getActiveClass() + "');");
   this.setJavaScriptMember (WT_RESIZE_JS, "function(self,w,h,s) {self.wtObj.wtResize();}");
 }
   private void rerenderHeader() {

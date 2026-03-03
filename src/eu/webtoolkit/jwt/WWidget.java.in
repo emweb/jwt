@@ -513,7 +513,7 @@ super.remove();
    String side  =   orientation == Orientation.Horizontal? ".Horizontal": ".Vertical";
    String canAdjustX  =  adjustOrientations.contains(Orientation.Horizontal)? "true": "false";
    String canAdjustY  =  adjustOrientations.contains(Orientation.Vertical)? "true": "false"; 
-   this.doJavaScript (           "Wt4_12_4.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_12_4" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
+   this.doJavaScript (           "Wt4_12_5.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_12_5" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
 }
   /** 
   
@@ -1166,7 +1166,7 @@ super.remove();
           
   */
   public String getJsRef() {
-  return   "Wt4_12_4.$('" +  this.getId() + "')";
+  return   "Wt4_12_5.$('" +  this.getId() + "')";
   }
   /**
   

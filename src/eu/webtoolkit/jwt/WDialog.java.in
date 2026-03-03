@@ -480,7 +480,7 @@ if (resizable) {
 }
     if (  this.resizable_) {
       Resizable.loadJavaScript (WApplication.getInstance());
-  this.setJavaScriptMember (" Resizable",     "(new Wt4_12_4.Resizable(Wt4_12_4," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
+  this.setJavaScriptMember (" Resizable",     "(new Wt4_12_5.Resizable(Wt4_12_5," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
 }
   }
   }
@@ -837,7 +837,7 @@ if ( WApplication.getInstance().getEnvironment().hasJavaScript()) {
 }
       }
     } 
-     this.doJavaScript (                   "new Wt4_12_4.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
+     this.doJavaScript (                   "new Wt4_12_5.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
 for ( int i =0; 
     i <    this.delayedJs_.size ();++ i) { 
        this.doJavaScript (  this.delayedJs_.get(i));
