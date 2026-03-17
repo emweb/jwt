@@ -64,7 +64,7 @@ public class WEnvironment {
           
   */
   public static String getJavaScriptWtScope() {
-  return "Wt4_12_5";
+  return "Wt4_12_6";
   }
   /**
   
@@ -628,7 +628,7 @@ public class WEnvironment {
           
   */
   public static String getLibraryVersion() {
-  return "4.12.5";
+  return "4.12.6";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int major, final bad java simple ref int minor) ;
   /**

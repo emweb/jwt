@@ -60,10 +60,10 @@ import org.slf4j.LoggerFactory;
   result.addChild (img);
    this.device_=  device;
  StringBuilder selectJS  = new StringBuilder();
-  selectJS.append("Wt4_12_5").append(".$('").append("i").append(   this.widget_.getId()).append("').onselectstart = ").append("function() { return false; };");
+  selectJS.append("Wt4_12_6").append(".$('").append("i").append(   this.widget_.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
  StringBuilder mouseJS  = new StringBuilder();
-  mouseJS.append("Wt4_12_5").append(".$('").append("i").append(   this.widget_.getId()).append("').onmousedown = ").append("function() { return false; };");
+  mouseJS.append("Wt4_12_6").append(".$('").append("i").append(   this.widget_.getId()).append("').onmousedown = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (mouseJS.toString());
 }
   public void updateContents(final List<DomElement> result, WPaintDevice device) {

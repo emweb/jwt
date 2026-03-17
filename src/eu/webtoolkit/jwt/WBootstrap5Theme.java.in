@@ -366,7 +366,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
     case UtilityCssClassRole.ToolTipInner:
     return "tooltip-inner";
     case UtilityCssClassRole.ToolTipOuter:
-    return "tooltip fade top in position-absolute";
+    return "tooltip fade top show position-absolute";
     default:
     return "";
   }
@@ -383,7 +383,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_12_5.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_12_6.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {

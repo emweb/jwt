@@ -1291,7 +1291,7 @@ if (! ( app != null)) {
   i.setAttribute ("title", "Popup Shim");
   i.setAttribute ("tabindex", "-1");
   i.setAttribute ("frameborder", "0");
-  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_12_5.isHidden(w)) {var i = Wt4_12_5.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
+  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_12_6.isHidden(w)) {var i = Wt4_12_6.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
  element.addChild (i);
 }
       }
@@ -1479,7 +1479,7 @@ break;
            String deferred  =    this.flags_.get(BIT_TOOLTIP_DEFERRED)? "true": "false";
            String showOnHover  =  jsShowOnHover? "true": "false";
            String forceShow  =    this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)? "true": "false"; 
-          element.callJavaScript (                "Wt4_12_5.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
+          element.callJavaScript (                "Wt4_12_6.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
 if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTip_.isConnected ()) {
                 this.lookImpl_.loadToolTip_.addListener(this, () -> {
             	WWebWidget.this.loadToolTip();
@@ -1517,11 +1517,11 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
   if ( ! all &&    this.transientImpl_ != null) {
     for ( int i =0; 
     i <      this.transientImpl_.addedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_12_5.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_12_6.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
 }
     for ( int i =0; 
     i <      this.transientImpl_.removedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_12_5.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_12_6.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
 }
     if (!     this.transientImpl_.childRemoveChanges_.isEmpty()) {
       if (   (int)   this.getChildren().size () !=     this.transientImpl_.addedChildren_ ||     this.transientImpl_.specialChildRemove_) {
@@ -1529,7 +1529,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         i <      this.transientImpl_.childRemoveChanges_.size ();++ i) {
            final String js =    this.transientImpl_.childRemoveChanges_.get(i);
           if ( js.charAt(0) == '_') { 
-            element.callJavaScript (  "Wt4_12_5.remove('" + js.substring(1) + "');", true);
+            element.callJavaScript (  "Wt4_12_6.remove('" + js.substring(1) + "');", true);
 }
           else  { 
             element.callJavaScript (js, true);
@@ -1554,7 +1554,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
       element.addPropertyWord (Property.Class, "unselectable");
  element.setAttribute ("unselectable", "on");
  StringBuilder selectJS  = new StringBuilder();
-      selectJS.append("Wt4_12_5").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
+      selectJS.append("Wt4_12_6").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     else  {
@@ -1562,7 +1562,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         element.addPropertyWord (Property.Class, "selectable");
  element.setAttribute ("unselectable", "off");
  StringBuilder selectJS  = new StringBuilder();
-        selectJS.append("Wt4_12_5").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return false; };");
+        selectJS.append("Wt4_12_6").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     }
@@ -1640,7 +1640,7 @@ break;
   if (  this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
     if (   this.flags_.get(BIT_HIDDEN_CHANGED) ||  all &&   this.flags_.get(BIT_HIDDEN)) {
       if (  this.flags_.get(BIT_HIDDEN)) { 
-        element.callJavaScript (  "Wt4_12_5.$('" +  this.getId() + "').classList.add('Wt-hidden');");
+        element.callJavaScript (  "Wt4_12_6.$('" +  this.getId() + "').classList.add('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "hidden");
 if (  this.flags_.get(BIT_HIDE_WITH_OFFSETS)) { 
           element.setProperty (Property.StylePosition, "absolute");
@@ -1684,7 +1684,7 @@ break;
  element.setProperty (Property.StyleLeft, "");
 }
         } 
-        element.callJavaScript (  "Wt4_12_5.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
+        element.callJavaScript (  "Wt4_12_6.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "visible");
 }
     }
@@ -1699,7 +1699,7 @@ break;
   app.loadJavaScript (THIS_JS, wtjs2 ());
 if (!   this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_12_5").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
+        ss.append("Wt4_12_6").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleDisplay, "none");
@@ -1710,7 +1710,7 @@ if (all) {
       }
       else  {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_12_5").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleTop)).append("','").append( element.getProperty (Property.StyleLeft)).append("');");
+        ss.append("Wt4_12_6").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleTop)).append("','").append( element.getProperty (Property.StyleLeft)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleVisibility, "hidden");
@@ -1755,13 +1755,13 @@ if (  this.flags_.get(BIT_GOT_FOCUS)) {
     if ( !  app.isJavaScriptLoaded(SCROLL_JS) &&  this.isScrollVisibilityEnabled()) { 
        app.loadJavaScript (SCROLL_JS, wtjs3 ());
  StringBuilder ss  = new StringBuilder();
-      ss.append("if (!Wt4_12_5.scrollVisibility) {Wt4_12_5.scrollVisibility = new ");
-ss.append("Wt4_12_5.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
+      ss.append("if (!Wt4_12_6.scrollVisibility) {Wt4_12_6.scrollVisibility = new ");
+ss.append("Wt4_12_6.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
  element.callJavaScript (ss.toString());
 }
     if ( this.isScrollVisibilityEnabled()) {
        StringBuilder ss  = new StringBuilder();
-      ss.append("Wt4_12_5.scrollVisibility.add({");
+      ss.append("Wt4_12_6.scrollVisibility.add({");
 ss.append("el:").append( this.getJsRef()).append(',');
 ss.append("margin:").append( this.getScrollVisibilityMargin()).append(',');
 ss.append("visible:").append(  this.isScrollVisible ());
@@ -1771,7 +1771,7 @@ ss.append("});");
 }
     else  {
       if (  this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) { 
-        element.callJavaScript (  "Wt4_12_5.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
+        element.callJavaScript (  "Wt4_12_6.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
     }
@@ -1832,7 +1832,7 @@ if (deep) {
    String renderRemoveJs(boolean recursive) {
    final StringBuilder result  = new StringBuilder();
   if (   this.isRendered () &&  this.isScrollVisibilityEnabled()) {
-    result.append("Wt4_12_5.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
+    result.append("Wt4_12_6.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
    this.flags_.set (BIT_SCROLL_VISIBILITY_CHANGED);
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
@@ -1845,7 +1845,7 @@ if (! recursive) {
       result.append("_").append( this.getId());
 }
     else  {
-      result.append("Wt4_12_5.remove('").append( this.getId()).append("');");
+      result.append("Wt4_12_6.remove('").append( this.getId()).append("');");
 }
   }
   return result.toString();
@@ -2574,7 +2574,7 @@ return result;
     Property.StyleLeft
   };
    static WJavaScriptPreamble wtjs1() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateDisplay", "(function(t,n,i,e,o,s){const a=t.WT;!function n(i,e,o,s,r){const d={None:0,SlideInFromLeft:1,SlideInFromRight:2,SlideInFromBottom:3,SlideInFromTop:4,Pop:5,Fade:256},l=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],c=[0,1,3,2,4,5],p=document.getElementById(i),m=1===p.childElementCount?p.firstElementChild:null;function f(t,n,i){for(const e of Object.keys(n)){i&&void 0===i[e]&&(i[e]=t.style[e]);t.style[e]=n[e]}}const h=f;if((()=>{const t={},n=a.css(p,\"display\");f(p,{display:r},t);const i=a.css(p,\"display\");h(p,t);return n!==i})()){const F=p.parentNode;if(F.wtAnimateChild){F.wtAnimateChild(a,p,e,o,s,{display:r});return}if(p.classList.contains(\"animating\")){Promise.all(p.getAnimations().map((t=>t.finished))).then((()=>{n(i,e,o,s,r)}));return}p.classList.add(\"animating\");const b=255&e,x=\"none\"===r,S={},I={},T={duration:s,iterations:1,easing:l[x?c[o]:o]};function u(){p.wtAnimatedHidden&&p.wtAnimatedHidden(x);0===p.getAnimations().length&&p.classList.remove(\"animating\");t.layouts2&&t.layouts2.setElementDirty(p)}function y(){p.style.display=r;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function g(t,n,i,o){x||y();const s=a.px(p,t),l={transform:`translate${o}(${(a.px(p,n)+s)*(i?-1:1)}px)`},c={transform:`translate${o}(0px)`};if(e&d.Fade){l.opacity=0;c.opacity=1}const m=x?[c,l]:[l,c];p.animate(m,T).finished.then((()=>{x&&(p.style.display=r);u()}))}function w(){x||y();const t={},n={};switch(b){case d.Pop:f(p,{transformOrigin:\"50% 50%\"},S);t.transform=\"scale(.2)\";n.transform=\"scale(1)\";break;case d.SlideInFromRight:t.transform=\"translateX(100%)\";n.transform=\"translateX(0)\";break;case d.SlideInFromLeft:t.transform=\"translateX(-100%)\";n.transform=\"translateX(0)\"}if(e&d.Fade){t.opacity=0;n.opacity=a.css(p,\"opacity\")}const i=x?[n,t]:[t,n];p.animate(i,T).finished.then((()=>{x&&(p.style.display=r);h(p,S);u()}))}const E=[\"absolute\",\"fixed\"].includes(a.css(p,\"position\"));switch(b){case d.SlideInFromTop:case d.SlideInFromBottom:E?g(\"height\",b===d.SlideInFromTop?\"top\":\"bottom\",b===d.SlideInFromTop,\"Y\"):function(){x||y();f(p,{overflow:\"hidden\"},S);const t=[],n=(()=>{if(!m)return null;const t=p.getBoundingClientRect(),n=m.getBoundingClientRect();return{left:n.x-t.x-a.pxComputedStyle(p,\"border-left-width\"),top:n.y-t.y-a.pxComputedStyle(p,\"border-top-width\")}})();if(m&&b===d.SlideInFromTop){const n={transform:\"translateY(0px)\"},i={transform:`translateY(-${p.clientHeight}px)`},e=x?[n,i]:[i,n];t.push(m.animate(e,T))}{const n={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},i={height:a.css(p,\"height\"),paddingTop:a.css(p,\"padding-top\"),paddingBottom:a.css(p,\"padding-bottom\"),borderTopWidth:a.css(p,\"border-top-width\"),borderBottomWidth:a.css(p,\"border-bottom-width\")};if(e&d.Fade){n.opacity=0;i.opacity=1}const o=x?[i,n]:[n,i];t.push(p.animate(o,T))}if(m){f(p,{position:\"relative\"},S);const t={position:\"absolute\",left:`${n.left}px`,top:`${n.top}px`,width:`${m.clientWidth}px`};f(m,t,I)}Promise.all(t.map((t=>t.finished))).then((()=>{x&&(p.style.display=r);h(p,S);h(m,I);u()}))}();break;case d.SlideInFromLeft:case d.SlideInFromRight:E?g(\"width\",b===d.SlideInFromLeft?\"left\":\"right\",b===d.SlideInFromLeft,\"X\"):w();break;case d.None:case d.Pop:w()}}}(n,i,e,o,s)})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateDisplay", "(function(t,n,i,e,o,s){const a=t.WT;!function n(i,e,o,s,r){const d={None:0,SlideInFromLeft:1,SlideInFromRight:2,SlideInFromBottom:3,SlideInFromTop:4,Pop:5,Fade:256},l=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],c=[0,1,3,2,4,5],p=document.getElementById(i),m=1===p.childElementCount?p.firstElementChild:null;function f(t,n,i){for(const e of Object.keys(n)){i&&void 0===i[e]&&(i[e]=t.style[e]);t.style[e]=n[e]}}const h=f;if((()=>{const t={},n=a.css(p,\"display\");f(p,{display:r},t);const i=a.css(p,\"display\");h(p,t);return n!==i})()){const F=p.parentNode;if(F.wtAnimateChild){F.wtAnimateChild(t,a,p,e,o,s,{display:r});return}if(p.classList.contains(\"animating\")){Promise.all(p.getAnimations().map((t=>t.finished))).then((()=>{n(i,e,o,s,r)}));return}p.classList.add(\"animating\");const b=255&e,x=\"none\"===r,S={},I={},T={duration:s,iterations:1,easing:l[x?c[o]:o]};function u(){p.wtAnimatedHidden&&p.wtAnimatedHidden(x);0===p.getAnimations().length&&p.classList.remove(\"animating\");t.layouts2&&t.layouts2.setElementDirty(p)}function y(){p.style.display=r;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function g(t,n,i,o){x||y();const s=a.px(p,t),l={transform:`translate${o}(${(a.px(p,n)+s)*(i?-1:1)}px)`},c={transform:`translate${o}(0px)`};if(e&d.Fade){l.opacity=0;c.opacity=1}const m=x?[c,l]:[l,c];p.animate(m,T).finished.then((()=>{x&&(p.style.display=r);u()}))}function w(){x||y();const t={},n={};switch(b){case d.Pop:f(p,{transformOrigin:\"50% 50%\"},S);t.transform=\"scale(.2)\";n.transform=\"scale(1)\";break;case d.SlideInFromRight:t.transform=\"translateX(100%)\";n.transform=\"translateX(0)\";break;case d.SlideInFromLeft:t.transform=\"translateX(-100%)\";n.transform=\"translateX(0)\"}if(e&d.Fade){t.opacity=0;n.opacity=a.css(p,\"opacity\")}const i=x?[n,t]:[t,n];p.animate(i,T).finished.then((()=>{x&&(p.style.display=r);h(p,S);u()}))}const E=[\"absolute\",\"fixed\"].includes(a.css(p,\"position\"));switch(b){case d.SlideInFromTop:case d.SlideInFromBottom:E?g(\"height\",b===d.SlideInFromTop?\"top\":\"bottom\",b===d.SlideInFromTop,\"Y\"):function(){x||y();f(p,{overflow:\"hidden\"},S);const t=[],n=(()=>{if(!m)return null;const t=p.getBoundingClientRect(),n=m.getBoundingClientRect();return{left:n.x-t.x-a.pxComputedStyle(p,\"border-left-width\"),top:n.y-t.y-a.pxComputedStyle(p,\"border-top-width\")}})();if(m&&b===d.SlideInFromTop){const n={transform:\"translateY(0px)\"},i={transform:`translateY(-${p.clientHeight}px)`},e=x?[n,i]:[i,n];t.push(m.animate(e,T))}{const n={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},i={height:a.css(p,\"height\"),paddingTop:a.css(p,\"padding-top\"),paddingBottom:a.css(p,\"padding-bottom\"),borderTopWidth:a.css(p,\"border-top-width\"),borderBottomWidth:a.css(p,\"border-bottom-width\")};if(e&d.Fade){n.opacity=0;i.opacity=1}const o=x?[i,n]:[n,i];t.push(p.animate(o,T))}if(m){f(p,{position:\"relative\"},S);const t={position:\"absolute\",left:`${n.left}px`,top:`${n.top}px`,width:`${m.clientWidth}px`};f(m,t,I)}Promise.all(t.map((t=>t.finished))).then((()=>{x&&(p.style.display=r);h(p,S);h(m,I);u()}))}();break;case d.SlideInFromLeft:case d.SlideInFromRight:E?g(\"width\",b===d.SlideInFromLeft?\"left\":\"right\",b===d.SlideInFromLeft,\"X\"):w();break;case d.None:case d.Pop:w()}}}(n,i,e,o,s)})");
   }
    static WJavaScriptPreamble wtjs2() {
   return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateVisible", "(function(t,n,i,e,o,s,a,r){})");

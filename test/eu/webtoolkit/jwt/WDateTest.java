@@ -38,4 +38,13 @@ public class WDateTest {
 		WDate date = new WDate(2020, 1, 3, 11, 32, 0, 0);
 		assertEquals("Fri, 03-Jan-2020 11:32:00 GMT", date.toString("EEE, dd-MMM-yyyy HH:mm:ss 'GMT'", false));
 	}
+
+	@Test
+	public void testGetDaysTo() {
+		Locale.setDefault(Locale.FRENCH);
+
+		WDate date1 = new WDate(2020, 1, 3, 23, 59, 0, 0);
+		WDate date2 = new WDate(2020, 1, 4, 0, 1, 0, 0);
+		assertEquals(1, date1.getDaysTo(date2));
+	}
 }
