@@ -1,0 +1,8 @@
+build
+dist
+*.in
+!*.java.in
+!*.pom.in
+*.prefs
+*.classpath
+*.project

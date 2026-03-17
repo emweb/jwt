@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.12.5</title>
+<title>JWt 4.12.6</title>
 </head>
 <body>
 
@@ -25,9 +25,94 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
 
+<h2>Release 4.12.6 (March 17, 2026)</h2>
+
+<p>JWt 4.12.6 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14376" target="_blank">Issue #14376</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTableView.html#itemWidget(eu.webtoolkit.jwt.WModelIndex)" target="_blank">WTableView.itemWidget()</a>
+    wrongly returning unrendered widgets when used in plain HTML mode. This could then also lead to a segmentation fault when
+    trying to modify the headers before the view was rendered.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14066" target="_blank">Issue #14066</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> header columns not
+    always having the same height as the content columns, which lead to several issues.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14319" target="_blank">Issue #14319</a>:
+    fixed <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> sometimes not updating after
+    a client-side resize.
+
+    Additionally, fixed
+    <a href="eu/webtoolkit/jwt/WTableView.html#scrollTo(eu.webtoolkit.jwt.WModelIndex,eu.webtoolkit.jwt.ScrollHint)" target="_blank">WTableView.scrollTo()</a> with
+    <a href="eu/webtoolkit/jwt/ScrollHint.html#EnsureVisible" target="_blank">ScrollHint.EnsureVisible</a>
+    inverting top and bottom.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14332" target="_blank">Issue #14332</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a>'s content being cut off when containing a
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> with a width bigger than the dialog itself.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14293" target="_blank">Issue #14293</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> fitting to its content in
+    <a href="eu/webtoolkit/jwt/WBootstrap2Theme.html" target="_blank">WBootstrap2Theme</a> and
+    <a href="eu/webtoolkit/jwt/WBootstrap3Theme.html" target="_blank">WBootstrap3Theme</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13958" target="_blank">Issue #13958</a>:
+    corrected a JavaScript error when using <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    with a disabled ancestor widget.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13692" target="_blank">Issue #13692</a>:
+    fixed JS layouts in <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a>
+    not being updated after being switched in with an animation. This would lead to the
+    content of the layout being fitted to the size of the old container.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14381" target="_blank">Issue #14381</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>s in
+    <a href="eu/webtoolkit/jwt/WPushButton.html" target="_blank">WPushButton</a> not being removed from the domroot when the button
+    was removed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/11955" target="_blank">Issue #11955</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDate.html#getDaysTo(eu.webtoolkit.jwt.WDate)" target="_blank">WDate.getDaysTo()</a>
+    returning the number of days in terms of seconds instead of the number of days according to the calendar. This could be
+    especially problematic when daylight saving time changes were involved.
+  </li>
+</ul>
+
+<p>JWt 4.12.6 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14356" target="_blank">Issue #14356</a>:
+    ensured that
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> top-left corner is visible when the dialog
+    position is automatically determined by JWt.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14380" target="_blank">Issue #14380</a>:
+    changed the style class <code>.in</code> for <code>.show</code> when using
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a> as it is the
+    correct class to use for Bootstrap 5.
+  </li>
+</ul>
+
 <h2>Release 4.12.5 (March 3, 2026)</h2>
 
-<p>Wt 4.12.5 is a patch release that addresses the following issues:</p>
+<p>JWt 4.12.5 is a patch release that addresses the following issues:</p>
 
 <ul>
   <li>

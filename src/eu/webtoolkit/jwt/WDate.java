@@ -7,6 +7,8 @@ package eu.webtoolkit.jwt;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -15,18 +17,18 @@ import java.util.TimeZone;
 /**
  * Class which holds a date on the gregorian calendar, specified as
  * day/month/year.
- * 
+ *
  * A valid date may be specified by year, month, and day of month (using the
  * {@link #WDate(int, int, int)} constructor, or the
  * {@link #setDate(int year, int month, int day)} method). When attempting to
  * specify an invalid date (with an impossible combination of year/month/date)
  * an {@link IllegalArgumentException} will be thrown.
- * 
+ *
  * The class provides a flexible way for converting between strings and dates.
  * Use toString() to convert to strings, and fromString() for parsing strings.
  * Both methods take a format string, and the same format syntax is supported by
  * both methods.
- * 
+ *
  * Simple operations are supported to compare dates, or to calculate with dates.
  */
 public class WDate implements Comparable<WDate> {
@@ -51,7 +53,7 @@ public class WDate implements Comparable<WDate> {
 		private Day(int calendarCode) {
 			this.calendarCode = calendarCode;
 		}
-		
+
 		// calendarCode: 0 (Sunday) to 6 (Saturday)
 		static Day fromInt(int day) {
 			return values()[day];
@@ -60,7 +62,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Sets default timezone
-	 * 
+	 *
 	 * If <code>null</code>, then the default (local) timezone will be used. You may
 	 * want to change this to e.g. GMT to not be affected by oddities in the local
 	 * time zone, such as for example missing 'time'.
@@ -69,15 +71,15 @@ public class WDate implements Comparable<WDate> {
 	 * The default is <code>null</code>.
 	 */
 	public static void setTimezone(TimeZone timeZone) {
-		WDate.timeZone = timeZone; 
+		WDate.timeZone = timeZone;
 	}
 
 	/**
 	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
 	 * second (0 - 59), millisecond (0 - 999)
-	 * 
+	 *
 	 * When the date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #setDate(int year, int month, int day, int hour, int minute, int
 	 *      second, int millisecond)
 	 */
@@ -90,9 +92,9 @@ public class WDate implements Comparable<WDate> {
 	/**
 	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
 	 * second (0 - 59)
-	 * 
+	 *
 	 * When the date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #setDate(int year, int month, int day, int hour, int minute, int
 	 *      second)
 	 */
@@ -102,9 +104,9 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Specify a date by year, month (1-12), and day (1-31)
-	 * 
+	 *
 	 * When the date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #setDate(int year, int month, int day)
 	 * @see #getYear()
 	 * @see #getMonth()
@@ -124,9 +126,9 @@ public class WDate implements Comparable<WDate> {
 	/**
 	 * Set a date by year, month (1-12), day (1-31), hour (0-23), minute (0-59),
 	 * second (0 - 59), millisecond (0 - 999)
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #WDate(int year, int month, int day, int hour, int minute, int
 	 *      second, int millisecond)
 	 * @see #getYear()
@@ -165,9 +167,9 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Set a date by year, month (1-12), day (1-31)
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #setDate(int, int, int, int, int, int)
 	 */
 	public void setDate(int year, int month, int day) {
@@ -177,52 +179,52 @@ public class WDate implements Comparable<WDate> {
 	/**
 	 * Set a date by year, month (1-12), and day (1-31), hour (0-23), minute
 	 * (0-59), second (0 - 59).
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
-	 * 
+	 *
 	 * @see #setDate(int, int, int, int, int, int, int)
 	 */
 	public void setDate(int year, int month, int day, int hour, int minute,
 			int second) {
 		this.setDate(year, month, day, hour, minute, second, 0);
 	}
-	
+
 	/**
 	 * Set this date's time by hour (0-23), minute (0-59), second (0 - 59) and millisecond (0 - 999).
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
 	 */
 	public void setTime(int hour, int minute, int second, int millisecond) {
 		this.setDate(getYear(), getMonth(), getDay(), hour, minute, second, millisecond);
 	}
-	
+
 	/**
 	 * Set this date's time by hour (0-23), minute (0-59) and second (0 - 59).
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
 	 */
 	public void setTime(int hour, int minute, int second) {
 		this.setTime(hour, minute, second, 0);
 	}
-	
+
 	/**
 	 * Set this date's time by hour (0-23) and minute (0-59).
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
 	 */
 	public void setTime(int hour, int minute) {
 		this.setTime(hour, minute, 0, 0);
 	}
-	
+
 	/**
 	 * Sets this date's time by WTime
-	 * 
+	 *
 	 * When the new date is invalid, an IllegalArgumentException is thrown.
 	 */
 	public void setTime(WTime time){
 		this.setTime(time.getHour(), time.getMinute(), time.getSecond(), time.getMsec());
 	}
-	
+
 	/**
 	 * Gets this date's time
 	 * @return WTime object
@@ -233,7 +235,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Adds seconds.
-	 * 
+	 *
 	 * Returns a time that is <i> nSeconds </i> seconds later than this time.
 	 * Negative values for <i> nSeconds </i> will result in a time that is as
 	 * many seconds earlier.
@@ -247,7 +249,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Adds milliseconds.
-	 * 
+	 *
 	 * Returns a time that is <i> nMilliseconds </i> milliseconds later than
 	 * this time. Negative values for <i> nMilliseconds </i> will result in a
 	 * time that is as many seconds earlier.
@@ -261,10 +263,10 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Add days to a date.
-	 * 
+	 *
 	 * Returns a date that is <i>ndays</i> later than this date. Negative values
 	 * for <i>ndays</i> will result in a date that is as many days earlier.
-	 * 
+	 *
 	 * @see #addMonths(int)
 	 * @see #addYears(int)
 	 */
@@ -277,11 +279,11 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Add months to a date.
-	 * 
+	 *
 	 * Returns a date that is the same day of the month, but <i>nmonths</i>
 	 * later than this date. Negative values for <i>nmonths</i> will result in a
 	 * date that is as many months earlier.
-	 * 
+	 *
 	 * @see #addDays(int)
 	 * @see #addYears(int)
 	 */
@@ -294,11 +296,11 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Add years to a date.
-	 * 
+	 *
 	 * Returns a date that is <i>nyears</i> later than this date. Negative
 	 * values for <i>nyears</i> will result in a date that is as many years
 	 * earlier.
-	 * 
+	 *
 	 * @see #addDays(int)
 	 * @see #addMonths(int)
 	 */
@@ -399,17 +401,19 @@ public class WDate implements Comparable<WDate> {
 	 * Returns the number of days from this date to <i>date</i>.
 	 */
 	public int getDaysTo(WDate date) {
-		return (int) ((date.d.getTime() - d.getTime()) / 1000 / 3600 / 24);
+		LocalDate thisDate = LocalDate.of(getYear(), getMonth(), getDay());
+		LocalDate otherDate = LocalDate.of(date.getYear(), date.getMonth(), date.getDay());
+		return (int) ChronoUnit.DAYS.between(thisDate, otherDate);
 	}
 
 	/**
 	 * Returns the difference between two WDate values (as text).
-	 * 
+	 *
 	 * This returns a textual representation of the approximate difference
 	 * between this time and <i> other </i>. The textual representation returns
 	 * the difference as a number of seconds, minutes, hours, days, weeks,
 	 * months, or years, using the coarsest unit that is more than \p minValue.
-	 * 
+	 *
 	 * @see #getDaysTo(WDate)
 	 * @see #getSecondsTo(WDate)
 	 */
@@ -466,7 +470,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Tests if this date is after the specified date.
-	 * 
+	 *
 	 * @param when
 	 *            - a date.
 	 * @return true if and only if the instant represented by this Date object
@@ -479,7 +483,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Tests if this date is after the specified date.
-	 * 
+	 *
 	 * @param when
 	 *            - a date.
 	 * @return true if and only if the instant represented by this Date object
@@ -514,7 +518,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Construct a date for the current client date.
-	 * 
+	 *
 	 * This method uses browser information to retrieve the date that is
 	 * configured in the client.
 	 */
@@ -525,14 +529,14 @@ public class WDate implements Comparable<WDate> {
 		} else
 			return getCurrentServerDate();
 	}
-	
+
 	private static WDate getUTCDate() {
 		// http://stackoverflow.com/a/2528480/1896048
 		SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 		dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
 		//Local time zone
 		SimpleDateFormat dateFormatLocal = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-		
+
 		Date utcDate = new Date();
 		try { //Time in GMT
 			utcDate = dateFormatLocal.parse(dateFormatGmt.format(new Date()));
@@ -542,7 +546,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Construct a date for the current server date.
-	 * 
+	 *
 	 * This method returns the date as indicated by the system clock of the
 	 * server.
 	 */
@@ -552,7 +556,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the short day name.
-	 * 
+	 *
 	 * Results (for given <i>weekDay</i>) are (default English):<br>
 	 * "Mon" (1),<br>
 	 * "Tue" (2),<br>
@@ -564,7 +568,7 @@ public class WDate implements Comparable<WDate> {
 	 *
 	 * The result is affected by localization using the "Wt.WDate.Mon" to
 	 * "Wt.WDate.Sun" keys.
-	 * 
+	 *
 	 * @see #getLongDayName(int)
 	 */
 	public static WString getShortDayName(int weekday) {
@@ -579,7 +583,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the short month name.
-	 * 
+	 *
 	 * Results (for given <i>month</i>) are (default English):<br>
 	 * "Jan" (1),<br>
 	 * "Feb" (2),<br>
@@ -593,16 +597,16 @@ public class WDate implements Comparable<WDate> {
 	 * "Oct" (10),<br>
 	 * "Nov" (11),<br>
 	 * "Dec" (12).
-	 * 
+	 *
 	 * The result is affected by localization using the "Wt.WDate.Jan" to
 	 * "Wt.WDate.Dec" keys.
-	 * 
+	 *
 	 * @see #getLongMonthName(int)
 	 */
 	public static WString getShortMonthName(int month) {
 		final String[] shortMonthNames = { "Jan", "Feb", "Mar",
 			"Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-		
+
 		if (WApplication.getInstance() != null)
 			return WString.tr("Wt.WDate." + shortMonthNames[month - 1]);
 		else
@@ -611,7 +615,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the long day name.
-	 * 
+	 *
 	 * Results (for given <i>weekDay</i>) are (default English):<br>
 	 * "Monday" (1),<br>
 	 * "Tuesday" (2),<br>
@@ -620,10 +624,10 @@ public class WDate implements Comparable<WDate> {
 	 * "Friday" (5),<br>
 	 * "Saturday" (6),<br>
 	 * "Sunday" (7).
-	 * 
+	 *
 	 * The result is affected by localization using the "Wt.WDate.Monday" to
 	 * "Wt.WDate.Sunday" keys.
-	 * 
+	 *
 	 * @see #getShortDayName(int)
 	 */
 	public static WString getLongDayName(int weekday) {
@@ -638,7 +642,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Returns the long month name.
-	 * 
+	 *
 	 * Results (for given <i>month</i>) are (default English):<br>
 	 * "January" (1),<br>
 	 * "February" (2),<br>
@@ -655,7 +659,7 @@ public class WDate implements Comparable<WDate> {
 	 *
 	 * The result is affected by localization using the "Wt.WDate.January" to
 	 * "Wt.WDate.December" keys.
-	 * 
+	 *
 	 * @see #getShortDayName(int)
 	 */
 	public static WString getLongMonthName(int month) {
@@ -671,7 +675,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Parse a WString to a date using a default format.
-	 * 
+	 *
 	 * The default <i>format</i> is "ddd MMM d yyyy". For example, a date
 	 * specified as: <code>
 	   *   "Wed Aug 29 2007"
@@ -679,9 +683,9 @@ public class WDate implements Comparable<WDate> {
 	 * constructed as: <code>
 	   *   WDate d = new WDate(2007,8,29);
 	   * </code>
-	 * 
+	 *
 	 * When the date could not be parsed or is not valid, null is returned.
-	 * 
+	 *
 	 * @see #fromString(String, String)
 	 */
 	public static WDate fromString(String text) {
@@ -690,12 +694,12 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Parse a String to a date using a specified format.
-	 * 
+	 *
 	 * The <i>format</i> follows the same syntax as used by
 	 * {@link #toString(String format)}.
-	 * 
+	 *
 	 * When the date could not be parsed or is not valid, null is returned.
-	 * 
+	 *
 	 * @see #toString(String format)
 	 */
 	public static WDate fromString(String text, String format) {
@@ -708,13 +712,13 @@ public class WDate implements Comparable<WDate> {
 				return new WDate(d);
 		} catch (ParseException e) {
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Converts the date to a Julian day.
-	 * 
+	 *
 	 * @see #fromJulianDay(int)
 	 */
 	public int toJulianDay() {
@@ -753,9 +757,9 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Format this date to a String using a default format.
-	 * 
+	 *
 	 * The default <i>format</i> is "ddd MMM d yyyy".
-	 * 
+	 *
 	 * @see #toString(String format)
 	 * @see #fromString(String)
 	 */
@@ -766,13 +770,13 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Format this date to a WString using a specified format.
-	 * 
+	 *
 	 * The <i>format</i> is a string interpreted by {@link SimpleDateFormat}.
 	 */
 	public String toString(String format) {
 		return toString(format, true);
 	}
-	
+
 	public String toString(String format, boolean localized) {
 		SimpleDateFormat formatter = localized ? new SimpleDateFormat(format) : new SimpleDateFormat(format, Locale.ENGLISH);
 		return formatter.format(this.d);
@@ -781,14 +785,14 @@ public class WDate implements Comparable<WDate> {
 	static WDate getPreviousWeekday(WDate d, int gw) {
 		Calendar c = createCalendar();
 		c.setTime(d.d);
-		
+
 		// FIXME we shouldn't need a loop here!
 		while (true) {
 			c.add(Calendar.DATE, -1);
 			if (c.get(Calendar.DAY_OF_WEEK) == (gw == 7 ? 1 : gw + 1))
 				break;
 		}
-		
+
 		return new WDate(c.getTime());
 	}
 
@@ -925,7 +929,7 @@ public class WDate implements Comparable<WDate> {
 
 	/**
 	 * Converts a Julian Day <i>jd</i> to a WDate.
-	 * 
+	 *
 	 * @see #toJulianDay()
 	 */
 	public static WDate fromJulianDay(int jd) {

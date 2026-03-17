@@ -120,6 +120,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   public void  remove() {
   if (   this.popupMenu_ != null) { 
        this.popupMenu_.setButton ((WInteractWidget)null);
+ WPopupMenu  menu =  this.popupMenu_;
+    if (menu != null) menu.remove();
+  this.popupMenu_ = null;
 }
   super.remove();
   }

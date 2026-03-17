@@ -152,17 +152,19 @@ import org.slf4j.LoggerFactory;
     }
   } 
     this.addedItems_.clear ();
-for ( int i =0; 
-  i <    this.resizedItems_.size ();++ i) {
-     WWidget  item =   this.resizedItems_.get(i).getWidget();
-     StringBuilder method  = new StringBuilder();
-    method.append("layout.resizeItem(").append( item.getId()).append(",").append('"').append( item.getWidth().getCssText()).append("\",").append('"').append( item.getHeight().getCssText()).append("\",").append(")");
+if (  this.canAdjustLayout_) {
+    for ( int i =0; 
+    i <    this.resizedItems_.size ();++ i) {
+       WWidget  item =   this.resizedItems_.get(i).getWidget();
+       StringBuilder method  = new StringBuilder();
+      method.append("layout.resizeItem(").append( item.getId()).append(",").append('"').append( item.getWidth().getCssText()).append("\",").append('"').append( item.getHeight().getCssText()).append("\",").append(")");
   div.callMethod (method.toString());
-} 
+}
+  } 
     this.resizedItems_.clear ();
 for ( int i =0; 
   i <    this.removedItems_.size ();++ i) { 
-     div.callJavaScript (  "Wt4_12_5.remove('" +   this.removedItems_.get(i) + "');", true);
+     div.callJavaScript (  "Wt4_12_6.remove('" +   this.removedItems_.get(i) + "');", true);
 } 
     this.removedItems_.clear ();
 if (  this.canAdjustLayout_) { 
@@ -232,7 +234,7 @@ if ( this.getObjectName().length()!=0) {
      result.addChild (el);
 }
    StringBuilder js  = new StringBuilder();
-  js.append("layout=new Wt4_12_5.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
+  js.append("layout=new Wt4_12_6.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
   result.callMethod (js.toString());
 return result;
   }
