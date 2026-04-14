@@ -24,7 +24,7 @@ import eu.webtoolkit.jwt.servlet.UploadedFile;
  * By storing the signal listener within the WObject and using
  * a weak reference from within the {@link Signal} class, the object and listener will be reclaimed when only
  * referenced (using a weak reference) from the listener.
- * 
+ *
  * @see Signal#addListener(WObject, eu.webtoolkit.jwt.Signal.Listener)
  */
 public class WObject {
@@ -63,7 +63,7 @@ public class WObject {
 	 * will usually reflect the widget type or role. The object name is prepended to the auto-generated object {@link #getId()}.
 	 * <p>
 	 * The default object name is empty.
-	 * 
+	 *
 	 * @param name the object name.
 	 */
 	public void setObjectName(String name) {
@@ -72,7 +72,7 @@ public class WObject {
 
 	/**
 	 * Returns the object name.
-	 * 
+	 *
 	 * @return the object name.
 	 */
 	public String getObjectName() {
@@ -100,6 +100,25 @@ public class WObject {
 		return getUniqueId();
 	}
 
+	/**
+	 * Returns whether the form data should be resent.
+	 *
+	 * This method is called to determine if the form data should be resent
+	 * to the server. If not overridden, it always returns true.
+	 *
+	 * You will probably want to override this method when overriding
+	 * {@link #setFormData(FormData)}, to stop the client from resending form data when it
+	 * is not needed.
+	 *
+	 * This method is only called once per update by the {@link WebRenderer}.
+	 *
+	 * @warning You should not call this method directly, as many widgets
+	 *          rely on the method being called only once per update.
+	 */
+	public boolean resendFormData() {
+		return true;
+	}
+
 	protected void setFormData(FormData formData) {
 	}
 
@@ -111,19 +130,19 @@ public class WObject {
 
 	void resetLearnedSlots() {
 	}
-	
+
 	void signalConnectionsChanged() {
 	}
 
 	/**
 	 * Creates a localized string.
-	 * 
+	 *
 	 * This is a convenience method for {@link WString#tr(String)}.
 	 */
 	public static WString tr(String intlKey) {
 		return WString.tr(intlKey);
 	}
-	
+
         /**
 	 * Disconnects listeners owned by the object from signals.
 	 *
@@ -134,11 +153,11 @@ public class WObject {
 	 * longer referenced but is still connected by signals).
 	 */
 	public void remove() {
-		if (listenerSignalsPairs != null) 
+		if (listenerSignalsPairs != null)
 			for (SignalImpl.ListenerSignalPair lsp : listenerSignalsPairs)
 				lsp.signal.removeListener(lsp.listener);
 	}
-	
+
 	static void seedId(int id) {
 	  nextObjId_.set(id);
 	}

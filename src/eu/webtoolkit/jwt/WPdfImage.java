@@ -429,7 +429,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, WTextF text, WPointF clipPoint) {
 		if (textFlag == TextFlag.WordWrap)
 			throw new UnsupportedOperationException("drawText(): TextWordWrap not yet implemented");
 
@@ -463,7 +463,7 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
 
-		String s = text.toString();
+		String s = text.getText().toString();
 
 		switch (horizontalAlign) {
 		case Left:
@@ -511,6 +511,11 @@ public class WPdfImage extends WResource implements WPaintDevice {
 		} catch (IOException e2) {
 			logger.info("IOException", e2);
 		}
+	}
+
+	@Override
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
+		drawText(rect, flags, textFlag, new WTextF(text), clipPoint);
 	}
 
 	@Override

@@ -96,7 +96,7 @@ public class WMeasurePaintDevice implements WPaintDevice {
   } 
    this.expandBounds (path.getControlPointRect());
 }
-  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) {
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final WTextF text, WPointF  clipPoint) {
   if (   clipPoint != null &&   this.getPainter() != null && !    this.getPainter().getClipPath().isEmpty ()) {
     if (!     this.getPainter().getClipPathTransform().map (  this.getPainter().getClipPath()).isPointInPath (   this.getPainter().getWorldTransform().map ( clipPoint))) {
       return ;
@@ -104,7 +104,7 @@ public class WMeasurePaintDevice implements WPaintDevice {
   }
    double w =0;
    double h =0;
-   WString line  = WString.toWString(text);
+   WString line  = text.getText();
    WFontMetrics fm  =  this.getFontMetrics();
   for (;;) {
      WTextItem t  =   this.measureText (line, rect.getWidth(),   textFlag == TextFlag.WordWrap? true: false);
@@ -146,6 +146,9 @@ break;
 break;
   } 
    this.expandBounds (new WRectF(x, y, w, h));
+}
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) { 
+   this.drawText (rect, alignmentFlags, textFlag, new WTextF(text), clipPoint);
 }
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
   return     this.device_.measureText (text, maxWidth, wordWrap);

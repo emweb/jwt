@@ -121,7 +121,7 @@ public class WMenuItem extends WContainerWidget {
   public void setText(final CharSequence text) {
   if (! (   this.text_ != null)) {  
     this.text_ = new WLabel();
-   this.getAnchor().addWidget (  this.text_);
+   this.getAnchor().insertWidget (    this.icon_ != null? 1: 0,   this.text_);
     this.text_.setTextFormat (TextFormat.Plain);
 } 
      this.text_.setText (text);
@@ -197,6 +197,49 @@ if (   this.menu_ != null) {
   else  {
     return "";
   }
+  }
+  /**
+  
+  Sets the item&apos;s badge. 
+          
+  <p>
+  
+  To remove the badge again, call this function with <code>null</code>.
+  
+  <p>
+  
+  
+          
+  */
+  public void setBadge(WBadge badge) {
+   WAnchor  a = this.getAnchor();
+  if (! ( a != null)) {
+    return ;
+  }
+  if (   this.badge_ != null) {
+    {
+    WWidget toRemove = WidgetUtils.remove( a,   this.badge_);
+    if (toRemove != null) toRemove.remove();}
+
+  }  
+  this.badge_ = badge;
+if ( badge != null) { 
+     a.addWidget (badge);
+}
+  }
+  /**
+  
+  Returns the item&apos;s badge. 
+          
+  <p>
+  
+  @see WMenuItem#setBadge(WBadge badge)
+  
+  
+          
+  */
+  public WBadge  getBadge() {
+  return   this.badge_;
   }
   /**
   
@@ -840,6 +883,16 @@ if (disabled) {
 }
   }
   }
+  public WWidget removeWidget(WWidget  widget) {
+  if (    this.badge_ != null &&  widget ==   this.badge_) {
+     WAnchor  a = this.getAnchor();
+    if ( a != null) {  
+      this.badge_ = null;
+return  a.removeWidget(widget);
+    }
+  }
+  return  super.removeWidget(widget);
+  }
   protected void render(EnumSet<RenderFlag> flags) {
   if (  this.isThemeStyleEnabled ()) {  
     this.setThemeStyle_ = true;
@@ -878,6 +931,7 @@ if (! (text.length()==0)) {
   private WText  icon_ ;
   private WLabel  text_ ;
   private WCheckBox  checkBox_ ;
+  private WBadge  badge_ ;
   private Object  data_ ;
   private boolean separator_ ;
   private boolean selectable_ ;

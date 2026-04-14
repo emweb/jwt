@@ -1268,14 +1268,24 @@ if (  this.getHeaderContainer() != null) {
   Scrolls the view to ensure that the item which represents the provided <code>index</code> is visible. A <code>hint</code> may indicate how the item should appear in the viewport (if possible).
   
   <p>
-  
-  <p><i><b>Note: </b>Currently only implemented to scroll to the correct row, not taking into account the column. 
-  </i></p>
-  
-  
+  The hint will be considered for both row and column. In case the hint is not applicable in one direction (for instance, {@link ScrollHint#PositionAtTop} for columns), the hint for that direction will default to {@link ScrollHint#EnsureVisible}. 
           
   */
-  public abstract void scrollTo(final WModelIndex index, ScrollHint hint) ;
+  public void scrollTo(final WModelIndex index, ScrollHint hint) {
+  switch (hint) {
+    case PositionAtTop:
+    case PositionAtBottom: 
+     this.scrollTo (index, hint, ScrollHint.EnsureVisible);
+break;
+    case PositionAtLeft:
+    case PositionAtRight: 
+     this.scrollTo (index, ScrollHint.EnsureVisible, hint);
+break;
+    default: 
+     this.scrollTo (index, hint, hint);
+break;
+  }
+  }
   /** 
   
   Scrolls the view to an item. 
@@ -1283,6 +1293,21 @@ if (  this.getHeaderContainer() != null) {
   <p>Calls {@link #scrollTo(WModelIndex index, ScrollHint hint) scrollTo(index, ScrollHint.EnsureVisible)} */public  final void scrollTo(final WModelIndex index)  {
     scrollTo(index, ScrollHint.EnsureVisible);
   }
+  /**
+  
+  Scrolls the view to an item. 
+          
+  <p>
+  
+  Scrolls the view to ensure that the item which represents the provided <code>index</code> is visible. The <code>rowHint</code> and <code>columnHint</code> indicates how the item should appear in the viewport.
+  
+  <p>
+  In case a hint is not applicable in one direction (for instance, {@link ScrollHint#PositionAtTop} for columns), the hint for that direction will default to {@link ScrollHint#EnsureVisible}. 
+          
+  */
+  public void scrollTo(final WModelIndex index, ScrollHint rowHint, ScrollHint columnHint) {
+  throw new WException("WAbstractItemView::scrollTo() with row and column hint is not implemented");
+}
   /**
   
   Configures what actions should trigger editing. 

@@ -1,0 +1,651 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+A class that represent a notification. 
+    
+<p>
+
+A notification is a message sent to the user that can be read from outside the webpage. For a page to be allowed to send notifications, permission must be explicitly given by the user to the application. The permission can be asked to the user with {@link WNotification#askPermission() askPermission()} or will be asked automatically the first time {@link WNotification#send() send()} is called in the application. It is possible to listen to the {@link WNotification#permissionUpdated() permissionUpdated()} signal to react to the user granting or denying permission to send notifications.
+
+<p>
+If the user has previously granted permission to the page to display notifications, the browser will remember it, and JWt will not ask for that permission again.
+
+<p>
+The {@link WNotification} will not be sent to the user if the permission has not yet been granted. Instead, the notification will wait for the user to accept notifications before being sent. This will however not happen if the notification was closed or destroyed.
+
+<p>
+A {@link WNotification} represents a notification with a tag. The value of this tag is the id of the {@link WNotification}. If the same {@link WNotification} is sent multiple times, this will update the notification instead of creating a new one, as long as it was not closed.
+
+<p>
+You can react to a notification being closed or clicked by listening to the {@link WNotification#closed() closed()} and {@link WNotification#clicked() clicked()} signals, this does however require that the {@link WNotification} has not been destroyed before the event happens.
+
+<p>
+Notifications can have an icon and a badge. Those can be set using {@link WNotification#setIcon(WLink iconLink) setIcon()} and {@link WNotification#setBadge(WLink badgeLink) setBadge()}, but since these are likely the same for all the notifications sent by your application, it is possible to set a default icon and a default badge for all notifications with {@link WNotification#setDefaultIcon(WLink iconLink) setDefaultIcon()} and {@link WNotification#setDefaultBadge(WLink badgeLink) setDefaultBadge()}.
+
+<p>
+@see WNotification#send()
+@see WNotification#close()
+
+
+<p><i><b>Note: </b>Sending notifications requires that:<ul>
+<li>JavaScript is enabled
+</li>
+<li>the browser supports notifications
+</li>
+<li>HTTPS is used 
+</li>
+</ul>
+
+
+</i></p>
+
+
+    
+*/
+public class WNotification extends WObject {
+  private static Logger logger = LoggerFactory.getLogger(WNotification.class);
+  
+  /**
+  
+  Enumeration representing the permission status of notifications. 
+          
+  <p>
+  
+  For an application to show notifications, it must first ask the authorization of the user. This enumeration represent the different possible permisson status that the application can have. 
+          
+  */
+  public enum Permission {
+    /** 
+    
+    Permission not yet denied or granted by the user. Notifications won&apos;t be displayed. 
+              
+    */
+    Default,
+    /** 
+    
+    Permission granted by the user. Notifications can be displayed. 
+              
+    */
+    Granted,
+    /** 
+    
+    Permission denied by the user. Notifications won&apos;t be displayed. 
+              
+    */
+    Denied;
+    
+    /**
+    Returns the numerical representation of this enum.
+    */
+    public int getValue() {
+      return ordinal();
+    }
+  }
+  /**
+  
+  Creates a new notification. 
+          
+  <p>
+  
+  Creates a new notification with the given title and body. 
+          
+  */
+  public  WNotification(final CharSequence title, final CharSequence body) {
+  super ();
+  this.title_ = WString.toWString(title);
+  this.body_ = WString.toWString(body);
+  this.iconLink_ = defaultIconLink_;
+  this.badgeLink_ = defaultBadgeLink_;
+  this.silent_ = false;
+  this.requireInteraction_ = false;
+  this.clicked_ = new JSignal(this, "clicked");
+  this.closed_ = new JSignal(this, "closed");
+  this.shown_ = new JSignal(this, "shown");
+  this.error_ = new JSignal(this, "error");
+  this.js_ = "";
+  this.conn_ = new AbstractSignal.Connection();
+  }
+  /** 
+  
+  Creates a new notification. 
+          
+  <p>Calls {@link #WNotification(CharSequence title, CharSequence body) this(new WString(), new WString())} */public  WNotification()  {
+    this(new WString(), new WString());
+  }
+  /** 
+  
+  Creates a new notification. 
+          
+  <p>Calls {@link #WNotification(CharSequence title, CharSequence body) this(title, new WString())} */public  WNotification(final CharSequence title)  {
+    this(title, new WString());
+  }
+  /**
+  
+  Sets the title of the notification. 
+          
+  <p>
+  
+  This sets the title of the notification.
+  
+  <p>
+  By default, the title is an empty string. 
+          
+  */
+  public void setTitle(final CharSequence title) {
+    this.title_ = WString.toWString(title);
+}
+  /**
+  
+  Returns the title of the notification. 
+          
+  <p>
+  
+  @see WNotification#setTitle(CharSequence title)
+  
+  
+          
+  */
+  public WString getTitle() {
+  return   this.title_;
+  }
+  /**
+  
+  Sets the body of the notification. 
+          
+  <p>
+  
+  This sets the body of the notification.
+  
+  <p>
+  By default, the notification has no body, which is represented by an empty string. 
+          
+  */
+  public void setBody(final CharSequence body) {
+    this.body_ = WString.toWString(body);
+}
+  /**
+  
+  Returns the body of the notification. 
+          
+  <p>
+  
+  Returns the body of the notification or an empty string if the notification has no body.
+  
+  <p>
+  @see WNotification#setBody(CharSequence body)
+  
+  
+          
+  */
+  public WString getBody() {
+  return   this.body_;
+  }
+  /**
+  
+  Sets the link to the notification&apos;s icon. 
+          
+  <p>
+  
+  This sets the link to the notification&apos;s icon which is the image displayed on the left of the notification.
+  
+  <p>
+  By default, the icon is set to the default icon.
+  
+  <p>
+  @see WNotification#setDefaultIcon(WLink iconLink)
+  
+  
+          
+  */
+  public void setIcon(final WLink iconLink) { 
+    this.iconLink_=  iconLink;
+}
+  /**
+  
+  Returns the link to the notification&apos;s icon. 
+          
+  <p>
+  
+  Returns the link to the notification&apos;s icon or a <code>null</code> link if the notification uses the default icon.
+  
+  <p>
+  By default, the icon is set to the default icon.
+  
+  <p>
+  @see WNotification#setIcon(WLink iconLink)
+  
+  
+          
+  */
+  public WLink getIcon() {
+  return   this.iconLink_;
+  }
+  /**
+  
+  Sets the link to the notification&apos;s badge. 
+          
+  <p>
+  
+  This sets the link to the notification&apos;s badge which is the image displayed when there is not enough space to display the notification.
+  
+  <p>
+  By default, the badge is set to the default badge.
+  
+  <p>
+  @see WNotification#setDefaultBadge(WLink badgeLink)
+  
+  
+          
+  */
+  public void setBadge(final WLink badgeLink) { 
+    this.badgeLink_=  badgeLink;
+}
+  /**
+  
+  Returns the link to the notification&apos;s badge. 
+          
+  <p>
+  
+  Returns the link to the notification&apos;s badge.
+  
+  <p>
+  By default, the badge is set to the default badge.
+  
+  <p>
+  @see WNotification#setBadge(WLink badgeLink)
+  @see WNotification#setDefaultBadge(WLink badgeLink)
+  
+  
+          
+  */
+  public WLink getBadge() {
+  return   this.badgeLink_;
+  }
+  /**
+  
+  Sets whether the notification should be silent or not. 
+          
+  <p>
+  
+  This sets whether the notification should be silent or not. A silent notification will not make any noise or vibration.
+  
+  <p>
+  By default, the notification is not silent.
+  
+  <p>
+  
+  <p><i><b>Note: </b>A non silent notification may still make no noise or vibration as it will respect the user&apos;s configuration. 
+  </i></p>
+  
+  
+          
+  */
+  public void setSilent(boolean enable) {  
+  this.silent_ = enable;
+}
+  /** 
+  
+  Sets whether the notification should be silent or not. 
+          
+  <p>Calls {@link #setSilent(boolean enable) setSilent(true)} */public  final void setSilent()  {
+    setSilent(true);
+  }
+  /**
+  
+  Returns whether the notification should be silent or not. 
+          
+  <p>
+  
+  @see WNotification#setSilent(boolean enable)
+  
+  
+          
+  */
+  public boolean isSilent() {
+  return   this.silent_;
+  }
+  /**
+  
+  Sets whether the notification require interaction to become inactive or not. 
+          
+  <p>
+  
+  This sets whether the notification should remain active until the user click&apos;s on it or dismiss it.
+  
+  <p>
+  By default, this is set to false. 
+          
+  */
+  public void setRequireInteraction(boolean enable) {  
+  this.requireInteraction_ = enable;
+}
+  /** 
+  
+  Sets whether the notification require interaction to become inactive or not. 
+          
+  <p>Calls {@link #setRequireInteraction(boolean enable) setRequireInteraction(true)} */public  final void setRequireInteraction()  {
+    setRequireInteraction(true);
+  }
+  /**
+  
+  Returns whether the notification require interaction to become inactive or not. 
+          
+  <p>
+  
+  @see WNotification#setRequireInteraction(boolean enable)
+  
+  
+          
+  */
+  public boolean isRequireInteraction() {
+  return   this.requireInteraction_;
+  }
+  /**
+  
+  Sends the notification. 
+          
+  <p>
+  
+  Sends the notification to the user. This only happens if the permission to send notification has been granted by the user.
+  
+  <p>
+  In case the user has not denied or granted notification to the user, the first call to send will instead ask for permission to send notification. The notification will then be sent after the user granted permission to send notification, unless this notification was closed or destroyed.
+  
+  <p>
+  Calling {@link WNotification#send() send()} multiple times on the same notification will not create multiple notification but replace the previous with the new one, as long as the previous one has not been closed. This means that the user will not be notified again for this notification unless the previous one has been closed.
+  
+  <p>
+  @see WNotification#close()
+  
+  
+          
+  */
+  public void send() {
+  if (WNotification.isSupported()) { 
+     this.update ();
+if ( WNotification.getPermission() == WNotification.Permission.Default) {
+      askPermission ();
+   this.conn_=  permissionUpdated ().addListener(this, (WNotification.Permission e1) -> {
+      	WNotification.this.sendJs();
+      });
+}
+    else  { 
+       this.sendJs ();
+}
+  }
+  }
+  /**
+  
+  Closes the notification. 
+          
+  <p>
+  
+  Closes the notification. This does nothing if the notification was not sent or was already closed.
+  
+  <p>
+  @see WNotification#send()
+  
+  
+          
+  */
+  public void close() {
+  if (WNotification.isSupported()) {
+    if ( WNotification.getPermission() == WNotification.Permission.Granted) { 
+       this.loadJavaScript ();
+ WApplication  app =WApplication.getInstance();
+       StringBuilder js  = new StringBuilder();
+      js.append( app.getJavaScriptClass()).append(".WNotification.close(").append( this.getJsRef()).append(");");
+  WApplication.getInstance().doJavaScript (js.toString());
+} 
+      this.conn_.disconnect ();
+}
+  }
+  /**
+  
+  {@link Signal} emitted when the notification is clicked. 
+          
+  */
+  public JSignal clicked() {
+  return   this.clicked_;
+  }
+  /**
+  
+  {@link Signal} emitted when the notification is closed. 
+          
+  */
+  public JSignal closed() {
+  return   this.closed_;
+  }
+  /**
+  
+  {@link Signal} emitted when the notification is shown. 
+          
+  */
+  public JSignal shown() {
+  return   this.shown_;
+  }
+  /**
+  
+  {@link Signal} emitted when the notification was not shown due to an error. 
+          
+  */
+  public JSignal error() {
+  return   this.error_;
+  }
+  /**
+  
+  Sets the link to the notifications default icon. 
+          
+  <p>
+  
+  By default, this is a <code>null</code> link which means no default icon is used.
+  
+  <p>
+  @see WNotification#setIcon(WLink iconLink)
+  
+  
+          
+  */
+  public static void setDefaultIcon(final WLink iconLink) { 
+  defaultIconLink_=  iconLink;
+}
+  /**
+  
+  Returns the link to the notifications default icon. 
+          
+  <p>
+  
+  @see WNotification#setDefaultIcon(WLink iconLink)
+  
+  
+          
+  */
+  public static WLink getDefaultIcon() {
+  return defaultIconLink_;
+  }
+  /**
+  
+  Sets the link to the notifications default badge. 
+          
+  <p>
+  
+  By default, this is a <code>null</code> link which means no default badge is used.
+  
+  <p>
+  @see WNotification#setBadge(WLink badgeLink)
+  
+  
+          
+  */
+  public static void setDefaultBadge(final WLink badgeLink) { 
+  defaultBadgeLink_=  badgeLink;
+}
+  /**
+  
+  Returns the link to the notifications default badge. 
+          
+  <p>
+  
+  @see WNotification#setDefaultBadge(WLink badgeLink)
+  
+  
+          
+  */
+  public static WLink getDefaultBadge() {
+  return defaultBadgeLink_;
+  }
+  /**
+  
+  Returns whether the user supports notifications or not. 
+          
+  */
+  public static boolean isSupported() {
+  return  WApplication.getInstance().getEnvironment().isSupportsNotifications();
+  }
+  /**
+  
+  Ask permission to send notifications to the user. 
+          
+  <p>
+  
+  This ask permission to the user to send notifications. This will only be done once per application. More calls to this function will not do anything.
+  
+  <p>
+  @see WNotification#permissionUpdated()
+  
+  
+  <p><i><b>Note: </b>Browsers ignores this if the permission is already denied or granted. 
+  </i></p>
+  
+  
+          
+  */
+  public static void askPermission() {
+   WApplication  app =WApplication.getInstance();
+  if (!   app.notificationPermissionAsked_) {
+     StringBuilder js  = new StringBuilder();
+    js.append("if (").append(WString.toWString(new WString("Notification")).getJsStringLiteral()).append(" in window){").append("Notification.requestPermission((result) => {").append("Wt.emit(").append( app.getJavaScriptClass()).append(",").append(WString.toWString(new WString("Wt-updateNotificationPermission")).getJsStringLiteral()).append(",result);").append("});").append("}");
+  app.doJavaScript (js.toString());
+  app.notificationPermissionAsked_ = true;
+}
+  }
+  /**
+  
+  Returns the status of the permission to send notifications. 
+          
+  <p>
+  
+  @see WNotification#askPermission()
+  
+  
+          
+  */
+  public static WNotification.Permission getPermission() {
+  return  WApplication.getInstance().getEnvironment().getNotificationPermission();
+  }
+  /**
+  
+  {@link Signal} emitted when the permission to send notification has been updated. 
+          
+  <p>
+  
+  {@link Signal} emitted when the permission to send notification has been updated. This happens when the user answered to {@link WNotification#askPermission() askPermission()}, and the new permission status is given by the signal as parameter to all connected functions.
+  
+  <p>
+  @see WNotification#askPermission()
+  
+  
+          
+  */
+  public static Signal1<WNotification.Permission> permissionUpdated() {
+  return   WApplication.getInstance().notificationPermissionChanged_;
+  }
+  private WString title_ ;
+  private WString body_ ;
+  private WLink iconLink_ ;
+  private WLink badgeLink_ ;
+  private boolean silent_ ;
+  private boolean requireInteraction_ ;
+  private JSignal clicked_ ;
+  private JSignal closed_ ;
+  private JSignal shown_ ;
+  private JSignal error_ ;
+  private String js_ ;
+  private AbstractSignal.Connection conn_ ;
+  private String getJsRef() {
+  return WString.toWString(new WString( this.getId())).getJsStringLiteral();
+  }
+  private void loadJavaScript() {
+   WApplication  app =WApplication.getInstance();
+   String  THIS_JS ="js/WNotification.js";
+  if (!  app.isJavaScriptLoaded(THIS_JS)) {
+     StringBuilder js  = new StringBuilder(); 
+     app.loadJavaScript (THIS_JS, appjs2 ());
+js.append( app.getJavaScriptClass()).append(".WNotificationSetup(").append( app.getJavaScriptClass()).append(");\n");
+  app.doJavaScript (js.toString());
+}
+  }
+  private void update() {
+  if ( WNotification.getPermission() != WNotification.Permission.Denied) {
+     WApplication  app =WApplication.getInstance();
+     StringBuilder js  = new StringBuilder();
+    js.append( app.getJavaScriptClass()).append(".WNotification.create(").append( this.getJsRef()).append(",").append(WString.toWString(  this.title_).getJsStringLiteral()).append(",{").append("tag:").append(WString.toWString(new WString( this.getId())).getJsStringLiteral()).append(",");
+if (! (  this.body_.length()==0)) {
+      js.append("body:").append(WString.toWString(  this.body_).getJsStringLiteral()).append(",");
+}
+    if (!   this.getIcon().isNull ()) {
+       String url  =   this.getIcon().resolveUrl (app); 
+      url=    app.encodeUntrustedUrl (url);
+js.append("icon:").append(WString.toWString(new WString(url)).getJsStringLiteral()).append(",");
+}
+    if (!   this.getBadge().isNull ()) {
+       String url  =   this.getBadge().resolveUrl (app); 
+      url=    app.encodeUntrustedUrl (url);
+js.append("badge:").append(WString.toWString(new WString(url)).getJsStringLiteral()).append(",");
+}
+    if (  this.silent_) {
+      js.append("silent:true,");
+}
+    if (  this.requireInteraction_) {
+      js.append("requireInteraction:true,");
+}
+    js.append("});");
+   this.js_=  js.toString();
+}
+  }
+  private void sendJs() {
+  if ( WNotification.getPermission() == WNotification.Permission.Granted) { 
+     this.loadJavaScript ();
+  WApplication.getInstance().doJavaScript (  this.js_);
+} 
+    this.conn_.disconnect ();
+}
+  private static WLink defaultIconLink_  = new WLink();
+  private static WLink defaultBadgeLink_  = new WLink();
+   static WJavaScriptPreamble appjs2() {
+  return new WJavaScriptPreamble(JavaScriptScope.ApplicationScope, JavaScriptObjectType.JavaScriptFunction, "WNotificationSetup", "(function(o){void 0===o.WNotification&&window.Notification&&new function(){o.WNotification=this;const i={};this.close=function(o){i[o]&&i[o].close()};this.create=function(n,t,c){!function(o){const n=i[o];if(n){n.onclose=()=>{};n.onclick=()=>{};n.onshow=()=>{};n.onerror=()=>{}}}(n);i[n]=new Notification(t,c);const e=i[n];e.onclose=()=>{o.emit(n,\"closed\");delete i[n]};e.onclick=()=>{o.emit(n,\"clicked\")};e.onshow=()=>{o.emit(n,\"shown\")};e.onerror=()=>{o.emit(n,\"error\")}}}})");
+  }
+}

@@ -1,0 +1,197 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.examples.widgetgallery;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+ class Notification extends Topic {
+  private static Logger logger = LoggerFactory.getLogger(Notification.class);
+  
+  public  Notification() {
+  super ();
+  }
+  public void populateSubMenu(WMenu  menu) { 
+     menu.addItem ("WNotification", DeferredWidget.deferCreate( () ->  {
+    return   Notification.this.wnotification ();
+  }
+  )).setPathComponent ("");
+  menu.addItem ("WBadge", DeferredWidget.deferCreate( () ->  {
+    return   Notification.this.wbadge ();
+  }
+  ));
+  menu.addItem ("WFavicon", DeferredWidget.deferCreate( () ->  {
+    return   Notification.this.wfavicon ();
+  }
+  ));
+}
+  private WWidget wnotification() {
+   TopicTemplate result =new TopicTemplate("notification-wnotification"); 
+   result.bindWidget ("AskNotificationPermission", AskNotificationPermission ());
+  result.bindWidget ("NotificationSend", NotificationSend ());
+  result.bindWidget ("NotificationChat", NotificationChat ());
+return result;
+  }
+  private WWidget wbadge() {
+   TopicTemplate result =new TopicTemplate("notification-wbadge"); 
+   result.bindWidget ("Badge", Badge ());
+  result.bindWidget ("BadgeInPopupMenu", BadgeInPopupMenu ());
+return result;
+  }
+  private WWidget wfavicon() {
+   TopicTemplate result =new TopicTemplate("notification-wfavicon"); 
+   result.bindWidget ("ChangeFavicon", ChangeFavicon ());
+  result.bindWidget ("FaviconPair", FaviconPair ());
+return result;
+  }
+   WWidget AskNotificationPermission() {
+   WContainerWidget container =new WContainerWidget();
+   final WPushButton  button =new WPushButton("Get asked for notification",(WContainerWidget) container);
+   final WText  text =new WText((WContainerWidget) container);
+    button.clicked ().addListener(this,  () ->  {
+    WNotification.askPermission ();
+    button.setEnabled (false);
+  }
+  );
+WNotification.permissionUpdated ().addListener(this,  (WNotification.Permission permission) ->  {
+    if ( permission == WNotification.Permission.Granted) { 
+       text.setText ("You have allowed us to send you notifications.");
+  }
+    else  { 
+       text.setText ("You have not allowed us to send you notifications.");
+  }
+  }
+  );
+return container;
+  }
+   WWidget NotificationSend() {
+   WContainerWidget container =new WContainerWidget();
+   final WNotification  p =new WNotification("You will see me everytime"); 
+   p.setSilent ();
+ WPushButton  button =new WPushButton("Receive notifications",(WContainerWidget) container);
+    button.clicked ().addListener(this,  () ->  { 
+     p.send ();
+   final WNotification oneUse  = new WNotification("You will only see me if you already accepted notifications."); 
+    oneUse.setSilent ();
+   oneUse.send ();
+  }
+  );
+return container;
+  }
+   WWidget NotificationChat() {
+   WContainerWidget container =new WContainerWidget();
+   final Channel  channel =new Channel(); 
+   container.addWidget (channel);
+ WPushButton  button =new WPushButton("Send Message",(WContainerWidget) channel);
+    button.clicked ().addListener(this,  () ->  { 
+     channel.newMsgSent ();
+  }
+  );
+return container;
+  }
+   WWidget Badge() {
+   WContainerWidget container =new WContainerWidget();
+   WBadge  badge =new WBadge("A Simple Badge"); 
+   container.addWidget (badge);
+return container;
+  }
+   WWidget BadgeInPopupMenu() {
+   final WCssDecorationStyle redBadgeStyle  = new WCssDecorationStyle(); 
+  redBadgeStyle.setBackgroundColor (new WColor(255, 0, 0));
+ final WCssDecorationStyle yellowBadgeStyle  = new WCssDecorationStyle(); 
+  yellowBadgeStyle.setBackgroundColor (new WColor(255, 200, 0));
+ yellowBadgeStyle.setForegroundColor (new WColor(0, 0, 0));
+ WContainerWidget container =new WContainerWidget();
+   WPushButton  button =new WPushButton("Features"); 
+   container.addWidget (button);
+ WPopupMenu popupMenu =new WPopupMenu(); 
+   popupMenu.addItem ("Old boring feature");
+ WBadge newBadge =new WBadge("New"); 
+   newBadge.setDecorationStyle (redBadgeStyle);
+  newBadge.setUseDefaultStyle (false);
+    popupMenu.addItem ("New exciting feature").setBadge (newBadge);
+ WBadge premiumBadge =new WBadge("Premium"); 
+   premiumBadge.setDecorationStyle (yellowBadgeStyle);
+  premiumBadge.setUseDefaultStyle (false);
+    popupMenu.addItem ("Premium feature").setBadge (premiumBadge);
+  button.setMenu (popupMenu);
+ WBadge buttonBadge =new WBadge("1"); 
+   buttonBadge.setDecorationStyle (redBadgeStyle);
+  buttonBadge.setUseDefaultStyle (false);
+  button.setBadge (buttonBadge);
+return container;
+  }
+   WWidget ChangeFavicon() {
+   WContainerWidget container =new WContainerWidget();
+   WPushButton  sunFaviconButton =new WPushButton("Change the favicon to a sun"); 
+   container.addWidget (sunFaviconButton);
+ WPushButton  cloudFaviconButton =new WPushButton("Change the favicon to a cloud"); 
+   container.addWidget (cloudFaviconButton);
+ WPushButton  snowFaviconButton =new WPushButton("Change the favicon to a snowflake"); 
+   container.addWidget (snowFaviconButton);
+ WPushButton  defaultFaviconButton =new WPushButton("Go back to the default favicon"); 
+   container.addWidget (defaultFaviconButton);
+  sunFaviconButton.clicked ().addListener(this,  () ->  {
+     WResourceFavicon favicon =new WResourceFavicon(new WWebRootDataInfo("icons/sun01.png").getFilePath()); 
+     WApplication.getInstance().setFavicon (favicon);
+  }
+  );
+  cloudFaviconButton.clicked ().addListener(this,  () ->  {
+     WResourceFavicon favicon =new WResourceFavicon(new WWebRootDataInfo("icons/w_cloud.png").getFilePath()); 
+     WApplication.getInstance().setFavicon (favicon);
+  }
+  );
+  snowFaviconButton.clicked ().addListener(this,  () ->  {
+     WResourceFavicon favicon =new WResourceFavicon(new WWebRootDataInfo("icons/snow.png").getFilePath()); 
+     WApplication.getInstance().setFavicon (favicon);
+  }
+  );
+  defaultFaviconButton.clicked ().addListener(this,  () ->  { 
+     WApplication.getInstance().setFavicon ((WFavicon)null);
+  }
+  );
+return container;
+  }
+   WWidget FaviconPair() {
+   WContainerWidget container =new WContainerWidget();
+   WPushButton  setCustomFaviconButton =new WPushButton("Set custom favicon"); 
+   container.addWidget (setCustomFaviconButton);
+ WPushButton  updateFaviconButton =new WPushButton("Update favicon"); 
+   container.addWidget (updateFaviconButton);
+ WPushButton  resetFaviconButton =new WPushButton("Reset favicon"); 
+   container.addWidget (resetFaviconButton);
+  setCustomFaviconButton.clicked ().addListener(this,  () ->  {
+     WResourceFavicon defaultFavicon =new WResourceFavicon(new WWebRootDataInfo("icons/jwt.png").getFilePath());
+     WResourceFavicon updatedFavicon =new WResourceFavicon(new WWebRootDataInfo("icons/jwt-update.png").getFilePath());
+     WFaviconPair faviconPair =new WFaviconPair(defaultFavicon,updatedFavicon); 
+     WApplication.getInstance().setFavicon (faviconPair);
+  }
+  );
+  updateFaviconButton.clicked ().addListener(this,  () ->  { 
+      WApplication.getInstance().getFavicon().update ();
+  }
+  );
+  resetFaviconButton.clicked ().addListener(this,  () ->  { 
+      WApplication.getInstance().getFavicon().reset ();
+  }
+  );
+return container;
+  }
+}

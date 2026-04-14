@@ -62,20 +62,21 @@ import org.slf4j.LoggerFactory;
    WApplication  app =WApplication.getInstance(); 
   {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_12_6.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_13_0.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
   el.callJavaScript (ss.toString());
 }
    String updateAreasJs  = "";
   if (hasJsObjects) {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_12_6.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_13_0.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
      this.widget_.jsObjects_.updateJs (ss, true);
   el.callJavaScript (ss.toString());
 if (     this.widget_.areaImage_ != null) { 
            this.widget_.areaImage_.setTargetJS (   this.widget_.getObjJsRef());
  updateAreasJs=       this.widget_.areaImage_.getUpdateAreasJS();
-}
-  } 
+} 
+       this.widget_.formDataChanged ();
+} 
    canvasDevice.render (   this.widget_.getJsRef(),  'c' +    this.widget_.getId(), el, updateAreasJs);
 if ( text != null) { 
      result.addChild (text);
@@ -104,8 +105,9 @@ result.add(canvas);
 if (     this.widget_.areaImage_ != null) { 
            this.widget_.areaImage_.setTargetJS (   this.widget_.getObjJsRef());
  updateAreasJs=       this.widget_.areaImage_.getUpdateAreasJS();
-}
-  } 
+} 
+       this.widget_.formDataChanged ();
+} 
    canvasDevice.render (   this.widget_.getJsRef(),  'c' +    this.widget_.getId(), el, updateAreasJs);
 result.add(el);
 }

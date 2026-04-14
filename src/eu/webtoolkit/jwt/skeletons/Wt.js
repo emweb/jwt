@@ -24,6 +24,7 @@
   _$_$if_CATCH_ALL_ERROR_$_
   _$_$if_DYNAMIC_JS_$_
   _$_$ifnot_DYNAMIC_JS_$_
+  _$_$if_FORM_DATA_CACHED_$_
   _$_$if_SHOW_ERROR_$_
   _$_$if_STRICTLY_SERIALIZED_EVENTS_$_
   _$_$if_UGLY_INTERNAL_PATHS_$_
@@ -2639,6 +2640,21 @@ window._$_APP_CLASS_$_ = new (function() {
   }
 
   let formObjects = [];
+  let resendFormData = [];
+  let mustResendAllFormData = false;
+
+  function mustResendFormData(id) {
+    if (mustResendAllFormData) {
+      return true;
+    }
+
+    for (let i = 0; i < resendFormData.length; ++i) {
+      if (resendFormData[i] === id) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   function encodeEvent(event) {
     const e = event.event;
@@ -2660,16 +2676,33 @@ window._$_APP_CLASS_$_ = new (function() {
         continue;
       }
 
+      let alreadyPushed = false;
       if (el.wtEncodeValue) {
         v = el.wtEncodeValue(el);
       } else if (el.type === "select-multiple") {
+        const selected = [];
         for (let j = 0, jl = el.options.length; j < jl; j++) {
           if (el.options[j].selected) {
-            result.push(
-              formObjects[x] + "=" +
-                encodeURIComponent(el.options[j].value)
-            );
+            selected.push(el.options[j].value);
           }
+        }
+        if (selected.length !== 0) {
+          _$_$if_FORM_DATA_CACHED_$_();
+          const encodeVal = selected.join();
+          if (encodeVal !== el.WtLastEncodedValue || mustResendFormData(formObjects[x])) {
+            el.WtLastEncodedValue = encodeVal;
+            _$_$endif_$_();
+
+            for (let j = 0; j < selected.length; j++) {
+              result.push(
+                formObjects[x] + "=" +
+                  encodeURIComponent(selected[j])
+              );
+            }
+            _$_$if_FORM_DATA_CACHED_$_();
+          }
+          _$_$endif_$_();
+          alreadyPushed = true;
         }
       } else if (el.type === "checkbox" || el.type === "radio") {
         if (el.indeterminate || el.style.opacity === "0.5") {
@@ -2694,21 +2727,39 @@ window._$_APP_CLASS_$_ = new (function() {
         }
       }
 
+      if (v === null && !alreadyPushed) {
+        v = "Wt-null";
+      }
+
       if (v !== null) {
-        let component;
-        try {
-          component = encodeURIComponent(v);
-          result.push(formObjects[x] + "=" + component);
-        } catch (e) {
-          // encoding failed, omit this form field
-          // This can happen on Windows when typing a character
-          // with a high and low surrogate pair (like an emoji).
-          // On Chrome and Firefox this is split out into two pairs
-          // of keydown/keyup events instead of one.
-          console.error("Form object " + formObjects[x] + " failed to encode, discarded", e);
+        _$_$if_FORM_DATA_CACHED_$_();
+        if (v !== el.WtLastEncodedValue || mustResendFormData(formObjects[x])) {
+          _$_$endif_$_();
+
+          let component;
+          try {
+            component = encodeURIComponent(v);
+            result.push(formObjects[x] + "=" + component);
+
+            _$_$if_FORM_DATA_CACHED_$_();
+            el.WtLastEncodedValue = v;
+            _$_$endif_$_();
+          } catch (e) {
+            // encoding failed, omit this form field
+            // This can happen on Windows when typing a character
+            // with a high and low surrogate pair (like an emoji).
+            // On Chrome and Firefox this is split out into two pairs
+            // of keydown/keyup events instead of one.
+            console.error("Form object " + formObjects[x] + " failed to encode, discarded", e);
+          }
+
+          _$_$if_FORM_DATA_CACHED_$_();
         }
+        _$_$endif_$_();
       }
     }
+    resendFormData = [];
+    mustResendAllFormData = false;
 
     try {
       if (document.activeElement) {
@@ -2775,11 +2826,22 @@ window._$_APP_CLASS_$_ = new (function() {
       const objY = widgetCoords.y;
 
       if (typeof event.object.scrollLeft !== UNDEFINED) {
+        const scrollInfo = {
+          scrollX: Math.round(event.object.scrollLeft),
+          scrollY: Math.round(event.object.scrollTop),
+          width: Math.round(event.object.clientWidth),
+          height: Math.round(event.object.clientHeight),
+        };
+
+        if (event.object.wtObj && event.object.wtObj.modifyScrollEventInfo) {
+          event.object.wtObj.modifyScrollEventInfo(scrollInfo);
+        }
+
         result.push(
-          "scrollX=" + Math.round(event.object.scrollLeft),
-          "scrollY=" + Math.round(event.object.scrollTop),
-          "width=" + Math.round(event.object.clientWidth),
-          "height=" + Math.round(event.object.clientHeight)
+          "scrollX=" + scrollInfo.scrollX,
+          "scrollY=" + scrollInfo.scrollY,
+          "width=" + scrollInfo.width,
+          "height=" + scrollInfo.height
         );
       }
 
@@ -3991,13 +4053,13 @@ window._$_APP_CLASS_$_ = new (function() {
     return "0";
   }
 
-  window.onunload = function() {
+  window.addEventListener("pagehide", () => {
     if (!hasQuit) {
       self.emit(self, "Wt-unload");
       scheduleUpdate();
       sendUpdate();
     }
-  };
+  });
 
   function setLocale(m) {
     if (m === "") {
@@ -4156,6 +4218,12 @@ window._$_APP_CLASS_$_ = new (function() {
     setSessionUrl,
     setFormObjects: function(o) {
       formObjects = o;
+    },
+    setResendFormData: function(o) {
+      resendFormData = o;
+    },
+    resendAllFormData: function() {
+      mustResendAllFormData = true;
     },
     saveDownPos,
     addTimerEvent,

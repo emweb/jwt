@@ -518,7 +518,7 @@ return new WLength();
     }
     }
   }
-  private WText.RichText text_ ;
+   WText.RichText text_ ;
   private static final int BIT_WORD_WRAP =0;
   private static final int BIT_TEXT_CHANGED =1;
   private static final int BIT_WORD_WRAP_CHANGED =2;

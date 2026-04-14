@@ -313,8 +313,12 @@ if (index.getFlags().contains(ItemFlag.DropEnabled)) {
   */
   public Object getEditState(WWidget  editor, final WModelIndex index) {
    IndexContainerWidget  w =ObjectUtils.cast(editor, IndexContainerWidget.class);
-   WLineEdit  lineEdit =ObjectUtils.cast( w.getWidget(0), WLineEdit.class);
-  return  lineEdit.getText();
+  if ( w != null) {
+     WLineEdit  lineEdit =ObjectUtils.cast( w.getWidget(0), WLineEdit.class);
+    return  lineEdit.getText();
+  }
+  logger.error(new StringWriter().append("Cannot retrieve editor state for default editor. You must override editState() and setEditState() for custom editors.").toString());
+return null;
   }
   /**
   
@@ -345,9 +349,14 @@ if (index.getFlags().contains(ItemFlag.DropEnabled)) {
   */
   public void setEditState(WWidget  editor, final WModelIndex index, final Object value) {
    IndexContainerWidget  w =ObjectUtils.cast(editor, IndexContainerWidget.class);
-   WLineEdit  lineEdit =ObjectUtils.cast( w.getWidget(0), WLineEdit.class); 
-   lineEdit.setText (((String) value));
+  if ( w != null) {
+     WLineEdit  lineEdit =ObjectUtils.cast( w.getWidget(0), WLineEdit.class); 
+     lineEdit.setText (((String) value));
 }
+  else  {
+    logger.error(new StringWriter().append("Cannot set editor state for default editor. You must override editState() and setEditState() for custom editors.").toString());
+}
+  }
   /**
   
   Creates an editor for a data item. 

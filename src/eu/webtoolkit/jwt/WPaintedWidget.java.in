@@ -377,48 +377,62 @@ return     this.areaImage_.removeArea (area);
   Create a {@link WTransform} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WTransform> createJSTransform() {
-  return    this.jsObjects_.addObject (new WTransform());
+  protected WJavaScriptHandle<WTransform> createJSTransform() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WTransform());
   }
   /**
   
   Create a {@link WBrush} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WBrush> createJSBrush() {
-  return    this.jsObjects_.addObject (new WBrush());
+  protected WJavaScriptHandle<WBrush> createJSBrush() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WBrush());
   }
   /**
   
   Create a {@link WPen} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WPen> createJSPen() {
-  return    this.jsObjects_.addObject (new WPen());
+  protected WJavaScriptHandle<WPen> createJSPen() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WPen());
   }
   /**
   
   Create a {@link WPainterPath} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WPainterPath> createJSPainterPath() {
-  return    this.jsObjects_.addObject (new WPainterPath());
+  protected WJavaScriptHandle<WPainterPath> createJSPainterPath() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WPainterPath());
   }
   /**
   
   Create a {@link WRectF} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WRectF> createJSRect() {
-  return    this.jsObjects_.addObject (new WRectF(0, 0, 0, 0));
+  protected WJavaScriptHandle<WRectF> createJSRect() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WRectF(0, 0, 0, 0));
   }
   /**
   
   Create a {@link WPointF} that is accessible from JavaScript, associated with this WPaintedWidget. 
           
   */
-  protected WJavaScriptHandle<WPointF> createJSPoint() {
-  return    this.jsObjects_.addObject (new WPointF(0, 0));
+  protected WJavaScriptHandle<WPointF> createJSPoint() { 
+   this.formDataChanged ();
+return    this.jsObjects_.addObject (new WPointF(0, 0));
+  }
+  /**
+  
+  Create a {@link WTextF} that is accessible from JavaScript, associated with this WPaintedWidget. 
+          
+  */
+  protected WJavaScriptHandle<WTextF> createJSText() {
+  return    this.jsObjects_.addObject (new WTextF());
   }
   protected void layoutSizeChanged(int width, int height) { 
    this.resizeCanvas (width, height);

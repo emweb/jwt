@@ -149,6 +149,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   private WButtonGroup buttonGroup_ ;
    void setGroup(WButtonGroup group) { 
     this.buttonGroup_=  group;
+  this.formDataChanged ();
 }
    void updateInput(final DomElement input, boolean all) {
   if (all) { 
@@ -169,24 +170,14 @@ if (   this.buttonGroup_ != null) {
   if (   this.flags_.get(BIT_STATE_CHANGED) ||   this.isReadOnly ()) {
     return ;
   }
-  if (! ( formData.values.length == 0)) {
-     final String value =   formData.values[0];
-    if (value.equals("1")) {
-      if (   this.buttonGroup_ != null) { 
-           this.buttonGroup_.uncheckOthers (this);
+  if (   this.buttonGroup_ != null) {
+    if ( ! ( formData.values.length == 0) &&    formData.values[0].equals("1")) { 
+         this.buttonGroup_.uncheckOthers (this);
   this.state_ = CheckState.Checked;
 }
-    }
-    else  {
-      if (! (   this.buttonGroup_ != null)) { 
-         super.setFormData (formData);
-}
-    }
   }
-  else  {
-    if (! (   this.buttonGroup_ != null)) { 
-       super.setFormData (formData);
+  else  { 
+     super.setFormData (formData);
 }
-  }
   }
 }

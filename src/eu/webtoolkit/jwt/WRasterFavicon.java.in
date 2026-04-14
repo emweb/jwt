@@ -1,0 +1,279 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+A {@link WFavicon} using a WRasterImage as resource. 
+    
+<p>
+
+This is a {@link WFavicon} that uses a WRasterImage as resource.
+
+<p>
+In its default state, it shows an image present in the docroot, and in its updated state, it shows the same image with a circle.
+
+<p>
+@see WApplication#setFavicon(WFavicon icon)
+
+
+    
+*/
+public class WRasterFavicon extends WFavicon {
+  private static Logger logger = LoggerFactory.getLogger(WRasterFavicon.class);
+  
+  /**
+  
+  Constructs a {@link WRasterFavicon}. 
+          
+  <p>
+  
+  Constructs a {@link WRasterFavicon} of given image <code>type</code>, <code>width</code>, and <code>height</code> and using the image described by <code>info</code> as default favicon.
+  
+  <p>
+  By default, <code>type</code> is &quot;png&quot; and <code>width</code> and <code>height</code> are of 256 pixels.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Like for WRasterImage, the mime type of the favicon is <code>&quot;image/&quot;</code> <code>type</code>. 
+  </i></p>
+  
+  
+          
+  */
+  public  WRasterFavicon(WAbstractDataInfo info, final WLength width, final WLength height, final String type) {
+  super ();
+  this.favicon_ = new WRasterPaintDevice(type, width, height);
+  this.defaultFaviconInfo_ = info;
+  this.bigBrush_ = new WBrush();
+  this.smallBrush_ = new WBrush(); 
+   this.init ();
+}
+  /** 
+  
+  Constructs a {@link WRasterFavicon}. 
+          
+  <p>Calls {@link #WRasterFavicon(WAbstractDataInfo info, WLength width, WLength height, String type) this(info, new WLength (256), new WLength (256), "png")} */public  WRasterFavicon(WAbstractDataInfo info)  {
+    this(info, new WLength (256), new WLength (256), "png");
+  }
+  /** 
+  
+  Constructs a {@link WRasterFavicon}. 
+          
+  <p>Calls {@link #WRasterFavicon(WAbstractDataInfo info, WLength width, WLength height, String type) this(info, width, new WLength (256), "png")} */public  WRasterFavicon(WAbstractDataInfo info, final WLength width)  {
+    this(info, width, new WLength (256), "png");
+  }
+  /** 
+  
+  Constructs a {@link WRasterFavicon}. 
+          
+  <p>Calls {@link #WRasterFavicon(WAbstractDataInfo info, WLength width, WLength height, String type) this(info, width, height, "png")} */public  WRasterFavicon(WAbstractDataInfo info, final WLength width, final WLength height)  {
+    this(info, width, height, "png");
+  }
+  public  WRasterFavicon(WAbstractDataInfo info, final String type) {
+  super ();
+  this.favicon_ = new WRasterPaintDevice(type, new WLength (256), new WLength (256));
+  this.defaultFaviconInfo_ = info;
+  this.bigBrush_ = new WBrush();
+  this.smallBrush_ = new WBrush(); 
+   this.init ();
+}
+  /**
+  
+  Sets the default favicon. 
+          
+  <p>
+  
+  Sets the image described by <code>info</code> as the new default favicon. 
+          
+  */
+  public void setdefaultFavicon(WAbstractDataInfo info) { 
+    this.defaultFaviconInfo_=  info;
+  this.doReset ();
+if (  this.isUpdated ()) { 
+     this.doUpdate ();
+}
+  }
+  /**
+  
+  Returns the data info of the default favicon. 
+          
+  <p>
+  
+  @see WRasterFavicon#setdefaultFavicon(WAbstractDataInfo info)
+  
+  
+          
+  */
+  public WAbstractDataInfo getDefaultFavicon() {
+  return   this.defaultFaviconInfo_;
+  }
+  /**
+  
+  Returns the url to the favicon. 
+          
+  <p>
+  
+  This returns the url to the WRasterImage, updating the WRasterImage will therefor automatically update the favicon on the client side. 
+          
+  */
+  public String getUrl() {
+  return    this.favicon_.getUrl();
+  }
+  /**
+  
+  Sets the brush used to paint the outline of the circle. 
+          
+  <p>
+  
+  This sets the brush used to paint the outline of the circle added to the favicon when in updated state.
+  
+  <p>
+  @see WFavicon#update()
+  
+  
+          
+  */
+  public void setOutlineBrush(final WBrush brush) { 
+    this.bigBrush_=  brush;
+if (  this.isUpdated ()) { 
+     this.doUpdate ();
+}
+  }
+  /**
+  
+  Returns the brush used to paint the outline of the circle. 
+          
+  <p>
+  
+  @see WRasterFavicon#setOutlineBrush(WBrush brush)
+  
+  
+          
+  */
+  public WBrush getOutlineBrush() {
+  return   this.bigBrush_;
+  }
+  /**
+  
+  Sets the brush used to fill the circle. 
+          
+  <p>
+  
+  This sets the brush used to the circle added to the favicon when in updated state.
+  
+  <p>
+  @see WFavicon#update()
+  
+  
+          
+  */
+  public void setFillBrush(final WBrush brush) { 
+    this.smallBrush_=  brush;
+if (  this.isUpdated ()) { 
+     this.doUpdate ();
+}
+  }
+  /**
+  
+  Returns the brush used to fill the circle. 
+          
+  <p>
+  
+  @see WRasterFavicon#setFillBrush(WBrush brush)
+  
+  
+          
+  */
+  public WBrush getFillBrush() {
+  return   this.smallBrush_;
+  }
+  /**
+  
+  Returns the WRasterImage. 
+          
+  <p>
+  
+  @see WRasterFavicon#doUpdate()
+  @see WRasterFavicon#doReset()
+  
+  
+          
+  */
+  protected WRasterPaintDevice  getFavicon() {
+  return   this.favicon_;
+  }
+  /**
+  
+  Updates the favicon. 
+          
+  <p>
+  
+  Draw the circle on the WRasterImage.
+  
+  <p>
+  You can override this function to change what is drawn on the favicon when update is called. 
+          
+  */
+  protected void doUpdate() {
+   WPainter p  = new WPainter( this.getFavicon());
+   double bRLeft =     this.favicon_.getWidth().toPixels () / 2;
+   double bRUp =     this.favicon_.getHeight().toPixels () / 2;
+   double bRWidth =     this.favicon_.getWidth().toPixels () / 2;
+   double bRHeight =     this.favicon_.getHeight().toPixels () / 2; 
+  p.setBrush (  this.bigBrush_);
+ p.drawEllipse (new WRectF(bRLeft, bRUp, bRWidth, bRHeight));
+ double widthDif = bRWidth / 5;
+   double heighDif = bRHeight / 5; 
+  p.setBrush (  this.smallBrush_);
+ p.drawEllipse (new WRectF( bRLeft + widthDif,  bRUp + heighDif,  bRWidth -  widthDif * 2,  bRHeight -  heighDif * 2));
+ p.end ();
+}
+  /**
+  
+  Resets the favicon. 
+          
+  <p>
+  
+  Clear the WRasterImage and repaint the default favicon on it. 
+          
+  */
+  protected void doReset() { 
+   this.resetRasterImage ();
+}
+  private WRasterPaintDevice favicon_ ;
+  private WAbstractDataInfo defaultFaviconInfo_ ;
+  private WBrush bigBrush_ ;
+  private WBrush smallBrush_ ;
+  private void init() { 
+   this.resetRasterImage ();
+  this.setOutlineBrush (new WBrush(new WColor(StandardColor.White)));
+  this.setFillBrush (new WBrush(new WColor(StandardColor.Red)));
+}
+  private void resetRasterImage() { 
+     this.favicon_.clear ();
+ WPainter p  = new WPainter( this.getFavicon()); 
+  p.drawImage (new WRectF(0, 0,     this.favicon_.getWidth().toPixels (),     this.favicon_.getHeight().toPixels ()), new WPainter.Image(  this.defaultFaviconInfo_));
+ p.end ();
+}
+}

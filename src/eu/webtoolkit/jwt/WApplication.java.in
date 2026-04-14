@@ -132,7 +132,9 @@ public class WApplication extends WObject {
   this.bodyClass_ = "";
   this.bodyHtmlClassChanged_ = true;
   this.enableAjax_ = false;
+  this.beingDeleted_ = false;
   this.focusId_ = "";
+  this.focusedWidget_ = null;
   this.selectionStart_ = - 1;
   this.selectionEnd_ = - 1;
   this.layoutDirection_ = LayoutDirection.LeftToRight;
@@ -168,8 +170,13 @@ public class WApplication extends WObject {
   this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
   this.focusChanged_ = new Signal();
   this.addedCookies_ = new HashMap<String, String>();
+  this.notificationPermissionAsked_ = false;
+  this.updateNotificationPermission_ = new JSignal1<String>(this, "Wt-updateNotificationPermission") {};
+  this.notificationPermissionChanged_ = new Signal1<WNotification.Permission>();
   this.soundManager_ = null;
   this.serverSideFontMetrics_ = (ServerSideFontMetrics)null;
+  this.favicon_ = (WFavicon)null;
+  this.faviconUrl_ = "";
   this.showLoadJS = new JSlot();
   this.hideLoadJS = new JSlot(); 
      this.session_.setApplication (this);
@@ -283,6 +290,9 @@ if (  this.getEnvironment().agentIsOpera ()) {
   });
   this.idleTimeout_.addListener(this, () -> {
   	WApplication.this.doIdleTimeout();
+  });
+  this.updateNotificationPermission_.addListener(this, (String e1) -> {
+  	WApplication.this.onUpdateNotificationPermission(e1);
   });
 }
   /**
@@ -2471,8 +2481,8 @@ if (name.length()==0) {
   this.loadingIndicator_ = indicator;
 if (   this.loadingIndicator_ != null) { 
        this.domRoot_.addWidget (indicator);
-   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_12_6.inline('" +    this.loadingIndicator_.getId() + "');}");
-   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_12_6.hide('" +    this.loadingIndicator_.getId() + "');}");
+   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_13_0.inline('" +    this.loadingIndicator_.getId() + "');}");
+   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_13_0.hide('" +    this.loadingIndicator_.getId() + "');}");
     this.loadingIndicator_.hide ();
 }
   }
@@ -2489,6 +2499,35 @@ if (   this.loadingIndicator_ != null) {
   */
   public WLoadingIndicator  getLoadingIndicator() {
   return   this.loadingIndicator_;
+  }
+  /**
+  
+  Sets the favicon for this application. 
+          
+  <p>
+  
+  This sets the favicon for this application. This overwrite the favicon defined in the configuration unless the favicon is a nullptr, in which case the favicon defined in the configuration is used. 
+          
+  */
+  public void setFavicon(WFavicon icon) { 
+    this.favicon_=  icon;
+}
+  /**
+  
+  Returns the favicon of this application. 
+          
+  <p>
+  
+  Returns the last favicon set to this application using {@link WApplication#setFavicon(WFavicon icon) setFavicon()}.
+  
+  <p>
+  @see WApplication#setFavicon(WFavicon icon)
+  
+  
+          
+  */
+  public WFavicon  getFavicon() {
+  return     this.favicon_ != null?   this.favicon_:    this.session_.getDefaultFavicon();
   }
    String getOnePixelGifUrl() {
   if (  this.getEnvironment().agentIsIElt (7)) {
@@ -2684,6 +2723,52 @@ if (   this.loadingIndicator_ != null) {
   this.selectionEnd_ = selectionEnd;
   this.focusChanged_.trigger();
 }
+  public void setFocus(WWidget  widget, int selectionStart, int selectionEnd) { 
+   this.setFocusedWidget (widget);
+ String widgetId  =   widget != null?  widget.getId(): ""; 
+   this.setFocus (widgetId, selectionStart, selectionEnd);
+}
+  /**
+  
+  Returns the id of the widget that has focus. 
+          
+  <p>
+  
+  This returns the id of the widget that has focus, or an empty string if no widget has focus.
+  
+  <p>
+  @see WApplication#getFocusedWidget()
+  @see WWebWidget#focussed()
+  @see WWidget#setFocus()
+  
+  
+          
+  */
+  public String getFocus() {
+  return   this.focusId_;
+  }
+  /**
+  
+  Returns the widget that has focus. 
+          
+  <p>
+  
+  This returns the widget that has focus, or <code>null</code> if no widget has focus.
+  
+  <p>
+  @see WApplication#getFocus()
+  @see WWebWidget#focussed()
+  @see WWidget#setFocus()
+  
+  
+          
+  */
+  public WWidget  getFocusedWidget() {
+  if ( ! (   this.focusedWidget_ != null) || !    this.focusedWidget_.getId().equals(  this.focusId_)) {
+      this.focusedWidget_ =    this.focusId_.length()==0? null:    this.getRoot().findById (  this.focusId_);
+}
+  return   this.focusedWidget_;
+  }
   /**
   
   Loads an internal JavaScript file. 
@@ -2954,7 +3039,7 @@ if (   this.session_.isUseUglyInternalPaths()) {
 if (   this.domRoot2_ != null) { 
        this.domRoot2_.enableAjax ();
 } 
-   this.doJavaScript (  "Wt4_12_6.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+   this.doJavaScript (  "Wt4_13_0.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
 }
   /**
   
@@ -3121,7 +3206,9 @@ if (   this.domRoot2_ != null) {
    String bodyClass_ ;
    boolean bodyHtmlClassChanged_ ;
    boolean enableAjax_ ;
+  private boolean beingDeleted_ ;
   private String focusId_ ;
+  private WWidget focusedWidget_ ;
   private int selectionStart_ ;
   private int selectionEnd_ ;
   private LayoutDirection layoutDirection_ ;
@@ -3169,6 +3256,9 @@ if (   this.domRoot2_ != null) {
   private void removeAddedCookies(final String name) {
     this.addedCookies_.remove(name);
 }
+   boolean notificationPermissionAsked_ ;
+  private JSignal1<String> updateNotificationPermission_ ;
+   Signal1<WNotification.Permission> notificationPermissionChanged_ ;
    WContainerWidget  getTimerRoot() {
   return   this.timerRoot_;
   }
@@ -3326,6 +3416,7 @@ if (!   this.internalPathValid_) {
    void streamAfterLoadJavaScript(final StringBuilder out) {
   out.append(  this.afterLoadJavaScript_);
   this.afterLoadJavaScript_="";
+  this.streamFaviconUpdate (out);
 }
    void streamBeforeLoadJavaScript(final StringBuilder out, boolean all, boolean withPreamble) {
   if (withPreamble) { 
@@ -3351,7 +3442,7 @@ if (!   this.internalPathValid_) {
   for ( int i =    this.javaScriptPreamble_.size () -   this.newJavaScriptPreamble_; 
   i <    this.javaScriptPreamble_.size ();++ i) {
      final WJavaScriptPreamble preamble =  this.javaScriptPreamble_.get(i);
-     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_12_6";
+     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_13_0";
     if (  preamble.type == JavaScriptObjectType.JavaScriptFunction) {
       out.append(scope).append('.').append(  preamble.name).append(" = function() { return (").append(  preamble.src).append(").apply(").append(scope).append(", arguments) };\n");
 }
@@ -3385,14 +3476,18 @@ if (!   this.internalPathValid_) {
      this.idleTimeout ();
 }
   }
+  private void onUpdateNotificationPermission(final String permission) { 
+   this.getEnv().setNotificationPermission (permission);
+  this.notificationPermissionChanged_.trigger( this.getEnv().getNotificationPermission());
+}
    void setAsFocus(final String id) {
+  if ( ! (  this.getRoot() != null) ||   this.beingDeleted_) {
+    return ;
+  }
    WWidget  w =   this.getRoot().findById (id);
   if ( w != null) { 
      w.setFocus ();
 }
-  }
-   String getFocus() {
-  return   this.focusId_;
   }
    int getSelectionStart() {
   return   this.selectionStart_;
@@ -3400,6 +3495,9 @@ if (!   this.internalPathValid_) {
    int getSelectionEnd() {
   return   this.selectionEnd_;
   }
+   void setFocusedWidget(WWidget  widget) {
+    this.focusedWidget_ = widget;
+}
   private WLocalizedStrings  getLocalizedStringsPack() {
   return   this.localizedStrings_;
   }
@@ -3412,6 +3510,20 @@ if (!   this.internalPathValid_) {
   }
   private SoundManager  soundManager_ ;
   private ServerSideFontMetrics serverSideFontMetrics_ ;
+  private WFavicon favicon_ ;
+  private String faviconUrl_ ;
+  private void streamFaviconUpdate(final StringBuilder out) {
+   final String url  =   this.getFavicon().getUrl();
+  if (! url.equals(  this.faviconUrl_)) {
+    if (url.length()==0) {
+      out.append("let link = document.querySelector(\"link[rel~='icon']\");").append("if (link) {").append("link.parentNode.removeChild(link);").append("}");
+}
+    else  {
+      out.append("let link = document.querySelector(\"link[rel~='icon']\");").append("if (!link) {").append("link = document.createElement('link');").append("link.rel = 'icon';").append("document.head.appendChild(link);").append("}").append("link.href = ").append(WString.toWString(new WString(url)).getJsStringLiteral()).append(";");
+} 
+      this.faviconUrl_=  url;
+}
+  }
    static String  RESOURCES_URL ="resourcesURL";
   private JSlot showLoadJS ;
   private JSlot hideLoadJS ;

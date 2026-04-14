@@ -1,0 +1,175 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+A widget that represent a badge. 
+    
+<p>
+
+A badge is a short text, often shown against a contrasting background, which is used to convey important information at a glance.
+
+<p>
+For instance, in a shopping application, a badge with the word &quot;new&quot; can be added to an article to show that this article was recently added.
+
+<p>
+Another example is to add a badge next to the channel in a chat application to show the number of unread messages in that channel.
+
+<p>
+A {@link WBadge} is an inline {@link WText} with a specific look. This look is defined in any of JWt&apos;s themes. Either they are &quot;Wt-badge&quot; for the polished and default theme, or &quot;badge&quot; for any of the bootstrap themes. For more information on the latter visit <a href="https://getbootstrap.com/docs/5.3/components/badge">Bootstrap&apos;s documentation</a>
+
+<p>
+@see WPushButton#setBadge(WBadge badge)
+@see WMenuItem#setBadge(WBadge badge)
+
+
+<p><i><b>Note: </b>With default JWt themes, empty WBadges will not be shown. 
+</i></p>
+
+
+    
+*/
+public class WBadge extends WText {
+  private static Logger logger = LoggerFactory.getLogger(WBadge.class);
+  
+  /**
+  
+  Creates an empty badge. 
+          
+  <p>
+  
+  @see WText#WText(WContainerWidget  parentContainer)
+  
+  
+          
+  */
+  public  WBadge(WContainerWidget  parentContainer) {
+  super ();
+  this.flags_ = new BitSet();
+  this.useDefaultStyle_ = true;
+  if ( parentContainer != null) parentContainer.addWidget (this);
+}
+  /** 
+  
+  Creates an empty badge. 
+          
+  <p>Calls {@link #WBadge(WContainerWidget  parentContainer) this((WContainerWidget)null)} */public  WBadge()  {
+    this((WContainerWidget)null);
+  }
+  /**
+  
+  Creates a badge with the given text. 
+          
+  <p>
+  
+  @see WText#WText(CharSequence text, WContainerWidget  parentContainer)
+  
+  
+          
+  */
+  public  WBadge(final CharSequence text, WContainerWidget  parentContainer) {
+  super (text, (WContainerWidget)null);
+  this.flags_ = new BitSet();
+  this.useDefaultStyle_ = true;
+  if ( parentContainer != null) parentContainer.addWidget (this);
+}
+  /** 
+  
+  Creates a badge with the given text. 
+          
+  <p>Calls {@link #WBadge(CharSequence text, WContainerWidget  parentContainer) this(text, (WContainerWidget)null)} */public  WBadge(final CharSequence text)  {
+    this(text, (WContainerWidget)null);
+  }
+  /**
+  
+  Creates a badge with the given text and format. 
+          
+  <p>
+  
+  @see WText#WText(CharSequence text, TextFormat format, WContainerWidget  parentContainer)
+  
+  
+          
+  */
+  public  WBadge(final CharSequence text, TextFormat textFormat, WContainerWidget  parentContainer) {
+  super (text, textFormat, (WContainerWidget)null);
+  this.flags_ = new BitSet();
+  this.useDefaultStyle_ = true;
+  if ( parentContainer != null) parentContainer.addWidget (this);
+}
+  /** 
+  
+  Creates a badge with the given text and format. 
+          
+  <p>Calls {@link #WBadge(CharSequence text, TextFormat textFormat, WContainerWidget  parentContainer) this(text, textFormat, (WContainerWidget)null)} */public  WBadge(final CharSequence text, TextFormat textFormat)  {
+    this(text, textFormat, (WContainerWidget)null);
+  }
+  public boolean isInline() {
+  return true;
+  }
+  /**
+  
+  Sets whether the badge should use the default theme style. 
+          
+  <p>
+  
+  If set to true, the badge will use the default theme style defined in the current theme.
+  
+  <p>
+  We recommend setting this to false if you want to customize the badge&apos;s style using {@link WWebWidget#setDecorationStyle(WCssDecorationStyle style) WWebWidget#setDecorationStyle()} to avoid having the default style overriding your custom style. This is currently only important for the Bootstrap 5 theme.
+  
+  <p>
+  By default, this is set to true. 
+          
+  */
+  public void setUseDefaultStyle(boolean use) {  
+  this.useDefaultStyle_ = use;
+   this.flags_.set (BIT_USE_DEFAULT_STYLE_CHANGED);
+}
+  /**
+  
+  Returns whether the badge uses the default style. 
+          
+  <p>
+  
+  @see WBadge#setUseDefaultStyle(boolean use)
+  
+  
+          
+  */
+  public boolean isUseDefaultStyle() {
+  return   this.useDefaultStyle_;
+  }
+   void updateDom(final DomElement element, boolean all) {
+   WApplication  app =WApplication.getInstance();
+  if ( all ||   this.flags_.get(BIT_USE_DEFAULT_STYLE_CHANGED)) { 
+      app.getTheme().apply (this, element, ElementThemeRole.Badge);
+  this.flags_.clear(BIT_USE_DEFAULT_STYLE_CHANGED);
+} 
+   super.updateDom (element, all);
+}
+  private static final int BIT_USE_DEFAULT_STYLE_CHANGED =0;
+   BitSet flags_ ;
+  private boolean useDefaultStyle_ ;
+}

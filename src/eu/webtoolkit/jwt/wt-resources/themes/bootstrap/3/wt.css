@@ -782,11 +782,20 @@ body.Wt-rtl .Wt-itemview .Wt-tv-no-rh {
 
 }
 
-.Wt-tableview .Wt-header .Wt-tv-c {
-  padding-left: 6px;
-  margin-left: 6px;
-  /*bootstrap 3 border box*/
+.Wt-tableview .Wt-header .Wt-label {
+  padding-inline: 3px 0px;
+}
 
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ * > * > .Wt-label {
+  padding-inline-end: 3px;
+}
+
+.Wt-tableview .Wt-header div[style*="text-align:center;"] .Wt-tv-sh ~ .Wt-label {
+  padding-inline: 19px 0px;
+}
+
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ div[style*="text-align:center;"] > * > .Wt-tv-sh ~ .Wt-label {
+  padding-inline-start: 16px;
 }
 
 .Wt-tableview .Wt-tv-contents {
@@ -1202,6 +1211,15 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
 }
 
 /*
+ * WBadge
+ */
+.btn .Wt-badge,
+.nav .Wt-badge,
+.dropdown-menu .Wt-badge {
+ margin-inline-start: 2px;
+}
+
+/*
  * WToolBar
  */
 
@@ -1286,4 +1304,12 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
     height: 16px;
     line-height: 16px;
     vertical-align: text-top;
+}
+
+.Wt-tooltip {
+    position: fixed;
+    display: inline-block;
+    overflow-y: auto;
+    width: fit-content;
+    height: fit-content;
 }

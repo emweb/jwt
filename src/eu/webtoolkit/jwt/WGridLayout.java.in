@@ -120,6 +120,9 @@ public class WGridLayout extends WLayout {
   public WLayoutItem  getItemAt(int index) {
    int row = index /  this.getColumnCount();
    int col = index %  this.getColumnCount();
+  if (  index < 0 ||  row >=  this.getRowCount()) {
+    return null;
+  }
   return     this.grid_.items_.get(row).get(col).item_;
   }
   public int getCount() {

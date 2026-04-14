@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
      WApplication  app =WApplication.getInstance();
     loadJavaScript (app);
   w.setJavaScriptMember (" ResizeSensor", "");
-  w.setJavaScriptMember (" ResizeSensor",   "new Wt4_12_6.ResizeSensor(Wt4_12_6," +  w.getJsRef() + ")");
+  w.setJavaScriptMember (" ResizeSensor",   "new Wt4_13_0.ResizeSensor(Wt4_13_0," +  w.getJsRef() + ")");
 }
   }
   public static void loadJavaScript(WApplication  app) { 

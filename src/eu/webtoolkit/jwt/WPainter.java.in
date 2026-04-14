@@ -1060,7 +1060,7 @@ for ( int i =1;
   
           
   */
-  public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) {
+  public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final WTextF text, WPointF  clipPoint) {
   if ( textFlag == TextFlag.SingleLine) {
     if (!!  EnumUtils.mask (alignmentFlags, AlignmentFlag.AlignVerticalMask).isEmpty ()) {
       alignmentFlags.add(AlignmentFlag.Top);
@@ -1093,10 +1093,10 @@ for ( int i =1;
   
   Draws text. 
           
-  <p>Calls {@link #drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF  clipPoint) drawText(rectangle, alignmentFlags, textFlag, text, (WPointF)null)} */public  final void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text)  {
+  <p>Calls {@link #drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, WTextF text, WPointF  clipPoint) drawText(rectangle, alignmentFlags, textFlag, text, (WPointF)null)} */public  final void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final WTextF text)  {
     drawText(rectangle, alignmentFlags, textFlag, text, (WPointF)null);
   }
-  public void drawTextOnPath(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, final List<WString> text, final WTransform transform, final WPainterPath path, double angle, double lineHeight, boolean softClipping) {
+  public void drawWTextFOnPath(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, final List<WTextF> text, final WTransform transform, final WPainterPath path, double angle, double lineHeight, boolean softClipping) {
   if (!!  EnumUtils.mask (alignmentFlags, AlignmentFlag.AlignVerticalMask).isEmpty ()) {
     alignmentFlags.add(AlignmentFlag.Top);
 }
@@ -1116,7 +1116,7 @@ for ( int i =1;
       }
        final WPainterPath.Segment seg =path.getSegments().get(i);
        final WPainterPath.Segment tseg =tpath.getSegments().get(i);
-       List<WString> splitText  = splitLabel (text.get(i));
+       List<WString> splitText  = splitLabel (text.get(i).getText());
       if (    seg.getType() == SegmentType.MoveTo ||  seg.getType() == SegmentType.LineTo ||  seg.getType() == SegmentType.QuadEnd ||  seg.getType() == SegmentType.CubicEnd) { 
          this.save ();
   this.setClipping (false);
@@ -1133,6 +1133,14 @@ for ( int j =0;
     }
   }
   }
+  public void drawTextOnPath(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, final List<WString> text, final WTransform transform, final WPainterPath path, double angle, double lineHeight, boolean softClipping) {
+   List<WTextF> textF  = new ArrayList<WTextF>();
+  for ( int i =0; 
+  i <  text.size ();++ i) {
+    textF.add(new WTextF(text.get(i)));
+} 
+   this.drawWTextFOnPath (rect, alignmentFlags, textF, transform, path, angle, lineHeight, softClipping);
+}
   /**
   
   Draws text. 
@@ -1146,7 +1154,7 @@ for ( int j =0;
   
           
   */
-  public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> flags, final CharSequence text) {
+  public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> flags, final WTextF text) {
   if (!!  EnumUtils.mask (flags, AlignmentFlag.AlignVerticalMask).isEmpty ()) {
     flags.add(AlignmentFlag.Top);
 }
@@ -1164,12 +1172,12 @@ for ( int j =0;
   This is an overloaded method for convenience.
   
   <p>
-  @see WPainter#drawText(WRectF rectangle, EnumSet flags, CharSequence text)
+  @see WPainter#drawText(WRectF rectangle, EnumSet flags, WTextF text)
   
   
           
   */
-  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> flags, final CharSequence text) { 
+  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> flags, final WTextF text) { 
    this.drawText (new WRectF(x, y, width, height), flags, text);
 }
   /**
@@ -1181,16 +1189,55 @@ for ( int j =0;
   This is an overloaded method for convenience.
   
   <p>
-  @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF  clipPoint)
+  @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, WTextF text, WPointF  clipPoint)
   @see WRectF
   @see TextFlag
-  @see WString
+  @see WTextF
   
   
           
   */
-  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text) { 
+  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final WTextF text) { 
    this.drawText (new WRectF(x, y, width, height), alignmentFlags, textFlag, text);
+}
+  /**
+  
+  Draws text. 
+          
+  */
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) { 
+   this.drawText (rect, alignmentFlags, textFlag, new WTextF(text), clipPoint);
+}
+  /** 
+  
+  Draws text. 
+          
+  <p>Calls {@link #drawText(WRectF rect, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF  clipPoint) drawText(rect, alignmentFlags, textFlag, text, (WPointF)null)} */public  final void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text)  {
+    drawText(rect, alignmentFlags, textFlag, text, (WPointF)null);
+  }
+  /**
+  
+  Draws text. 
+          
+  */
+  public void drawText(final WRectF rectangle, EnumSet<AlignmentFlag> flags, final CharSequence text) { 
+   this.drawText (rectangle, flags, new WTextF(text));
+}
+  /**
+  
+  Draws text. 
+          
+  */
+  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> flags, final CharSequence text) { 
+   this.drawText (x, y, width, height, flags, new WTextF(text));
+}
+  /**
+  
+  Draws text. 
+          
+  */
+  public void drawText(double x, double y, double width, double height, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text) { 
+   this.drawText (x, y, width, height, alignmentFlags, textFlag, new WTextF(text));
 }
   /**
   
@@ -1365,7 +1412,7 @@ for ( int j =0;
   
   <p>
   @see WPainter#getFont()
-  @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF  clipPoint)
+  @see WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, WTextF text, WPointF  clipPoint)
   
   
           

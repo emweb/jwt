@@ -64,7 +64,7 @@ public class WEnvironment {
           
   */
   public static String getJavaScriptWtScope() {
-  return "Wt4_12_6";
+  return "Wt4_13_0";
   }
   /**
   
@@ -257,6 +257,26 @@ public class WEnvironment {
   */
   public boolean hasWebGL() {
   return   this.webGLsupported_;
+  }
+  /**
+  
+  Returns whether the browser has support for notifications. 
+          
+  <p>
+  
+  Support for notifications is required for sending notifications. 
+          
+  */
+  public boolean isSupportsNotifications() {
+  return   this.notificationSupported_;
+  }
+  /**
+  
+  Returns the status of the permission to send notifications. 
+          
+  */
+  public WNotification.Permission getNotificationPermission() {
+  return   this.notificationPermission_;
   }
   /**
   
@@ -628,7 +648,7 @@ public class WEnvironment {
           
   */
   public static String getLibraryVersion() {
-  return "4.12.6";
+  return "4.13.0";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int major, final bad java simple ref int minor) ;
   /**
@@ -892,6 +912,8 @@ public class WEnvironment {
    String queryString_ ;
    boolean webGLsupported_ ;
   protected boolean isLikelyBotGetRequest_ ;
+  protected boolean notificationSupported_ ;
+  protected WNotification.Permission notificationPermission_ ;
    Map<String, String[]> parameters_ ;
    Map<String, String> cookies_ ;
    Locale locale_ ;
@@ -920,6 +942,8 @@ public class WEnvironment {
   this.queryString_ = "";
   this.webGLsupported_ = false;
   this.isLikelyBotGetRequest_ = false;
+  this.notificationSupported_ = false;
+  this.notificationPermission_ = WNotification.Permission.Default;
   this.parameters_ = new HashMap<String, String[]>();
   this.cookies_ = new HashMap<String, String>();
   this.locale_ = new Locale("");
@@ -1173,6 +1197,8 @@ if ( t != -1) {
   this.queryString_ = "";
   this.webGLsupported_ = false;
   this.isLikelyBotGetRequest_ = false;
+  this.notificationSupported_ = false;
+  this.notificationPermission_ = WNotification.Permission.Default;
   this.parameters_ = new HashMap<String, String[]>();
   this.cookies_ = new HashMap<String, String>();
   this.locale_ = new Locale("");
@@ -1231,8 +1257,9 @@ if ( cookie != null) {
 } 
     this.locale_=  request.getLocale();
  String  wtdE = request.getParameter ("wtd");
-   String  method =request.getRequestMethod();  
-  this.isLikelyBotGetRequest_ =      wtdE != null && !  wtdE.equals(sessionId) &&  method != null && method.equals("GET") &&   this.agentSupportsAjax ();
+   String  method =request.getRequestMethod();
+   String  signalE = request.getParameter ("signal");  
+  this.isLikelyBotGetRequest_ =   (    wtdE != null && ! ( signalE != null) && !  wtdE.equals(sessionId) ||  ! ( wtdE != null) &&  signalE != null) &&  method != null && method.equals("GET");
 }
    void updateHostName(final WebRequest request) {
    final Configuration conf =    this.session_.getController().getConfiguration();
@@ -1269,7 +1296,12 @@ if (! (  request.getParameter ("htmlHistory") != null)) {
   }
    String  tzSE = request.getParameter ("tzS"); 
     this.timeZoneName_=    tzSE != null?  tzSE: "";
- String  hashE = request.getParameter ("_");
+ String  notifE = request.getParameter ("notif");  
+  this.notificationSupported_ =  notifE != null;
+if (  this.notificationSupported_) { 
+     this.setNotificationPermission ( notifE);
+}
+   String  hashE = request.getParameter ("_");
   if ( hashE != null) { 
      this.setInternalPath ( hashE);
 }
@@ -1295,6 +1327,21 @@ if (! (  request.getParameter ("htmlHistory") != null)) {
       this.screenHeight_ = Integer.parseInt( scrHE);
 }
     catch (final RuntimeException e ) {
+    }
+  }
+  }
+   void setNotificationPermission(final String permission) {
+  if (permission.equals("denied")) {  
+    this.notificationPermission_ = WNotification.Permission.Denied;
+}
+  else  {
+    if (permission.equals("granted")) {  
+      this.notificationPermission_ = WNotification.Permission.Granted;
+}
+    else  {
+      if (permission.equals("default")) {  
+        this.notificationPermission_ = WNotification.Permission.Default;
+}
     }
   }
   }

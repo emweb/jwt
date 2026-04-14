@@ -251,7 +251,7 @@ return treeTable;
   i <   tableView.getModel().getColumnCount();++ i) { 
      tableView.setColumnWidth (i, new WLength (120));
 } 
-   tableView.setWidth (new WLength (  ( WIDTH + 7) *   tableView.getModel().getColumnCount() + 2));
+   tableView.setWidth (new WLength (  ( WIDTH + 1) *   tableView.getModel().getColumnCount() + 2));
 return tableView;
   }
    WWidget LargeTableView() {
@@ -301,7 +301,7 @@ options.add(new WString ("cherries"));
   i <   table.getModel().getColumnCount();++ i) { 
      table.setColumnWidth (i, new WLength (WIDTH));
 } 
-   table.setWidth (new WLength (  ( WIDTH + 7) *   table.getModel().getColumnCount() + 2));
+   table.setWidth (new WLength (  ( WIDTH + 1) *   table.getModel().getColumnCount() + 2));
 return table;
   }
    WWidget TreeView() {

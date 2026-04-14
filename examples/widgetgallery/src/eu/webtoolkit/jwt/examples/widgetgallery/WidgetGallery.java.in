@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
     this.addToMenu (menu, "Trees & Tables", new TreesTables()).setPathComponent ("trees-tables");
     this.addToMenu (menu, "Graphics & Charts", new GraphicsWidgets()).setPathComponent ("graphics-charts");
   this.addToMenu (menu, "Media", new Media());
+  this.addToMenu (menu, "Notification", new Notification());
 if (  menu.getCurrentIndex() < 0) { 
      menu.select (0);
      menu.itemAt (0).getMenu().select (0);

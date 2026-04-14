@@ -328,7 +328,7 @@ public class WIntValidator extends WValidator {
   public String getJavaScriptValidate() {
   loadJavaScript (WApplication.getInstance());
  StringBuilder js  = new StringBuilder();
-  js.append("new Wt4_12_6.WIntValidator(").append(  this.isMandatory ()).append(',');
+  js.append("new Wt4_13_0.WIntValidator(").append(  this.isMandatory ()).append(',');
 if (   this.bottom_ != Integer.MIN_VALUE) {
     js.append(  this.bottom_);
 }

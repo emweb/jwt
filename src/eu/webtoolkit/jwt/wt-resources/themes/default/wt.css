@@ -72,6 +72,35 @@ span.Wt-disabled, fieldset.Wt-disabled legend {
 */
 
 /*
+ * WBadge
+ */
+ .Wt-badge {
+  display: inline-block;
+  position: relative;
+  min-width: 10px;
+  padding: 3px 7px;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  background-color: #999999;
+  border-radius: 5px;
+}
+
+.Wt-badge:empty {
+  display: none;
+}
+
+.Wt-btn .Wt-badge,
+.item .Wt-badge,
+.itemselected .Wt-badge {
+  margin-inline-start: 2px;
+}
+
+/*
  * WCalendar
  */
 .Wt-cal {
@@ -710,14 +739,16 @@ body.Wt-rtl .Wt-tabs a {
  * XHTML Tooltips
  */
 .Wt-tooltip {
-  position: absolute;
-  max-width: 700px;
+  display: inline-block;
   background-color: #ffffcc;
   border: 1px solid black;
   padding: 1px 2px;
   font-family: sans-serif;
   font-size: smaller;
   z-index: 1000;
+  overflow-y: auto;
+  width: fit-content;
+  height: fit-content;
 }
 
 /*
@@ -850,7 +881,7 @@ body.Wt-rtl .Wt-sbspacer {
 
 .Wt-itemview .Wt-tv-rh {
   float: right;
-  width: 4px;
+  width: 3px;
   cursor: col-resize;
 }
 
@@ -983,13 +1014,6 @@ body.Wt-rtl .Wt-itemview .Wt-tv-sh {
 /*
  * WTableView
  */
-body.Wt-ltr .Wt-tableview .Wt-header .Wt-tv-c {
-  padding-left: 6px;
-}
-
-body.Wt-rtl .Wt-tableview .Wt-header .Wt-tv-c {
-  padding-right: 6px;
-}
 
 .Wt-tableview .Wt-tv-contents .Wt-tv-c,
 .Wt-plaintable .Wt-tv-c {
@@ -1019,6 +1043,22 @@ body.Wt-rtl .Wt-tableview .Wt-header .Wt-tv-c {
 
 .Wt-tableview th {
   padding: 0px;
+}
+
+.Wt-tableview .Wt-header .Wt-label {
+  padding-inline: 3px 0px;
+}
+
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ * > * > .Wt-label {
+  padding-inline-end: 3px;
+}
+
+.Wt-tableview .Wt-header div[style*="text-align:center;"] .Wt-tv-sh ~ .Wt-label {
+  padding-inline: 19px 0px;
+}
+
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ div[style*="text-align:center;"] > * > .Wt-tv-sh ~ .Wt-label {
+  padding-inline-start: 16px;
 }
 
 .Wt-tableview table {

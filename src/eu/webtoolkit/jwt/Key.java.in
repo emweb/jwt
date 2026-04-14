@@ -64,6 +64,12 @@ public enum Key {
   Backspace(8),
   /** 
   
+  Clear key. 
+            
+  */
+  Clear(12),
+  /** 
+  
   Shift key. 
             
   */
@@ -80,6 +86,18 @@ public enum Key {
             
   */
   Alt(18),
+  /** 
+  
+  Pause key. 
+            
+  */
+  Pause(19),
+  /** 
+  
+  Escape key. 
+            
+  */
+  Escape(27),
   /** 
   
   Page up key. 
@@ -142,10 +160,112 @@ public enum Key {
   Delete(46),
   /** 
   
-  Escape key. 
+  Meta / Windows key. 
             
   */
-  Escape(27),
+  Meta(91),
+  /** 
+  
+  Context menu / Apps key. 
+            
+  */
+  ContextMenu(93),
+  /** 
+  
+  &apos;0&apos; num pad key. 
+            
+  */
+  Numpad0(96),
+  /** 
+  
+  &apos;1&apos; num pad key. 
+            
+  */
+  Numpad1(97),
+  /** 
+  
+  &apos;2&apos; num pad key. 
+            
+  */
+  Numpad2(98),
+  /** 
+  
+  &apos;3&apos; num pad key. 
+            
+  */
+  Numpad3(99),
+  /** 
+  
+  &apos;4&apos; num pad key. 
+            
+  */
+  Numpad4(100),
+  /** 
+  
+  &apos;5&apos; num pad key. 
+            
+  */
+  Numpad5(101),
+  /** 
+  
+  &apos;6&apos; num pad key. 
+            
+  */
+  Numpad6(102),
+  /** 
+  
+  &apos;7&apos; num pad key. 
+            
+  */
+  Numpad7(103),
+  /** 
+  
+  &apos;8&apos; num pad key. 
+            
+  */
+  Numpad8(104),
+  /** 
+  
+  &apos;9&apos; num pad key. 
+            
+  */
+  Numpad9(105),
+  /** 
+  
+  &apos;*&apos; num pad key. 
+            
+  */
+  NumMultiply(106),
+  /** 
+  
+  &apos;+&apos; num pad key. 
+            
+  */
+  NumAdd(107),
+  /** 
+  
+  &apos;,&apos; num pad key. 
+            
+  */
+  NumSeparator(108),
+  /** 
+  
+  &apos;-&apos; num pad key. 
+            
+  */
+  NumSubtract(109),
+  /** 
+  
+  &apos;.&apos; num pad key. 
+            
+  */
+  NumDecimal(110),
+  /** 
+  
+  &apos;/&apos; num pad key. 
+            
+  */
+  NumDivide(111),
   /** 
   
   F1 function key. 
@@ -218,6 +338,94 @@ public enum Key {
             
   */
   F12(123),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemSemicolon(186),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemPlus(187),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemComma(188),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemMinus(189),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemPeriod(190),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemQuestion(191),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  <p>
+  
+  
+  <p><i><b>Note: </b>Cannot be distinguished from OemCloseBrackets in Firefox! 
+  </i></p>
+  
+  
+            
+  */
+  OemTilde(192),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemOpenBrackets(219),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemPipe(220),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  <p>
+  
+  
+  <p><i><b>Note: </b>Cannot be distinguished from OemTilde in Firefox! 
+  </i></p>
+  
+  
+            
+  */
+  OemCloseBrackets(221),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemQuotes(222),
+  /** 
+  
+  Configuration-dependent key. 
+            
+  */
+  OemBackslash(226),
   /** 
   
   Space. 

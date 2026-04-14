@@ -289,7 +289,7 @@ return result;
   table.setHeaderHeight (new WLength (28));
   table.setMargin (new WLength (10), EnumSet.of (Side.Top, Side.Bottom));
   table.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
-  table.setWidth (new WLength (    4 * 120 + 80 +  5 * 7 + 2));
+  table.setWidth (new WLength (    4 * 120 + 80 + 5 + 2));
 if ( WApplication.getInstance().getEnvironment().hasAjax()) { 
      table.setEditTriggers (EnumSet.of(EditTrigger.SingleClicked));
   table.setEditOptions (EnumUtils.or( table.getEditOptions(), EditOption.SaveWhenClosed));
@@ -545,7 +545,7 @@ for (row = 0;
   table.setColumnWidth (1, new WLength (100));
   table.setRowHeight (new WLength (28));
   table.setHeaderHeight (new WLength (28));
-  table.setWidth (new WLength (   150 + 100 + 14 + 2));
+  table.setWidth (new WLength (   150 + 100 + 2 + 2));
 if ( WApplication.getInstance().getEnvironment().hasAjax()) { 
      table.setEditTriggers (EnumSet.of(EditTrigger.SingleClicked));
 }

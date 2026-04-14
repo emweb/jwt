@@ -642,12 +642,12 @@
 }
 .Wt-itemview .Wt-tv-rh {
   float: right;
-  width: 4px;
+  width: 3px;
   cursor: col-resize;
 }
 .Wt-itemview .Wt-tv-no-rh {
   width: 0px;
-  margin-left: 4px;
+  margin-left: 3px;
   cursor: default;
 }
 .Wt-itemview .Wt-tv-sh {
@@ -705,7 +705,7 @@ body.Wt-rtl .Wt-itemview .Wt-tv-sh {
 }
 body.Wt-rtl .Wt-itemview .Wt-tv-no-rh {
   margin-left: 0px;
-  margin-right: 4px;
+  margin-right: 3px;
 }
 /*
  * WTableView
@@ -718,9 +718,23 @@ body.Wt-rtl .Wt-itemview .Wt-tv-no-rh {
 .Wt-tableview select {
   width: 100%;
 }
-.Wt-tableview .Wt-header .Wt-tv-c {
-  padding-left: 6px;
+
+.Wt-tableview .Wt-header .Wt-label {
+  padding-inline: 3px 0px;
 }
+
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ * > * > .Wt-label {
+  padding-inline-end: 3px;
+}
+
+.Wt-tableview .Wt-header div[style*="text-align:center;"] .Wt-tv-sh ~ .Wt-label {
+  padding-inline: 19px 0px;
+}
+
+.Wt-tableview .Wt-header .Wt-tv-no-rh ~ div[style*="text-align:center;"] > * > .Wt-tv-sh ~ .Wt-label {
+  padding-inline-start: 16px;
+}
+
 .Wt-tableview .Wt-tv-contents {
   background-color: #fff;
 }
@@ -1065,6 +1079,14 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
   position: relative;
 }
 /*
+ * WBadge
+ */
+.btn .Wt-badge,
+.nav .Wt-badge,
+.dropdown-menu .Wt-badge {
+ margin-inline-start: 2px;
+}
+/*
  * WResizable
  */
 .Wt-resizable,
@@ -1123,4 +1145,12 @@ body.Wt-rtl .Wt-treeview .Wt-ctrl.noexpand {
     height: 16px;
     line-height: 16px;
     vertical-align: text-top;
+}
+
+.Wt-tooltip {
+    position: fixed;
+    display: inline-block;
+    overflow-y: auto;
+    width: fit-content;
+    height: fit-content;
 }

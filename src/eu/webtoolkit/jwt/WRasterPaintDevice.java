@@ -206,7 +206,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 	}
 
 	@Override
-	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, WTextF text, WPointF clipPoint) {
 		if (textFlag == TextFlag.WordWrap)
 			throw new UnsupportedOperationException("drawText(): WordWrap not yet implemented");
 
@@ -224,7 +224,7 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 		AlignmentFlag horizontalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignHorizontalMask));
 		AlignmentFlag verticalAlign = EnumUtils.enumFromSet(EnumUtils.mask(flags, AlignmentFlag.AlignVerticalMask));
 
-		String s = text.toString();
+		String s = text.getText().toString();
 
 		switch (horizontalAlign) {
 		case Left:
@@ -253,6 +253,11 @@ public class WRasterPaintDevice extends WResource implements WPaintDevice {
 
 		g2.setPaint(penPaint);
 		g2.drawString(s, (float)px, (float)py);
+	}
+
+	@Override
+	public void drawText(WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, CharSequence text, WPointF clipPoint) {
+		drawText(rect, flags, textFlag, new WTextF(text), clipPoint);
 	}
 
 

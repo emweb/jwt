@@ -1,0 +1,152 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+A value class that defines a text. 
+    
+<p>
+
+The text is defined by a string.
+
+<p>
+<h3>JavaScript exposability</h3>
+
+
+<p>
+A WTextF is JavaScript exposable. If a WTextF {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound}, it can be accessed in your custom JavaScript code through {@link WJavaScriptHandle#getJsRef() its handle&apos;s jsRef()}. A text is represented in JavaScript as a string.
+
+<p>
+
+<p><i><b>Warning: </b>A WTextF that is JavaScript exposed should be modified only through its {@link WJavaScriptHandle handle}. Any attempt at modifying it will cause an exception to be thrown.
+</i></p>
+
+@see WPaintedWidget#createJSText()
+
+
+    
+*/
+public class WTextF extends WJavaScriptExposableObject {
+  private static Logger logger = LoggerFactory.getLogger(WTextF.class);
+  
+  /**
+  
+  Default constructor. 
+          
+  <p>
+  
+  Constructs an empty text.
+  
+  <p>
+  @see WTextF#isEmpty()
+  
+  
+          
+  */
+  public  WTextF() {
+  super ();
+  this.text_ = new WString();
+  }
+  /**
+  
+  Construct text from {@link WString}. 
+          
+  */
+  public  WTextF(final CharSequence text) {
+  super ();
+  this.text_ = WString.toWString(text);
+  }
+  /**
+  
+  Construct text from string. 
+          
+  */
+  public  WTextF(String  text) {
+  super ();
+  this.text_ = new WString(text);
+  }
+  public  WTextF(final WTextF other) {
+  super (other);
+  this.text_ = other.getText();
+  }
+  public WTextF clone() {
+  return new WTextF( this);
+  }
+  /**
+  
+  Indicates whether some other object is "equal to" this one. 
+          
+  */
+  public boolean equals(final WTextF other) {
+  if (!   this.sameBindingAs (other)) {
+    return false;
+  }
+  return (  this.text_.toString().equals( other.text_.toString()));
+  }
+  /**
+  
+  Returns whether the text is empty or not. 
+          
+  */
+  public boolean isEmpty() {
+  return (  this.text_.length()==0);
+  }
+  /**
+  
+  Sets the content of the text. 
+          
+  <p>
+  
+  @exception {@link WException} 
+  if the text {@link WJavaScriptExposableObject#isJavaScriptBound() is JavaScript bound} 
+  
+  
+  
+          
+  */
+  public void setText(final CharSequence text) { 
+   this.checkModifiable ();
+  this.text_ = WString.toWString(text);
+}
+  /**
+  
+  Returns the content of the text. 
+          
+  */
+  public WString getText() {
+  return   this.text_;
+  }
+  public String getJsValue() {
+  return WString.toWString(  this.text_).getJsStringLiteral();
+  }
+  protected void assignFromJSON(final com.google.gson.JsonElement value) {
+  try {
+      this.text_ = new WString( value.getAsString ());
+}
+  catch (final RuntimeException e ) {
+    logger.error(new StringWriter().append( "Couldn't convert JSON to WTextF: " + e.toString()).toString());
+}
+  }
+  private WString text_ ;
+}

@@ -226,6 +226,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   public void setValueText(final String value) { 
     this.value_=  sanitize (value,  this.isMultiple());
    this.flags_.set (BIT_VALUE_CHANGED);
+  this.formDataChanged ();
   this.repaint ();
 }
   /**
@@ -309,7 +310,7 @@ return u8String;
    super.render (flags);
  WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WEmailEdit.js", wtjs1 ());
-  super.setJavaScriptMember ("wtEncodeValue", "Wt4_12_6.encodeEmailValue");
+  super.setJavaScriptMember ("wtEncodeValue", "Wt4_13_0.encodeEmailValue");
 }
    void updateDom(final DomElement element, boolean all) { 
    super.updateDom (element, all);

@@ -238,7 +238,7 @@ tmp.append(myzround (p.getX())).append(",").append(myzround (p.getY()));
      this.activePaths_.get(thisPath).path+=  tmp.toString();
     this.activePaths_.get(thisPath).bbox=      this.activePaths_.get(thisPath).bbox.united (bbox);
 }
-  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) {
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final WTextF text, WPointF  clipPoint) {
   if ( textFlag == TextFlag.WordWrap) {
     throw new WException("WVmlImage::drawText(): TextFlag::WordWrap is not supported");
 }
@@ -268,7 +268,7 @@ break;
    EscapeOStream render  = new EscapeOStream();
   render.append("<v:shape style=\"width:").append( (int) ( Z *   this.currentRect_.getWidth())).append("px;height:").append( (int) ( Z *   this.currentRect_.getHeight())).append("px;\"><v:path textpathok=\"True\" v=\"m").append(myzround (rect.getLeft(), false)).append(',').append(myzround (y, false)).append('l').append(myzround (rect.getRight(), false)).append(',').append(myzround (y, false)).append("m0,0l0,0e\"/><v:fill on=\"True\" ").append(colorAttributes (  this.getPainter().getPen().getColor())).append("/><v:stroke on=\"False\"/>").append(  this.skewElement (  this.getPainter().getCombinedTransform())).append("<v:textpath on=\"True\" string=\"");
  render.pushEscape (EscapeOStream.RuleSet.HtmlAttribute);
-render.append(text.toString());
+render.append(text.getText().toString());
  render.popEscape ();
 render.append("\" style=\"v-text-align:");
 switch (horizontalAlign) {
@@ -300,6 +300,9 @@ if ( !!  EnumUtils.mask (  this.getPainter().getRenderHints(), RenderHint.LowQua
       this.rendered_.append(result.substring(0, 0 + pos)).append( this.getCreateShadowFilter()).append(result.substring(pos));
 }
     this.rendered_.append(render.toString());
+}
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) { 
+   this.drawText (rect, alignmentFlags, textFlag, new WTextF(text), clipPoint);
 }
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
    WApplication  app =WApplication.getInstance();

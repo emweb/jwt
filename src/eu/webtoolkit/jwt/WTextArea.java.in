@@ -177,6 +177,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   public void setText(final String text) { 
     this.content_=  text;
   this.contentChanged_ = true;
+  this.formDataChanged ();
   this.repaint ();
   this.validate ();
   this.applyEmptyText ();

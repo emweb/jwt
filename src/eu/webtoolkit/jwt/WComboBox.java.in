@@ -192,6 +192,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.makeCurrentIndexValid ();
   this.validate ();
   this.selectionChanged_ = true;
+  this.formDataChanged ();
   this.repaint ();
 }
   }
@@ -522,8 +523,9 @@ if ( guard != null) {
     if (   this.currentIndex_ >= from) {  
       this.currentIndex_ += count;
 }
-  }
-  }
+  } 
+   this.formDataChanged ();
+}
   private void rowsRemoved(final WModelIndex anon1, int from, int to) {  
   this.itemsChanged_ = true;
   this.repaint (EnumSet.of(RepaintFlag.SizeAffected));
@@ -539,8 +541,9 @@ if (   this.currentIndex_ < from) {
       this.currentIndex_ = - 1;
   this.makeCurrentIndexValid ();
 }
-  }
-  }
+  } 
+   this.formDataChanged ();
+}
   private void saveSelection() {
   if (   this.currentIndex_ >= 0) {  
     this.currentIndexRaw_ =     this.model_.toRawIndex (   this.model_.getIndex(  this.currentIndex_,   this.modelColumn_));
@@ -564,6 +567,7 @@ if (   this.currentIndex_ < from) {
 } 
    this.makeCurrentIndexValid ();
   this.currentIndexRaw_ = null;
+  this.formDataChanged ();
 }
   private boolean isSupportsNoSelection() {
   return   this.noSelectionEnabled_;

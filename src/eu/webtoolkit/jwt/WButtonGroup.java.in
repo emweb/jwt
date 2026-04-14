@@ -63,6 +63,7 @@ public class WButtonGroup extends WObject {
   this.buttons_ = new ArrayList<WButtonGroup.Button>();
   this.checkedChanged_ = new Signal1<WRadioButton>();
   this.checkedChangedConnected_ = false;
+  this.formDataChanged_ = true;
   }
   /**
   
@@ -118,7 +119,10 @@ if (  this.checkedChangedConnected_) {
     if (    this.buttons_.get(i).button == button) {
         this.buttons_.remove( 0 + i);
   button.setGroup ((WButtonGroup)null);
-return ;
+if ( i ==  this.getSelectedButtonIndex()) {  
+        this.formDataChanged_ = true;
+}
+      return ;
     }
   }
   }
@@ -233,8 +237,9 @@ return ;
          b.setChecked (false);
 }
     }
-  }
-  }
+  }  
+  this.formDataChanged_ = true;
+}
   /**
   
   Returns the checked radiobutton. 
@@ -313,6 +318,11 @@ for ( int i =0;
   }
   return   this.checkedChanged_;
   }
+  public boolean resendFormData() {
+   boolean resend =  this.formDataChanged_;  
+  this.formDataChanged_ = false;
+return resend;
+  }
   static class Button {
     private static Logger logger = LoggerFactory.getLogger(Button.class);
     
@@ -322,6 +332,7 @@ for ( int i =0;
   private List<WButtonGroup.Button> buttons_ ;
   private Signal1<WRadioButton> checkedChanged_ ;
   private boolean checkedChangedConnected_ ;
+  private boolean formDataChanged_ ;
    void uncheckOthers(WRadioButton  button) {
   for ( int i =0; 
   i <    this.buttons_.size ();++ i) {

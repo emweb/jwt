@@ -73,6 +73,10 @@ The following table shows which style classes are applied by this theme.
 </td><td>.Wt-spinbox 
 </td><td>(for the HTML4 implementation)  
 </td></tr>
+<tr><td>{@link WBadge} 
+</td><td>.Wt-badge 
+</td><td>
+</td></tr>
 <tr><td rowspan="11">{@link WCalendar} * 
 </td><td>.Wt-cal 
 </td><td>
@@ -464,6 +468,13 @@ return ;
       }
     }
     break;
+    case SPAN: 
+    {
+       WBadge  badge =ObjectUtils.cast(widget, WBadge.class);
+      if ( badge != null) { 
+        element.addPropertyWord (Property.Class, "Wt-badge");
+}
+    }
     default:
     break;
   }
@@ -521,7 +532,7 @@ return ;
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_12_6.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_13_0.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {

@@ -392,7 +392,7 @@ if (readOnly) {
   if (  this.isRendered ()) {
      String result  =   this.getJsRef() + ".ed.remove();";
     if (! recursive) { 
-      result+=    "Wt4_12_6.remove('" +  this.getId() + "');";
+      result+=    "Wt4_13_0.remove('" +  this.getId() + "');";
 }
     return result;
   }
@@ -487,7 +487,7 @@ result.add(e);
    this.setInline (false);
 initTinyMCE ();
   this.version_ = getTinyMCEVersion ();
-  this.setJavaScriptMember (" WTextEdit",     "new Wt4_12_6.WTextEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
+  this.setJavaScriptMember (" WTextEdit",     "new Wt4_13_0.WTextEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
   this.setJavaScriptMember (WT_RESIZE_JS,   "function(e, w, h, s) { var obj = " +  this.getJsRef() + ".wtObj; obj.wtResize(e, w, h, s); };");
  String direction  =    app.getLayoutDirection() == LayoutDirection.LeftToRight? "ltr": "rtl"; 
    this.setConfigurationSetting ("directionality", direction);

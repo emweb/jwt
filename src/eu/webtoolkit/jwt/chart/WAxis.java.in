@@ -2120,7 +2120,7 @@ textPens.add( this.getTextPen());
       cfg.zoomLevel = level;
  cfg.side = side;
   this.getLabelTicks (ticks, segment, cfg);
- List<WString> labels  = new ArrayList<WString>();
+ List<WTextF> labels  = new ArrayList<WTextF>();
        WPainterPath path  = new WPainterPath();
       for ( int i =0; 
       i <  ticks.size ();++ i) {
@@ -2136,7 +2136,7 @@ textPens.add( this.getTextPen());
         }
         if ( properties.contains(AxisProperty.Labels) && ! ( ticks.get(i).label.length()==0)) { 
           path.moveTo (p);
-labels.add( ticks.get(i).label);
+labels.add(new WTextF( ticks.get(i).label));
 }
       }
        WTransform t  =  vertical? new WTransform(1, 0, 0, 1, labelPos, 0): new WTransform(1, 0, 0, 1, 0, labelPos); 
@@ -3265,7 +3265,7 @@ maximum = temp;
   private boolean hasLabelTransformOnSide(AxisValue side) {
   return    this.labelTransforms_.get(side) != null;
   }
-  private void renderLabels(final WPainter painter, final List<WString> labels, final WPainterPath path, EnumSet<AlignmentFlag> flags, double angle, int margin, final WTransform transform, final WPen pen) {
+  private void renderLabels(final WPainter painter, final List<WTextF> labels, final WPainterPath path, EnumSet<AlignmentFlag> flags, double angle, int margin, final WTransform transform, final WPen pen) {
   if (  path.getSegments().size () == 0) {
     return ;
   }
@@ -3306,14 +3306,14 @@ break;
   if ( painter.getDevice().getFeatures().contains(PaintDeviceFeatureFlag.FontMetrics)) {
      WMeasurePaintDevice device  = new WMeasurePaintDevice(painter.getDevice());
      WPainter measPainter  = new WPainter(device); 
-    measPainter.drawText (new WRectF(0, 0, 100, 100), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine, "Sfjh", (WPointF)null);
+    measPainter.drawText (new WRectF(0, 0, 100, 100), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine, new WTextF("Sfjh"), (WPointF)null);
 lineHeight = device.getBoundingRect().getHeight();
 }
    boolean clipping = painter.hasClipping ();
   if (   !   this.partialLabelClipping_ && clipping &&   this.getTickDirection() == TickDirection.Outwards &&   this.getLocation() != AxisValue.Zero) { 
     painter.setClipping (false);
 } 
-  painter.drawTextOnPath (new WRectF(left, top, width, height), EnumUtils.or(EnumSet.of(horizontalAlign), verticalAlign), labels, transform, path, angle, lineHeight,  clipping && !   this.partialLabelClipping_);
+  painter.drawWTextFOnPath (new WRectF(left, top, width, height), EnumUtils.or(EnumSet.of(horizontalAlign), verticalAlign), labels, transform, path, angle, lineHeight,  clipping && !   this.partialLabelClipping_);
  painter.setClipping (clipping);
  painter.setPen (oldPen);
 }

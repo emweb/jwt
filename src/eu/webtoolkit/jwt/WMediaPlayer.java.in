@@ -80,6 +80,7 @@ public class WMediaPlayer extends WCompositeWidget {
   */
   public  WMediaPlayer(MediaType mediaType, WContainerWidget  parentContainer) {
   super ();
+  this.flags_ = new BitSet();
   this.signals_ = new ArrayList<JSignal>();
   this.signalsDouble_ = new ArrayList<WMediaPlayer.SignalDouble>();
   this.mediaType_ = mediaType;
@@ -91,7 +92,6 @@ public class WMediaPlayer extends WCompositeWidget {
   this.gui_ = this;
   this.boundSignals_ = 0;
   this.boundSignalsDouble_ = 0;
-  this.mediaUpdated_ = false;
   this.status_ = new WMediaPlayer.State();
   for ( int i =0; 
   i < 11;++ i) { 
@@ -285,7 +285,7 @@ if (   this.gui_ != null) {
     this.media_.add(new WMediaPlayer.Source());
     this.media_.get(  this.media_.size()-1).link=  link;
    this.media_.get(  this.media_.size()-1).encoding = encoding;
-  this.mediaUpdated_ = true;
+   this.flags_.set (BIT_MEDIA_UPDATED);
   this.scheduleRender ();
 }
   /**
@@ -319,7 +319,7 @@ if (   this.gui_ != null) {
   */
   public void clearSources() { 
     this.media_.clear ();
-  this.mediaUpdated_ = true;
+   this.flags_.set (BIT_MEDIA_UPDATED);
   this.scheduleRender ();
 }
   /**
@@ -384,8 +384,9 @@ if ( w != null) {
      w.setFormat (WString.Empty);
   w.valueChanged ().addListener(this, (Double event) -> {WMediaPlayer.this.updateFromProgressBar(bc_id,event);});
   this.updateProgressBarState (id);
+} 
+    this.flags_.set (BIT_FORM_DATA_CHANGED);
 }
-  }
   /**
   
   Returns a control progress bar. 
@@ -534,6 +535,7 @@ return     this.display_[ (int)   id.getValue ()];
   if ( rate !=    this.status_.playbackRate) {   
     this.status_.playbackRate = rate;
   this.playerDoData ("wtPlaybackRate", String.valueOf(rate));
+   this.flags_.set (BIT_FORM_DATA_CHANGED);
 }
   }
   /**
@@ -551,6 +553,7 @@ return     this.display_[ (int)   id.getValue ()];
   public void setVolume(double volume) {   
   this.status_.volume = volume;
   this.playerDo ("volume", String.valueOf(volume));
+   this.flags_.set (BIT_FORM_DATA_CHANGED);
 }
   /**
   
@@ -714,6 +717,11 @@ return     this.display_[ (int)   id.getValue ()];
    super.refresh ();
   this.render (EnumSet.of(RenderFlag.Full));
 }
+  public boolean resendFormData() {
+   boolean resend =  this.flags_.get(BIT_FORM_DATA_CHANGED);
+    this.flags_.clear(BIT_FORM_DATA_CHANGED);
+return resend;
+  }
   protected void setFormData(final WObject.FormData formData) {
   if (! ( formData.values.length == 0)) {
      List<String> attributes  = new ArrayList<String>();
@@ -742,7 +750,7 @@ if (  attributes.size () == 8) {
   }
   protected void render(EnumSet<RenderFlag> flags) {
    WApplication  app =WApplication.getInstance();
-  if (   this.mediaUpdated_ ||  flags.contains(RenderFlag.Full) && !   this.media_.isEmpty()) {
+  if (   this.flags_.get(BIT_MEDIA_UPDATED) ||  flags.contains(RenderFlag.Full) && !   this.media_.isEmpty()) {
      StringBuilder ss  = new StringBuilder();
     ss.append('{');
  boolean first =true;
@@ -764,8 +772,8 @@ if (!!  EnumUtils.mask (flags, RenderFlag.Full).isEmpty ()) {
 }
     else  { 
         this.initialJs_=     ".jPlayer('setMedia', " + ss.toString() + ')' +   this.initialJs_;
-}  
-    this.mediaUpdated_ = false;
+}
+      this.flags_.clear(BIT_MEDIA_UPDATED);
 }
   if (flags.contains(RenderFlag.Full)) {
     if (   this.gui_ == this) { 
@@ -847,7 +855,7 @@ first = false;
 first = false;
 }
     ss.append('}').append("});");
-ss.append("new Wt4_12_6.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
+ss.append("new Wt4_13_0.WMediaPlayer(").append( app.getJavaScriptClass()).append(',').append( this.getJsRef()).append(");");
   this.doJavaScript (ss.toString());
   this.boundSignals_ = 0;
   this.boundSignalsDouble_ = 0;
@@ -888,6 +896,9 @@ for ( int i =  this.boundSignalsDouble_;
     public JSignal1<Double>  signal ;
     public String jsExprA1 ;
   }
+  private static final int BIT_MEDIA_UPDATED =0;
+  private static final int BIT_FORM_DATA_CHANGED =1;
+  private BitSet flags_ ;
   private List<JSignal> signals_ ;
   private List<WMediaPlayer.SignalDouble> signalsDouble_ ;
   private MediaType mediaType_ ;
@@ -902,7 +913,6 @@ for ( int i =  this.boundSignalsDouble_;
   private WWidget gui_ ;
   private int boundSignals_ ;
   private int boundSignalsDouble_ ;
-  private boolean mediaUpdated_ ;
   static class State {
     private static Logger logger = LoggerFactory.getLogger(State.class);
     

@@ -127,6 +127,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   if (! value.equals(  this.color_)) { 
       this.color_=  value;
   this.colorChanged_ = true;
+  this.formDataChanged ();
   this.repaint ();
 }
   }

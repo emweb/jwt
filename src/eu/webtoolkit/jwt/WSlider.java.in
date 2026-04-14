@@ -402,8 +402,9 @@ if (   this.paintedSlider_ != null) {
   else  { 
      this.update ();
   this.onChange ();
+} 
+   this.formDataChanged ();
 }
-  }
   /**
   
   Returns the current slider value. 
@@ -438,7 +439,10 @@ if (   this.paintedSlider_ != null) {
   this.maximum_ = maximum;
   this.value_ = Math.min(  this.maximum_,   this.value_);
   this.minimum_ = Math.min(   this.maximum_ - 1,   this.minimum_);
-  this.update ();
+if (   this.value_ ==   this.maximum_) { 
+     this.formDataChanged ();
+} 
+   this.update ();
 }
   /**
   
@@ -474,7 +478,10 @@ if (   this.paintedSlider_ != null) {
   this.minimum_ = minimum;
   this.value_ = Math.max(  this.minimum_,   this.value_);
   this.maximum_ = Math.max(   this.minimum_ + 1,   this.maximum_);
-  this.update ();
+if (   this.value_ ==   this.minimum_) { 
+     this.formDataChanged ();
+} 
+   this.update ();
 }
   /**
   
@@ -506,7 +513,10 @@ if (   this.paintedSlider_ != null) {
   this.minimum_ = minimum;
   this.maximum_ = maximum;
   this.value_ = Math.min(  this.maximum_, Math.max(  this.minimum_,   this.value_));
-  this.update ();
+if (    this.value_ ==   this.maximum_ ||    this.value_ ==   this.minimum_) { 
+     this.formDataChanged ();
+} 
+   this.update ();
 }
   /**
   
@@ -648,6 +658,7 @@ if (   this.paintedSlider_ != null) {
   public void setValueText(final String value) {
   try {  
     this.value_ = Integer.parseInt(value);
+  this.formDataChanged ();
 }
   catch (final RuntimeException e ) {
   }

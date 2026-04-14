@@ -115,8 +115,12 @@ public interface WPaintDevice {
   Draws <i>sourceRect</i> from the image with URL <code>imageUri</code> and original dimensions <i>imgWidth</i> and <code>imgHeight</code> to the location, into the rectangle defined by <code>rect</code>.
   
   <p>
-  The image is transformed using the current painter settings. 
+  The image is transformed using the current painter settings.
+  
+  <p>
+  
           
+  @deprecated Use {@link WPaintDevice#drawImage(WRectF rect, String imageUri, int imgWidth, int imgHeight, WRectF sourceRect) drawImage()} with WAbstractDataInfo* instead of a string  
   */
   public void drawImage(final WRectF rect, final String imageUri, int imgWidth, int imgHeight, final WRectF sourceRect) ;
   /**
@@ -162,6 +166,19 @@ public interface WPaintDevice {
           
   */
   public void drawRect(final WRectF rectangle) ;
+  /**
+  
+  Draws text. 
+          
+  <p>
+  
+  The text must be rendered, stroked and transformed using the current painter settings.
+  
+  <p>
+  If clipPoint is not null, a check is performed whether the point is inside of the current clip area. If not, the text is not drawn. 
+          
+  */
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final WTextF text, WPointF  clipPoint) ;
   /**
   
   Draws text. 

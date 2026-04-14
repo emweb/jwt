@@ -267,6 +267,18 @@ public abstract class WAbstractProxyModel extends WAbstractItemModel {
 }
   /**
   
+  Handles a drop event. 
+          
+  <p>
+  
+  The default proxy implementation maps the given index to the source model, and forwards the dropEvent call to the source model. 
+          
+  */
+  public void dropEvent(final WDropEvent e, DropAction action, final WModelIndex index, Side side) { 
+     this.sourceModel_.dropEvent (e, action,   this.mapToSource (index), side);
+}
+  /**
+  
   Converts a model index to a raw pointer that remains valid while the model&apos;s layout is changed. 
           
   <p>

@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
   this.eventQueueMutex_ = new ReentrantLock();
   this.eventQueue_ = new LinkedList<ApplicationEvent>();
   this.type_ = type;
-  this.favicon_ = favicon;
+  this.defaultFavicon_ = new WUrlFavicon(favicon);
   this.state_ = WebSession.State.JustCreated;
   this.sessionId_ = sessionId;
   this.sessionIdCookie_ = "";
@@ -82,6 +82,7 @@ import org.slf4j.LoggerFactory;
   this.embeddedEnv_ = new WEnvironment(this);
   this.app_ = null;
   this.debug_ =     this.controller_.getConfiguration().debug ();
+  this.formDataCache_ = new HashMap<String, String[]>();
   this.handlers_ = new ArrayList<WebSession.Handler>();
   this.recursiveEventHandler_ = null;  
   this.env_ =   env != null? env:   this.embeddedEnv_;
@@ -141,8 +142,11 @@ return true;
   public EntryPointType getType() {
   return   this.type_;
   }
-  public String getFavicon() {
-  return   this.favicon_;
+  public WFavicon  getFavicon() {
+  return     this.app_ != null?    this.app_.getFavicon():  this.getDefaultFavicon();
+  }
+  public WFavicon  getDefaultFavicon() {
+  return   this.defaultFavicon_;
   }
   public String getDocType() {
    final boolean xhtml =    this.env_.getContentType() == HtmlContentType.XHTML1;
@@ -1511,7 +1515,7 @@ if ( handler.getResponse() != null) {
    this.setState (WebSession.State.Loaded,    this.controller_.getConfiguration().getSessionTimeout());
 if (wasSuspended) {
     if (    this.env_.hasAjax() &&     this.controller_.getConfiguration().reloadIsNewSession ()) { 
-         this.app_.doJavaScript ("Wt4_12_6.history.removeSessionId()");
+         this.app_.doJavaScript ("Wt4_13_0.history.removeSessionId()");
   this.sessionIdInUrl_ = false;
 }
         this.app_.unsuspended ().trigger();
@@ -1607,7 +1611,7 @@ return ;
   private ReentrantLock eventQueueMutex_ ;
   private LinkedList<ApplicationEvent> eventQueue_ ;
   private EntryPointType type_ ;
-  private String favicon_ ;
+  private WFavicon defaultFavicon_ ;
   private WebSession.State state_ ;
   private String sessionId_ ;
   private String sessionIdCookie_ ;
@@ -1646,6 +1650,7 @@ return ;
   private WEnvironment  env_ ;
   private WApplication  app_ ;
   private boolean debug_ ;
+  private Map<String, String[]> formDataCache_ ;
   private List<WebSession.Handler> handlers_ ;
   private WebSession.Handler  recursiveEventHandler_ ;
    void pushUpdates() {
@@ -1708,10 +1713,47 @@ return ;
    String signalId  =     this.app_.encodeSignal (objectId, name);
   return   this.decodeSignal (signalId,  checkExposed && ! name.equals("resized"));
   }
-  private static WObject.FormData getFormData(final WebRequest request, final String name) {
+  private String[] getFormParamValues(final WebRequest request, final String name) {
+   String[]  requestParam = request.getParameterValues (name);
+   final Configuration conf =   this.controller_.getConfiguration();
+  if (! ( requestParam.length == 0)) {
+    if (   requestParam[0].equals("Wt-null")) {
+      requestParam = new String[0];
+}
+    if (conf.isCacheFormData()) {  
+      this.formDataCache_.put(name, requestParam);
+}
+    return  requestParam;
+  }
+  else  {
+    if (conf.isCacheFormData()) {
+       String[]  it =  this.formDataCache_.get(name);
+      if ( it != null) {
+        return it;
+      }
+    }
+  }
+  return  requestParam;
+  }
+  private WObject.FormData getFormData(final WebRequest request, final String name) {
    List<UploadedFile> files  = new ArrayList<UploadedFile>();
   CollectionUtils.findInMultimap(request.getUploadedFiles(), name, files);
-return new WObject.FormData( request.getParameterValues (name), files);
+ final String[] paramValues =  this.getFormParamValues (request, name);
+  return new WObject.FormData(paramValues, files);
+  }
+   boolean inFormDataCache(final String name) {
+  return    this.formDataCache_.get(name) != null;
+  }
+   void pruneFormDataCache() {
+  for ( Iterator<Map.Entry<String, String[]>> it_it =  this.formDataCache_.entrySet().iterator(); 
+  it_it.hasNext ();) {
+    Map.Entry<String, String[]> it = it_it.next();
+    if (    this.renderer_.currentFormObjects_.get( it.getKey()) == null) {
+      it_it.remove();
+}
+    else  {
+    }
+  }
   }
   private void render(final WebSession.Handler handler) throws IOException{
   logger.debug(new StringWriter().append("render()").toString());
@@ -1882,7 +1924,7 @@ if ( signalE.equals("hash")) {
              String  hashE = request.getParameter ( se + "_");
             if ( hashE != null) { 
                this.changeInternalPath ( hashE, handler.getResponse());
-    this.app_.doJavaScript ("Wt4_12_6.scrollHistory();");
+    this.app_.doJavaScript ("Wt4_13_0.scrollHistory();");
 }
             else  { 
                this.changeInternalPath ("", handler.getResponse());
@@ -1943,7 +1985,7 @@ if (  kind == WebSession.SignalKind.LearnedStateless && discardStateless) {
        this.app_.setFocus ( focus, selectionStart, selectionEnd);
 }
   else  { 
-       this.app_.setFocus ("", - 1, - 1);
+       this.app_.setFocus ((WWidget)null, - 1, - 1);
 }
   for ( Iterator<Map.Entry<String, WObject>> i_it =formObjects.entrySet().iterator(); 
   i_it.hasNext ();) {
@@ -1955,7 +1997,7 @@ if (  kind == WebSession.SignalKind.LearnedStateless && discardStateless) {
       if (  w != null && !   w.isEnabled ()) {
         continue;
       } 
-       obj.setFormData (getFormData (request,  se + formName));
+       obj.setFormData (  this.getFormData (request,  se + formName));
 }
     else  { 
        obj.setRequestTooLarge (0L);

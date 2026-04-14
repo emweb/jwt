@@ -357,7 +357,7 @@ public class CurveLabel {
       if ( painter.getDevice().getFeatures().contains(PaintDeviceFeatureFlag.FontMetrics)) {
          WMeasurePaintDevice device  = new WMeasurePaintDevice(painter.getDevice());
          WPainter measPainter  = new WPainter(device); 
-        measPainter.drawText (new WRectF(0, 0, 100, 100), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine,  this.getLabel(), (WPointF)null);
+        measPainter.drawText (new WRectF(0, 0, 100, 100), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine, new WTextF( this.getLabel()), (WPointF)null);
 rectWidth =  device.getBoundingRect().getWidth() +  CURVE_LABEL_PADDING / 2;
 }
     } 
@@ -395,7 +395,7 @@ minSquareDist = d;
  painter.fillPath ( translation.map (rectPath),  this.getBoxBrush());
  painter.strokePath ( translation.map (rectPath).getCrisp(),  this.getLinePen());
  painter.setPen ( this.getTextPen());
- painter.drawText ( translation.map (rect), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine,  this.getLabel(), (WPointF)null);
+ painter.drawText ( translation.map (rect), EnumUtils.or(EnumSet.of(AlignmentFlag.Middle), AlignmentFlag.Center), TextFlag.SingleLine, new WTextF( this.getLabel()), (WPointF)null);
 }
   private WDataSeries  series_ ;
   private Object x_ ;

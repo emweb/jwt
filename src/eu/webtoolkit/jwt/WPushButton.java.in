@@ -55,8 +55,9 @@ public class WPushButton extends WFormWidget {
   this.text_ = new WText.RichText();
   this.icon_ = new WLink();
   this.flags_ = new BitSet();
-  this.popupMenu_ = null;   
-  this.text_.format = TextFormat.Plain;
+  this.popupMenu_ = null;
+  this.renderedBadgeId_ = ""; 
+   this.init ();
 if ( parentContainer != null) parentContainer.addWidget (this);
 }
   /** 
@@ -81,8 +82,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.text_ = new WText.RichText();
   this.icon_ = new WLink();
   this.flags_ = new BitSet();
-  this.popupMenu_ = null;   
-  this.text_.format = TextFormat.Plain;
+  this.popupMenu_ = null;
+  this.renderedBadgeId_ = ""; 
+   this.init ();
    this.text_.text = WString.toWString(text);
 if ( parentContainer != null) parentContainer.addWidget (this);
 }
@@ -104,8 +106,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.text_ = new WText.RichText();
   this.icon_ = new WLink();
   this.flags_ = new BitSet();
-  this.popupMenu_ = null;   
-  this.text_.format = TextFormat.Plain;
+  this.popupMenu_ = null;
+  this.renderedBadgeId_ = ""; 
+   this.init ();
    this.text_.text = WString.toWString(text);
   this.setTextFormat (format);
 if ( parentContainer != null) parentContainer.addWidget (this);
@@ -123,8 +126,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
  WPopupMenu  menu =  this.popupMenu_;
     if (menu != null) menu.remove();
   this.popupMenu_ = null;
-}
-  super.remove();
+} 
+   this.setBadge ((WBadge)null);
+super.remove();
   }
   /**
   
@@ -377,6 +381,48 @@ return ok;
   }
   /**
   
+  Sets a badge. 
+          
+  <p>
+  
+  To remove the badge again, call this function with <code>null</code>.
+  
+  <p>
+  @see WPushButton#removeWidget(WWidget  widget)
+  
+  
+          
+  */
+  public void setBadge(WBadge badge) {
+  if (   this.badge_ != null) {
+    {
+    WWidget toRemove =     this.badge_.removeFromParent ();
+    if (toRemove != null) toRemove.remove();}
+
+  }  
+  this.badge_ = badge;
+if ( badge != null) { 
+       this.badge_.setParentWidget (this);
+} 
+    this.flags_.set (BIT_BADGE_CHANGED);
+  this.repaint (EnumSet.of(RepaintFlag.SizeAffected));
+}
+  /**
+  
+  Returns the badge. 
+          
+  <p>
+  
+  @see WPushButton#setBadge(WBadge badge)
+  
+  
+          
+  */
+  public WBadge  getBadge() {
+  return   this.badge_;
+  }
+  /**
+  
   Sets a destination link. 
           
   <p>
@@ -480,6 +526,10 @@ if (   this.popupMenu_ != null) {
   if (    this.text_.text.refresh ()) { 
       this.flags_.set (BIT_TEXT_CHANGED);
   this.repaint (EnumSet.of(RepaintFlag.SizeAffected));
+}
+  if (    this.badge_ != null &&       this.badge_.text_.text.refresh ()) { 
+      this.flags_.set (BIT_BADGE_CHANGED);
+  this.repaint (EnumSet.of(RepaintFlag.SizeAffected));
 } 
    super.refresh ();
 }
@@ -526,6 +576,23 @@ if (   this.popupMenu_ != null) {
   public boolean isSetFirstFocus() {
   return false;
   }
+  public void iterateChildren(final HandleWidgetMethod method) {
+  if (   this.badge_ != null) { 
+    method.handle (  this.badge_);
+}
+  }
+  public WWidget removeWidget(WWidget  widget) {
+  if (    this.badge_ != null &&    this.badge_ == widget) { 
+       this.badge_.setParentWidget ((WWidget)null);
+ WBadge res  =   this.badge_;  
+    this.badge_ = null;
+   this.flags_.set (BIT_BADGE_CHANGED);
+  this.repaint (EnumSet.of(RepaintFlag.SizeAffected));
+return res;
+  }
+  logger.error(new StringWriter().append("removeWidget(): widget not in button").toString());
+return null;
+  }
   private static String  CHECKED_SIGNAL ="M_checked";
   private static String  UNCHECKED_SIGNAL ="M_unchecked";
   private static final int BIT_TEXT_CHANGED =0;
@@ -536,11 +603,14 @@ if (   this.popupMenu_ != null) {
   private static final int BIT_IS_CHECKABLE =5;
   private static final int BIT_IS_CHECKED =6;
   private static final int BIT_CHECKED_CHANGED =7;
+  private static final int BIT_BADGE_CHANGED =8;
   private WAnchor.LinkState linkState_ ;
   private WText.RichText text_ ;
   private WLink icon_ ;
    BitSet flags_ ;
   private WPopupMenu popupMenu_ ;
+  private WBadge  badge_ ;
+  private String renderedBadgeId_ ;
    void updateDom(final DomElement element, boolean all) {
   if ( all &&  element.getType() == DomElementType.BUTTON) { 
     element.setAttribute ("type", "button");
@@ -553,6 +623,12 @@ if (   this.popupMenu_ != null) {
  element.insertChildAt (image, 0);
    this.flags_.set (BIT_ICON_RENDERED);
   this.flags_.clear(BIT_ICON_CHANGED);
+}
+  if (    this.badge_ != null && (    this.flags_.get(BIT_BADGE_CHANGED) || all ||   this.flags_.get(BIT_TEXT_CHANGED))) {
+     DomElement  badge =    this.badge_.createSDomElement (WApplication.getInstance()); 
+    element.addChild (badge);
+   this.renderedBadgeId_=     this.badge_.getId();
+  this.flags_.clear(BIT_BADGE_CHANGED);
 }
   if (   this.flags_.get(BIT_TEXT_CHANGED) || all) { 
     element.setProperty (Property.InnerHTML,   this.text_.getFormattedText());
@@ -595,6 +671,7 @@ WAnchor.renderHTarget (  this.linkState_, element, all);
   this.flags_.clear(BIT_ICON_CHANGED);
   this.flags_.clear(BIT_LINK_CHANGED);
   this.flags_.clear(BIT_CHECKED_CHANGED);
+  this.flags_.clear(BIT_BADGE_CHANGED);
   super.propagateRenderOk (deep);
 }
   protected void getDomChanges(final List<DomElement> result, WApplication  app) {
@@ -609,6 +686,12 @@ WAnchor.renderHTarget (  this.linkState_, element, all);
 }
     result.add(image);
   this.flags_.clear(BIT_ICON_CHANGED);
+}
+  if (   this.renderedBadgeId_.length()!=0 &&   this.flags_.get(BIT_BADGE_CHANGED)) {
+     DomElement  badge =DomElement.getForUpdate (  this.renderedBadgeId_, DomElementType.SPAN); 
+     badge.removeFromParent ();
+  this.renderedBadgeId_="";
+result.add(badge);
 } 
    super.getDomChanges (result, app);
 }
@@ -626,6 +709,10 @@ WAnchor.renderHTarget (  this.linkState_, element, all);
 }
   } 
    super.enableAjax ();
+}
+  private void init() {   
+  this.text_.format = TextFormat.Plain;
+  this.badge_ = null;
 }
   private void doRedirect() {
    WApplication  app =WApplication.getInstance();

@@ -5316,4 +5316,150 @@
 
     <p><a href="#pdf">Top</a></p>
   </message>
+
+  <!--NOTIFICATION message blocks-->
+
+  <message id="notification-intro">
+    <p class="lead">Notification &#8212; Tools for notifying the user</p>
+  </message>
+
+  <message id="notification-wnotification">
+    <h2 id="wnotification">WNotification</h2>
+    <p>
+      A ${doc-link WNotification} is an object that represents a
+      notification that can be sent to the user.
+    </p>
+
+      <h3 id="wnotification/permission">Asking Permission</h3>
+      <p>
+        In order for a notification to be displayed to the user, you
+        first need to have it's permission. JWt will automatically ask
+        the permission the first time you send a notification to a user,
+        but you can also do it manually. You can react to the user
+        accepting or refusing to give you the permission by listening to
+        the <code>WNotification.permissionUpdated()</code> signal.
+      </p>
+      <p>
+        Tips: You can reset your notification settings for the site in
+        your browser settings.
+      </p>
+
+      <fieldset class="example">
+        <legend>Example</legend>
+        ${AskNotificationPermission}
+        ${src AskNotificationPermission}
+      </fieldset>
+
+      <h3 id="wnotification/sending">Sending Notifications</h3>
+      <p>
+        You can send a notification by using its <code>send()</code>
+        method. If you try to send a notification without having
+        permission from the user to send notifications, the
+        notifications will wait for the user to give permission. Once
+        the user gives permission, all still relevant notification that
+        are waiting will be sent. A notification is relevant if it was
+        not closed or destroyed.
+      </p>
+
+      <fieldset class="example">
+        <legend>Example</legend>
+        ${NotificationSend}
+        ${src NotificationSend}
+      </fieldset>
+
+      <p>
+        As long as the a notification was not closed, sending it again
+        will only update it. This can be used to avoid spamming the
+        user with many notifications while only the last one needs to
+        be kept. For instance, in a chat application, if several new
+        messages are sent in the same channel, it is better to have no
+        more than 1 notification for that channel which says how many
+        new messages arrived, rather than having one notification per
+        new message.
+      </p>
+
+      <fieldset class="example">
+        <legend>Example</legend>
+        ${NotificationChat}
+        ${src NotificationChat}
+      </fieldset>
+
+  </message>
+
+  <message id="notification-wbadge">
+    <h2 id="wbadge">WBadge</h2>
+    <p>
+      A ${doc-link WBadge} is a short text, often shown against a contrasting
+      background, which is used to convey important information at a
+      glance.
+    </p>
+
+    <fieldset class="example">
+      <legend>Example</legend>
+      ${Badge}
+      ${src Badge}
+    </fieldset>
+
+    <p>
+      A badge can also be added to any ${doc-link WPushButton} or ${doc-link WMenuItem}. This
+      is useful to attract the user's attention to a particular button or menu item.
+    </p>
+
+    <fieldset class="example">
+      <legend>Example</legend>
+      ${BadgeInPopupMenu}
+      ${src BadgeInPopupMenu}
+    </fieldset>
+  </message>
+
+  <message id="notification-wfavicon">
+    <h2 id="wfavicon">WFavicon</h2>
+    <p>
+      A ${doc-link WFavicon} is an object that represents a
+      favicon that can be set for the application. Changing the
+      favicon can be used to notify the user that something happened on
+      the application, even when the user is looking at another tab.
+      This is less intrusive than a ${doc-link WNotification}, and does
+      not require permission from the user.
+    </p>
+
+      <h3 id="wfavicon/changingfavicon">Changing Favicon</h3>
+      <p>
+        You can change the favicon to any image that a browser accepts
+        as a favicon (e.g. PNG, JPEG, ICO). This will only modify the
+        favicon for the application, so it will only affect the user.
+        You can go back to the default favicon of the application by
+        setting the favicon of the application to <code>nullptr</code>.
+      </p>
+      <p>
+        Tips: You can set the default favicon for an application when
+        adding the entry point for the application, or you can
+        configure the default favicon in the<code>wt_config.xml</code>,
+        by setting the property named <code>favicon</code>.
+      </p>
+
+      <fieldset class="example">
+        <legend>Example</legend>
+        ${ChangeFavicon}
+        ${src ChangeFavicon}
+      </fieldset>
+
+      <h3 id="wfavicon/wfaviconpair">Favicon Pair</h3>
+      <p>
+        A ${doc-link WFavicon} has 2 states: the default state and the
+        updated state. This state can be changed using the
+        <code>update()</code> and <code>reset()</code> methods. Basic
+        ${doc-link WFavicon} are the same image in both states, but
+        a ${doc-link WFaviconPair} is a favicon that shows a different
+        ${doc-link WFavicon} in each state.
+      </p>
+
+      <fieldset class="example">
+        <legend>Example</legend>
+        ${FaviconPair}
+        ${src FaviconPair}
+      </fieldset>
+
+  </message>
+
 </messages>

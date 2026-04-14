@@ -183,6 +183,8 @@ public class Configuration {
   // Debug
 	private ErrorReporting errorReporting = ErrorReporting.ErrorMessage;
 	private ClientSideErrorReportLevel clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
+	private boolean cacheFormData = true;
+	private float maxFormDataResendRatio = 0.5f;
 
   // Request management
 	private long maxRequestSize = 1024*1024; // 1 Megabyte
@@ -340,6 +342,10 @@ public class Configuration {
 					setUseXFrameSameOrigin(parseBoolean(errorMessage, node));
 				} else if (node.getNodeName().equalsIgnoreCase("use-script-nonce")) {
 					setUseScriptNonce(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("cache-form-data")) {
+					setCacheFormData(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("form-data-resend-ratio-limit")) {
+					setMaxFormDataResendRatio(parseFloat(errorMessage, node));
 				} else if (node.getNodeName().equalsIgnoreCase("serve-private-resources-to-bots")) {
 					setServePrivateResourcesToBots(parseBoolean(errorMessage, node));
 				} else if (node.getNodeName().equalsIgnoreCase("bot-resources-path")) {
@@ -377,6 +383,14 @@ public class Configuration {
 			return Integer.parseInt(n.getTextContent().trim());
 		} catch (Exception e) {
 			throw new RuntimeException(errorMessage + "Cannot parse integer value from element " + n.getNodeName());
+		}
+	}
+
+	private float parseFloat(String errorMessage, Node n) {
+		try {
+			return Float.parseFloat(n.getTextContent().trim());
+		} catch (Exception e) {
+			throw new RuntimeException(errorMessage + "Cannot parse float value from element " + n.getNodeName());
 		}
 	}
 
@@ -1150,13 +1164,74 @@ public class Configuration {
 	}
 
 	/**
+	 * Configures whether the application should cache form objects data.
+	 *
+	 * When enabled JWt will cache form data on the server side, so that
+	 * the client does not have to send the form data with every request.
+	 *
+	 * @see #setMaxFormDataResendRatio(float)
+	 */
+	public void setCacheFormData(boolean useCacheFormData) {
+		cacheFormData = useCacheFormData;
+	}
+
+	/**
+	 * Returns whether the application should cache form objects data.
+	 *
+	 * @see #setCacheFormData(boolean)
+	 */
+	public boolean isCacheFormData() {
+		return cacheFormData;
+	}
+
+	/**
+	 * Sets the maximum form data resend ratio.
+	 *
+	 * When form data caching is enabled, if the data of a form
+	 * object is updated by the server, the server will notify
+	 * that this form object needs to be resubmitted in the next
+	 * signal.
+	 *
+	 * Since this slightly increases the size of the response sent
+	 * by the server for every form object updated, you can change
+	 * this option to limit the amount of form objects the server
+	 * can ask the client to resubmit. In case this limit is
+	 * reached, the server will ask the client to resubmit all the
+	 * form objects instead.
+	 *
+	 * The value is the ratio of the number of form objects that
+	 * can be asked to be resubmitted compared to the total number
+	 * of form objects on the client.
+	 *
+	 * The default value is 0.5, which means that the server can
+	 * ask the client to resubmit up to 50% of the form objects
+	 * that are currently on the client.
+	 *
+	 * @see #setCacheFormData(boolean)
+	 */
+	public void setMaxFormDataResendRatio(float ratio) {
+		if (ratio < 0 || ratio > 1)
+			throw new IllegalArgumentException("maxFormDataResendRatio must be between 0 and 1");
+		this.maxFormDataResendRatio = ratio;
+	}
+
+	/**
+	 * Returns the maximum form data resend ratio.
+	 *
+	 * @see #setMaxFormDataResendRatio(float)
+	 */
+	public float getMaxFormDataResendRatio() {
+		return maxFormDataResendRatio;
+	}
+
+	/**
 	 * Configures different rendering engines for certain browsers.
 	 *
 	 * Currently this is only used to select IE7 compatible rendering
 	 * engine for IE8, which solves problems of unreliable and slow
 	 * rendering performance for VML which Microsoft broke in IE8.
 	 *
-     * Before 3.3.0, the default value was IE8=IE7, but since 3.3.0
+	 * Before 3.3.0, the default value was IE8=IE7, but since 3.3.0
 	 * this has been changed to an empty string (i.e. let IE8 use the
 	 * standard IE8 rendering engine) to take advantage of IE8's
 	 * improved CSS support.

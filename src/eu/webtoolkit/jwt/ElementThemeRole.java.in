@@ -43,6 +43,7 @@ public class ElementThemeRole {
   public final static int FormButton = 6;
   public final static int FileUploadForm = 7;
   public final static int FileUploadInput = 8;
+  public final static int Badge = 9;
   public final static int ProgressBarBar = 100;
   public final static int ProgressBarLabel = 101;
 }

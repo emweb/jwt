@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.12.6</title>
+<title>JWt 4.13.0</title>
 </head>
 <body>
 
@@ -24,6 +24,173 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.13.0 (April 14, 2026)</h2>
+
+<p>JWt 4.13.0 is a major release that introduces the following new features:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/12968" target="_blank">Issue #12968</a>:
+    It is now possible to send notifications trough JavaScript notification API using
+    <a href="eu/webtoolkit/jwt/WNotification.html" target="_blank">WNotification</a>. You
+    can see examples of how to use it in the
+    <a href="https://jwt.emweb.be/jwt-gallery/gallery/notification" target="_blank">Widget Gallery</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/12967" target="_blank">Issue #12967</a>:
+    It is now possible to change the favicon of an individual
+    <a href="eu/webtoolkit/jwt/WApplication.html" target="_blank">WApplication</a> using
+    <a href="eu/webtoolkit/jwt/WApplication.html#setFavicon(eu.webtoolkit.jwt.WFavicon)" target="_blank">WApplication.setFavicon()</a>. This takes as parameter a
+    <a href="eu/webtoolkit/jwt/WFavicon.html" target="_blank">WFavicon</a> which is a new class representing favicons. Since the main goal of this feature is to allow developers to notify
+    the user using the favicon, the WFavicon is mainly designed to make around this idea. While WFavicon is an abstract class, we also added four specialisations of this class.
+    The
+    <a href="eu/webtoolkit/jwt/WResourceFavicon.html" target="_blank">WResourceFavicon</a> and
+    <a href="eu/webtoolkit/jwt/WUrlFavicon.html" target="_blank">WUrlFavicon</a> are simple specialisations of WFavicon that allows to create a favicon from a
+    <a href="eu/webtoolkit/jwt/WResource.html" target="_blank">WResource</a> or a URL respectively.
+    The
+    <a href="eu/webtoolkit/jwt/WRasterFavicon.html" target="_blank">WRasterFavicon</a>, uses a
+    <a href="eu/webtoolkit/jwt/WRasterPaintDevice.html" target="_blank">WRasterPaintDevice</a> to update the favicon.
+    And the
+    <a href="eu/webtoolkit/jwt/WFaviconPair.html" target="_blank">WFaviconPair</a>, can be used to switch between two
+    <a href="eu/webtoolkit/jwt/WFavicon.html" target="_blank">WFavicon</a>.
+    You can see examples of how to use it in the
+    <a href="https://jwt.emweb.be/jwt-gallery/gallery/notification/wfavicon" target="_blank">Widget Gallery</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12946" target="_blank">Issue #12946</a>:
+    Added
+    <a href="eu/webtoolkit/jwt/WBadge.html" target="_blank">WBadge</a>, a new class that represents a badge which is a text
+    with a special look. Badges are often used to draw the attention, or warn of updates.
+    It is possible to add a WBadge to a
+    <a href="eu/webtoolkit/jwt/WPushButton.html" target="_blank">WPushButton</a>, to a
+    <a href="eu/webtoolkit/jwt/WMenuItem.html" target="_blank">WMenuItem</a>, (and by extension) to a
+    <a href="eu/webtoolkit/jwt/WTabWidget.html" target="_blank">WTabWidget</a>.
+    You can see examples of how to use it in the
+    <a href="https://jwt.emweb.be/jwt-gallery/gallery/notification/wbadge" target="_blank">Widget Gallery</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13785" target="_blank">Issue #13785</a>:
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#scrollTo(eu.webtoolkit.jwt.WModelIndex,eu.webtoolkit.jwt.ScrollHint,eu.webtoolkit.jwt.ScrollHint)" target="_blank">WAbstractItemView.scrollTo()</a> now also
+    takes the column of the index into account when scrolling to an item. It is now also possible to specify different hints for the row and
+    column when scrolling to an item.
+
+    Additionally, some bugs linked to scrolling were fixed for both
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> and
+    <a href="eu/webtoolkit/jwt/WTreeView.html" target="_blank">WTreeView</a>.
+  </li>
+  <li>
+    <a href="https://redmine.webtoolkit.eu/issues/7986" target="_blank">Issue #7986</a>:
+    added caching for form objects data on the server side to reduce the size of the request sent to the server by the client.
+    This can be disabled by setting the <code>form-data-caching</code> option to <code>false</code> in the <code>jwt_config.xml</code> file.
+
+    Note that this reduction in request size may come at the cost of an increase response size when updating form objects. It is possible
+    to limit this impact by changing the <code>form-data-resend-ratio-limit</code> option in the <code>jwt_config.xml</code> file.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12940" target="_blank">Issue #12940</a>:
+    Added
+    <a href="eu/webtoolkit/jwt/WTextF.html" target="_blank">WTextF</a> which is text that can be exposed to the client side. This allows developers to handle updates to the text of a
+    <a href="eu/webtoolkit/jwt/WPaintedWidget.html" target="_blank">WPaintedWidget</a> directly on the client side.
+    <a href="eu/webtoolkit/jwt/WPaintDevice.html" target="_blank">WPaintDevice</a>, and
+    <a href="eu/webtoolkit/jwt/WPainter.html" target="_blank">WPainter</a> have been updated to use WTextF instead of
+    <a href="eu/webtoolkit/jwt/WString.html" target="_blank">WString</a>.
+  </li>
+</ul>
+
+<p>JWt 4.13.0 also fixes the following bugs:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14441" target="_blank">Issue #14441</a>:
+    fixed an error that could occur when deleting a
+    <a href="eu/webtoolkit/jwt/WApplication.html" target="_blank">WApplication</a> that had a
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> open.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14447" target="_blank">Issue #14447</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WRadioButton.html" target="_blank">WRadioButton</a> never being set to the checked state
+    from the client side when not being inside a
+    <a href="eu/webtoolkit/jwt/WButtonGroup.html" target="_blank">WButtonGroup</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14416" target="_blank">Issue #14416</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#setSelectable(boolean)" target="_blank">WWebWidget.setSelectable(true)</a> preventing selection instead of allowing it.
+    This caused several widgets to have unselectable text, like in
+    <a href="https://redmine.emweb.be/issues/14310" target="_blank">issue #14310</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14035" target="_blank">Issue #14035</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WHBoxLayout.html#getItemAt(int)" target="_blank">WHBoxLayout.getItemAt()</a>,
+    <a href="eu/webtoolkit/jwt/WVBoxLayout.html#getItemAt(int)" target="_blank">WVBoxLayout.getItemAt()</a>, and
+    <a href="eu/webtoolkit/jwt/WGridLayout.html#getItemAt(int)" target="_blank">WGridLayout.getItemAt()</a> not checking that
+    the given index was in the valid range, leading to an error instead of returning null.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14455" target="_blank">Issue #14455</a>:
+    fixed widgets in layout with
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    not having their preferred size updated after being resized.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14436" target="_blank">Issue #14436</a>:
+    fixed some cases where widgets in a layout with
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    would be partially hidden instead of shrinking.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13574" target="_blank">Issue #13574</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> headers label
+    alignment when aligning to the right or the center.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14053" target="_blank">Issue #14053</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WAbstractProxyModel.html" target="_blank">WAbstractProxyModel</a> not using the overridden version of
+    <a href="eu/webtoolkit/jwt/WAbstractItemModel.html#dropEvent(eu.webtoolkit.jwt.WDropEvent,eu.webtoolkit.jwt.DropAction,eu.webtoolkit.jwt.WModelIndex,eu.webtoolkit.jwt.Side)" target="_blank">WAbstractItemModel.dropEvent()</a> when handling drop events.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14504" target="_blank">Issue #14504</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WItemDelegate.html#getEditState(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.WModelIndex)" target="_blank">WItemDelegate.getEditState()</a> and
+    <a href="eu/webtoolkit/jwt/WItemDelegate.html#setEditState(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.WModelIndex,java.lang.Object)" target="_blank">WItemDelegate.setEditState()</a>
+    causing an error when the editor widget was not a
+    <a href="eu/webtoolkit/jwt/WLineEdit.html" target="_blank">WLineEdit</a>. It will now log an error instead.
+  </li>
+</ul>
+
+<p>JWt 4.13.0 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13841" target="_blank">Issue #13841</a>:
+    added the ability to retrieve the currently focused widget in a JWt application using
+    <a href="eu/webtoolkit/jwt/WApplication.html#getFocusedWidget()" target="_blank">WApplication.getFocusedWidget()</a>,
+    or its ID using
+    <a href="eu/webtoolkit/jwt/WApplication.html#getFocus()" target="_blank">WApplication.getFocus()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/9328" target="_blank">Issue #9328</a>:
+    improved the positioning of tooltips so that they do not go outside of the screen and
+    add a vertical scrollbar to the tooltip if necessary.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13789" target="_blank">Issue #13789</a>:
+    added support for more
+    <a href="eu/webtoolkit/jwt/Key.html" target="_blank">Key</a>s in
+    <a href="eu/webtoolkit/jwt/WKeyEvent.html" target="_blank">WKeyEvent</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14467" target="_blank">Issue #14467</a>:
+    replaced the use of the deprecated <code>unload</code> event with <code>pagehide</code>
+    to know when a page is being unloaded by the browser.
+  </li>
+</ul>
+
 
 <h2>Release 4.12.6 (March 17, 2026)</h2>
 

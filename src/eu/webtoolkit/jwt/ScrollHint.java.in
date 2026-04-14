@@ -33,30 +33,54 @@ public enum ScrollHint {
   Scrolls minimally to make it visible. 
             
   */
-  EnsureVisible,
+  EnsureVisible(0),
   /** 
   
   Positions the item at the top of the viewport. 
             
   */
-  PositionAtTop,
+  PositionAtTop(1),
   /** 
   
   Positions the item at the bottom of the viewport. 
             
   */
-  PositionAtBottom,
+  PositionAtBottom(2),
   /** 
   
   Positions the item at the center of the viewport. 
             
   */
-  PositionAtCenter;
+  PositionAtCenter(3),
+  /** 
+  
+  Positions the item at the left of the viewport. 
+            
+  */
+  PositionAtLeft(4),
+  /** 
+  
+  Positions the item at the right of the viewport. 
+            
+  */
+  PositionAtRight(5),
+  /** 
+  
+  Do not scroll. 
+            
+  */
+  NoScroll(6);
+  
+  private int value;
+  
+  ScrollHint(int value) {
+    this.value = value;
+  }
   
   /**
   Returns the numerical representation of this enum.
   */
   public int getValue() {
-    return ordinal();
+    return value;
   }
 }

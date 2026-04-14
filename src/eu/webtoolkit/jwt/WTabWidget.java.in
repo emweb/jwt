@@ -377,6 +377,34 @@ return result;
   }
   /**
   
+  Sets the badge for the tab at the specified index. 
+          
+  <p>
+  
+  To remove the badge again, call this function with <code>null</code>. 
+          
+  */
+  public void setTabBadge(int index, WBadge badge) {
+   WMenuItem  item =    this.menu_.itemAt (index); 
+   item.setBadge (badge);
+}
+  /**
+  
+  Returns the badge for the tab at the specified index. 
+          
+  <p>
+  
+  @see WTabWidget#setTabBadge(int index, WBadge badge)
+  
+  
+          
+  */
+  public WBadge  getTabBadge(int index) {
+   WMenuItem  item =    this.menu_.itemAt (index);
+  return  item.getBadge();
+  }
+  /**
+  
   Enables internal paths for items. 
           
   <p>

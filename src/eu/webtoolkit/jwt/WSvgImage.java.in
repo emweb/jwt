@@ -155,7 +155,7 @@ public class WSvgImage extends WResource implements WVectorImage {
    this.makeNewGroup ();
   this.drawPlainPath (  this.shapes_, path);
 }
-  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) {
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> flags, TextFlag textFlag, final WTextF text, WPointF  clipPoint) {
   if (   clipPoint != null &&   this.getPainter() != null && !    this.getPainter().getClipPath().isEmpty ()) {
     if (!     this.getPainter().getClipPathTransform().map (  this.getPainter().getClipPath()).isPointInPath (   this.getPainter().getWorldTransform().map ( clipPoint))) {
       return ;
@@ -190,7 +190,7 @@ break;
 default:
       break;
     }
-      this.shapes_.append("<flowRoot ").append(style.toString()).append(">\n").append("  <flowRegion>\n").append("    <rect").append(" width=\"").append(rect.getWidth()).append("\"").append(" height=\"").append(rect.getHeight()).append("\"").append(" x=\"").append(rect.getX()).append("\"").append(" y=\"").append(rect.getY()).append("\"").append("    />\n").append("  </flowRegion>\n").append("  <flowPara").append(" text-align=\"").append(hAlign).append("\">\n").append(" ").append(WWebWidget.escapeText (text, false).toString()).append("\n").append("  </flowPara>\n").append("</flowRoot>\n");
+      this.shapes_.append("<flowRoot ").append(style.toString()).append(">\n").append("  <flowRegion>\n").append("    <rect").append(" width=\"").append(rect.getWidth()).append("\"").append(" height=\"").append(rect.getHeight()).append("\"").append(" x=\"").append(rect.getX()).append("\"").append(" y=\"").append(rect.getY()).append("\"").append("    />\n").append("  </flowRegion>\n").append("  <flowPara").append(" text-align=\"").append(hAlign).append("\">\n").append(" ").append(WWebWidget.escapeText (text.getText(), false).toString()).append("\n").append("  </flowPara>\n").append("</flowRoot>\n");
 }
   else  {
       this.shapes_.append("<text ").append(style.toString());
@@ -223,9 +223,12 @@ break;
       break;
     }
       this.shapes_.append(" y=").append(quote (y));
-  this.shapes_.append(">").append(WWebWidget.escapeText (text, false).toString()).append("</text>");
+  this.shapes_.append(">").append(WWebWidget.escapeText (text.getText(), false).toString()).append("</text>");
 }
   }
+  public void drawText(final WRectF rect, EnumSet<AlignmentFlag> alignmentFlags, TextFlag textFlag, final CharSequence text, WPointF  clipPoint) { 
+   this.drawText (rect, alignmentFlags, textFlag, new WTextF(text), clipPoint);
+}
   public WTextItem measureText(final CharSequence text, double maxWidth, boolean wordWrap) {
    WApplication  app =WApplication.getInstance();
   return    app.getServerSideFontMetrics().measureText (  this.getPainter().getFont(), text, maxWidth, wordWrap);

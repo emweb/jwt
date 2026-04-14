@@ -1,0 +1,186 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+An abstract class representing a favicon. 
+    
+<p>
+
+The favicon of a page is an icon that is used by the browser to represent the page in its user interface. In modern browsers, this is usualy showed on the browser tab of the page.
+
+<p>
+Changing the favicon of a page can be used to notify the user that something happend on the page without the having to use notifications, which can feel invasive and requires the user&apos;s approval to be used. This class is designed with this idea in mind.
+
+<p>
+A {@link WFavicon} can be in 2 states:<ol>
+<li>Updated: used to notify the user
+</li>
+<li>Default: used otherwise
+</li>
+</ol>
+
+
+
+<p>
+The state of the {@link WFavicon} can be changed using {@link WFavicon#update() update()} and {@link WFavicon#reset() reset()}.
+
+<p>
+@see WApplication#setFavicon(WFavicon icon)
+
+
+    
+*/
+public abstract class WFavicon {
+  private static Logger logger = LoggerFactory.getLogger(WFavicon.class);
+  
+  /**
+  
+  Returns the url to the favicon. 
+          
+  <p>
+  
+  This should return the absolute url to the favicon. 
+          
+  */
+  public abstract String getUrl() ;
+  /**
+  
+  Sets the favicon in its update state. 
+          
+  <p>
+  
+  This sets the favicon in its update state.
+  
+  <p>
+  If you want the favicon to be different in its updated state, you should override {@link WFavicon#doUpdate() doUpdate()}, which is called at the end of this function.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Despite its name, this does not push any updates to the browser unless it changes the url of the favicon.
+  </i></p>
+  
+  @see WFavicon#reset()
+  @see WFavicon#getUrl()
+  
+  
+          
+  */
+  public void update() {  
+  this.isUpdated_ = true;
+  this.doUpdate ();
+}
+  /**
+  
+  Sets the favicon in its default state. 
+          
+  <p>
+  
+  Sets the favicon in its default state.
+  
+  <p>
+  If you did any changes in {@link WFavicon#doUpdate() doUpdate()}, you should clean up those changes in {@link WFavicon#doReset() doReset()}, which is called at the end of this function.
+  
+  <p>
+  
+  <p><i><b>Note: </b>This does not push any updates to the browser unless it changes the url of the favicon.
+  </i></p>
+  
+  @see WFavicon#update()
+  @see WFavicon#getUrl()
+  
+  
+          
+  */
+  public void reset() {  
+  this.isUpdated_ = false;
+  this.doReset ();
+}
+  /**
+  
+  Returns whether the favicon is in its update state or not. 
+          
+  <p>
+  
+  @see WFavicon#update()
+  @see WFavicon#reset()
+  
+  
+          
+  */
+  public boolean isUpdated() {
+  return   this.isUpdated_;
+  }
+  protected  WFavicon() {
+  this.isUpdated_ = false;
+  }
+  /**
+  
+  Updates the favicon. 
+          
+  <p>
+  
+  This is called at the end of {@link WFavicon#update() update()} and does nothing by default. You can override this function to make changes to the favicon when {@link WFavicon#update() update()} is called.
+  
+  <p>
+  If you do so, you will likely want to clean up those changes in {@link WFavicon#doReset() doReset()}.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you want those changes to be pushed to the client, you have to make sure that this updates the url of the favicon.
+  </i></p>
+  
+  @see WFavicon#doReset()
+  @see WFavicon#update()
+  @see WFavicon#getUrl()
+  
+  
+          
+  */
+  protected void doUpdate() {
+  }
+  /**
+  
+  Resets the favicon. 
+          
+  <p>
+  
+  This is called at the end of {@link WFavicon#reset() reset()} and should be overriden to make it clean up what was done in {@link WFavicon#doUpdate() doUpdate()}.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you want those changes to be pushed to the client, you have to make sure that this updates the url of the favicon.
+  </i></p>
+  
+  @see WFavicon#doUpdate()
+  @see WFavicon#reset()
+  @see WFavicon#getUrl()
+  
+  
+          
+  */
+  protected void doReset() {
+  }
+  private boolean isUpdated_ ;
+}

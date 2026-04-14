@@ -1,0 +1,107 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+A {@link WFavicon} using a resource. 
+    
+<p>
+
+This is a {@link WFavicon} that uses a resource for its favicon.
+
+<p>
+@see WApplication#setFavicon(WFavicon icon)
+
+
+    
+*/
+public class WResourceFavicon extends WFavicon {
+  private static Logger logger = LoggerFactory.getLogger(WResourceFavicon.class);
+  
+  /**
+  
+  Constructs a {@link WResourceFavicon}. 
+          
+  <p>
+  
+  Constructs a {@link WResourceFavicon} from a {@link WResource}. 
+          
+  */
+  public  WResourceFavicon(final WResource resource) {
+  super ();
+  this.resource_ = resource;
+  }
+  /**
+  
+  Constructs a {@link WResourceFavicon} from a file. 
+          
+  <p>
+  
+  This is a constructor that automatically creates a {@link WResourceFavicon} of WFileResource using the given filename and MIME type.
+  
+  <p>
+  By default, the MIME type is application/octet-stream, which lets the browser guess the MIME type. 
+          
+  */
+  public  WResourceFavicon(final String filename, final String mimeType) {
+  super ();
+  this.resource_ = new WFileResource(mimeType,filename);
+  }
+  /** 
+  
+  Constructs a {@link WResourceFavicon} from a file. 
+          
+  <p>Calls {@link #WResourceFavicon(String filename, String mimeType) this(filename, "application/octet-stream")} */public  WResourceFavicon(final String filename)  {
+    this(filename, "application/octet-stream");
+  }
+  /**
+  
+  Sets the default favicon. 
+          
+  */
+  public void setResource(final WResource resource) { 
+    this.resource_=  resource;
+}
+  /**
+  
+  Returns the resource. 
+          
+  <p>
+  
+  @see WResourceFavicon#setResource(WResource resource)
+  
+  
+          
+  */
+  public WResource  getResource() {
+  return   this.resource_;
+  }
+  public String getUrl() {
+  if (   this.resource_ != null) {
+    return    this.resource_.getUrl();
+  }
+  return "";
+  }
+  private WResource resource_ ;
+}

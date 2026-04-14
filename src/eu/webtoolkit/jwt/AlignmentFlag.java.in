@@ -40,7 +40,7 @@ When used with setVerticalAlignment(), this applies only to inline widgets and d
 When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment) WContainerWidget#setContentAlignment()}, this determines the vertical alignment of contents within the table cell.
 
 <p>
-When used with {@link WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, CharSequence text, WPointF  clipPoint) WPainter#drawText()}, this determines the horizontal and vertical alignment of the text with respect to the bounding rectangle.
+When used with {@link WPainter#drawText(WRectF rectangle, EnumSet alignmentFlags, TextFlag textFlag, WTextF text, WPointF  clipPoint) WPainter#drawText()}, this determines the horizontal and vertical alignment of the text with respect to the bounding rectangle.
 
 <p>
 When used with {@link WContainerWidget#setContentAlignment(EnumSet alignment) WContainerWidget#setContentAlignment()}, this specifies how contents should be aligned horizontally within the container.
