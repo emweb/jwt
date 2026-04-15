@@ -58,9 +58,6 @@ public abstract class WWebWidget extends WWidget {
     this.flags_.set (BIT_INLINE);
    this.flags_.set (BIT_ENABLED);
    this.flags_.set (BIT_TOOLTIP_SHOW_ON_HOVER);
-  this.focussed ().addListener(this, () -> {
-  	WWebWidget.this.onFocus();
-  });
 if ( parentContainer != null) parentContainer.addWidget (this);
 }
   /** 
@@ -1986,7 +1983,13 @@ if ( managed != null) {
 }
   return result;
   }
-  protected void render(EnumSet<RenderFlag> flags) { 
+  protected void render(EnumSet<RenderFlag> flags) {
+  if (!   this.flags_.get(BIT_FOCUS_CONNECTED)) {
+      this.focussed ().addListener(this, () -> {
+    	WWebWidget.this.onFocus();
+    });
+   this.flags_.set (BIT_FOCUS_CONNECTED);
+} 
    super.render (flags);
 }
    void signalConnectionsChanged() { 
@@ -2038,6 +2041,7 @@ if ( managed != null) {
   private static final int BIT_TOOLTIP_CLEAN_FORCE_SHOW =40;
   private static final int BIT_TOOLTIP_SHOW_ON_HOVER =41;
   private static final int BIT_RESEND_FORM_DATA =42;
+  private static final int BIT_FOCUS_CONNECTED =43;
   private static String  FOCUS_SIGNAL ="focus";
   private static String  BLUR_SIGNAL ="blur";
   private static final int DEFAULT_BASE_Z_INDEX =1100;

@@ -25,6 +25,25 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
 
+<h2>Release 4.13.1 (April 15, 2026)</h2>
+
+<p>JWt 4.13.1 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14472" target="_blank">Issue #14472</a>:
+    delayed the automatic connection of the
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#focussed()" target="_blank">WWebWidget::focussed()</a> signal until the first
+    render of the widget. This will stop the error happening when creating a
+    <a href="eu/webtoolkit/jwt/WSpinBox.html" target="_blank">WSpinBox</a> or
+    <a href="eu/webtoolkit/jwt/WDoubleSpinBox.html" target="_blank">WDoubleSpinBox</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14471" target="_blank">Issue #14471</a>:
+    added back slf4j-simple to the examples, allowing them to log by default.
+  </li>
+</ul>
+
 <h2>Release 4.13.0 (April 14, 2026)</h2>
 
 <p>JWt 4.13.0 is a major release that introduces the following new features:</p>

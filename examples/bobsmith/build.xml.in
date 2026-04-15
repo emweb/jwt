@@ -23,7 +23,7 @@
 
   <target name="all" depends="dist">
   </target>
-  
+
   <!-- Clean up -->
   <target name="clean">
     <delete dir="${build.dir}"/>
@@ -35,16 +35,17 @@
   <!-- Compile Java source -->
   <target name="build" depends="clean">
     <ant dir="${jwt.dir}" target="all" inheritAll="false"/>
-    
+
     <mkdir dir="${jwt-lib.dir}"/>
     <copy todir="${jwt-lib.dir}" flatten="true">
       <fileset dir="${jwt.dir}/dist" />
-      <fileset dir="${jwt.dir}/lib" 
+      <fileset dir="${jwt.dir}/examples/lib" includes="*.jar" />
+      <fileset dir="${jwt.dir}/lib"
 	       includes="*.jar CLASSIFIER/*.jar CLASSIFIER/servlet-api/*.jar"/>
     </copy>
 
     <mkdir dir="${build.dir}"/>
-    
+
     <javac
        srcdir="${src.dir}"
        destdir="${build.dir}"
@@ -56,18 +57,18 @@
 
   <target name="dist" depends="build">
     <mkdir dir="${dist.dir}"/>
-    
+
     <copy todir="${build.dir}">
       <fileset dir="${src.dir}"
                includes="**/*.xml,**/*.properties,**/*.csv" />
     </copy>
 
-    <war destfile="${dist.dir}/${proj.name}.war" 
-	 webxml="WebRoot/WEB-INF/web.xml">
+    <war destfile="${dist.dir}/${proj.name}.war"
+         webxml="WebRoot/WEB-INF/web.xml">
       <fileset dir="WebRoot"/>
-      <lib dir="${jwt-lib.dir}" 
-	   includes="**/*.jar" 
-	   excludes="servlet-api-*.jar">
+      <lib dir="${jwt-lib.dir}"
+           includes="**/*.jar"
+           excludes="servlet-api-*.jar">
       </lib>
       <classes dir="${build.dir}"/>
     </war>
