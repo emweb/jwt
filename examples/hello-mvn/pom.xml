@@ -30,7 +30,7 @@
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>4.13.1</version>
+      <version>4.13.2</version>
       <classifier>javax</classifier>
     </dependency>
 

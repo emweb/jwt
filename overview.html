@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.13.0</title>
+<title>JWt 4.13.2</title>
 </head>
 <body>
 
@@ -25,6 +25,59 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
 
+<h2>Release 4.13.2 (May 7, 2026)</h2>
+
+<p>JWt 4.13.2 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14490" target="_blank">Issue #14490</a>:
+    fixed form object data not being correctly cached when updated via signal. It seems that
+    it mainly caused issues with browser auto-fill.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14469" target="_blank">Issue #14469</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WGroupBox.html" target="_blank">WGroupBox</a> being unable to add or insert widgets.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14482" target="_blank">Issue #14482</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WApplication.html#getFocusedWidget()" target="_blank">WApplication.getFocusedWidget()</a>
+    returning null when the focused widget was inside of a popup.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14488" target="_blank">Issue #14488</a>:
+      fixed
+      <a href="eu/webtoolkit/jwt/WApplication.html#globalKeyWentDown()" target="_blank">Global key events</a>
+      not being emitted if connected for the first time after the page had already been loaded by the client.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14481" target="_blank">Issue #14481</a>:
+    ensured that <code>XHTML</code> content in a <a href="eu/webtoolkit/jwt/WPushButton.html" target="_blank">WPushButton</a> is correctly
+    rendered as such, in case of the content being a localized string, containing an <code>XHTML entity</code>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/7974" target="_blank">Issue #7974</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a> and
+    <a href="eu/webtoolkit/jwt/WPopupWidget.html" target="_blank">WPopupWidget</a>
+    not avoiding being cut off by the edges of their parent widget when being
+    positioned.
+  </li>
+</ul>
+
+<p>JWt 4.13.2 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14367" target="_blank">Issue #14367</a>:
+    made it possible to scroll a
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> when having the mouse over a
+    header (column or row) if scrolling in that direction would make that header move.
+  </li>
+</ul>
+
 <h2>Release 4.13.1 (April 15, 2026)</h2>
 
 <p>JWt 4.13.1 is a patch release that addresses the following issues:</p>
@@ -33,7 +86,7 @@ behaviour. It also indicates the main changes from version to version.
   <li>
     <a href="https://redmine.emweb.be/issues/14472" target="_blank">Issue #14472</a>:
     delayed the automatic connection of the
-    <a href="eu/webtoolkit/jwt/WWebWidget.html#focussed()" target="_blank">WWebWidget::focussed()</a> signal until the first
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#focussed()" target="_blank">WWebWidget.focussed()</a> signal until the first
     render of the widget. This will stop the error happening when creating a
     <a href="eu/webtoolkit/jwt/WSpinBox.html" target="_blank">WSpinBox</a> or
     <a href="eu/webtoolkit/jwt/WDoubleSpinBox.html" target="_blank">WDoubleSpinBox</a>.

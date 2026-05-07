@@ -144,6 +144,52 @@ if ( parentContainer != null) parentContainer.addWidget (this);
 } 
    super.refresh ();
 }
+  public void addWidget(WWidget widget) {
+  if (! (   this.logicalLayout_ != null)) { 
+      this.getRealLayout().addWidget (widget);
+}
+  }
+  public void insertBefore(WWidget widget, WWidget  before) {
+   int index = this.getIndexOf(before);
+  if ( index == - 1) {
+    logger.warn(new StringWriter().append("insertBefore(): before is not in container, appending at back").toString());
+index =  super.getCount();
+} 
+   this.insertWidget (index, widget);
+}
+  public void insertWidget(int index, WWidget widget) {
+  if (! (   this.logicalLayout_ != null)) {
+     WBoxLayout  boxLayout =ObjectUtils.cast( this.getRealLayout(), WBoxLayout.class);
+    if ( boxLayout != null) { 
+       boxLayout.insertWidget (index, widget);
+}
+    else  {
+      logger.error(new StringWriter().append("Could not insert widget. Logical layout is not a box layout").toString());
+}
+  }
+  }
+  public int getIndexOf(WWidget  w) {
+  if (! (   this.logicalLayout_ != null)) {
+    for ( int i =0; 
+    i <   this.getRealLayout().getCount();++ i) {
+       WWidget  candidate = this.getWidget(i);
+      if ( candidate == w) {
+        return i;
+      }
+    }
+  }
+  return - 1;
+  }
+  public WWidget  getWidget(int index) {
+  if (   this.logicalLayout_ != null) {
+    return null;
+  }
+   WLayoutItem  item =  this.getRealLayout().getItemAt(index);
+  return   item != null?  item.getWidget(): null;
+  }
+  public int getCount() {
+  return     this.logicalLayout_ != null? 0:   this.getRealLayout().getCount();
+  }
    DomElementType getDomElementType() {
   return DomElementType.FIELDSET;
   }

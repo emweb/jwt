@@ -943,7 +943,7 @@ logger.error(new StringWriter().append("activate for bogus item").toString());
   app.loadJavaScript (THIS_JS, wtjs2 ());
  String ddUnfiltered  =    this.isDropDownIconUnfiltered_? "true": "false";
    String autoSelect  =    this.isAutoSelectEnabled_? "true": "false"; 
-   this.setJavaScriptMember (" WSuggestionPopup",                   "new Wt4_13_0.WSuggestionPopup(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +   this.replacerJS_ + "," +   this.matcherJS_ + "," + String.valueOf(Math.max(0,   this.filterLength_)) + "," + String.valueOf( this.isPartialResults()) + "," + String.valueOf(  this.defaultValue_) + "," + ddUnfiltered + "," + autoSelect + ");");
+   this.setJavaScriptMember (" WSuggestionPopup",                   "new Wt4_13_2.WSuggestionPopup(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +   this.replacerJS_ + "," +   this.matcherJS_ + "," + String.valueOf(Math.max(0,   this.filterLength_)) + "," + String.valueOf( this.isPartialResults()) + "," + String.valueOf(  this.defaultValue_) + "," + ddUnfiltered + "," + autoSelect + ");");
 }
   protected void render(EnumSet<RenderFlag> flags) {
   if (flags.contains(RenderFlag.Full)) { 
@@ -969,7 +969,7 @@ logger.error(new StringWriter().append("activate for bogus item").toString());
   }
    static String instantiateStdMatcher(final WSuggestionPopup.Options options) {
    StringBuilder s  = new StringBuilder();
-  s.append("new Wt4_13_0.WSuggestionPopupStdMatcher(").append(WWebWidget.jsStringLiteral ( options.highlightBeginTag)).append(", ").append(WWebWidget.jsStringLiteral ( options.highlightEndTag)).append(", ");
+  s.append("new Wt4_13_2.WSuggestionPopupStdMatcher(").append(WWebWidget.jsStringLiteral ( options.highlightBeginTag)).append(", ").append(WWebWidget.jsStringLiteral ( options.highlightEndTag)).append(", ");
 if (  options.listSeparator != 0) {
     s.append(WWebWidget.jsStringLiteral ( "" +  options.listSeparator));
 }

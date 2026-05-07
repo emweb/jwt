@@ -157,7 +157,7 @@ public class AuthThrottle {
   public void initializeThrottlingMessage(WInteractWidget  button) {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/AuthThrottle.js", wtjs1 ());
-  button.setJavaScriptMember (" AuthThrottle",     "new Wt4_13_0.AuthThrottle(Wt4_13_0," +  button.getJsRef() + "," + WString.toWString(WString.tr ("Wt.Auth.throttle-retry")).getJsStringLiteral() + ");");
+  button.setJavaScriptMember (" AuthThrottle",     "new Wt4_13_2.AuthThrottle(Wt4_13_2," +  button.getJsRef() + "," + WString.toWString(WString.tr ("Wt.Auth.throttle-retry")).getJsStringLiteral() + ");");
 }
   /**
   

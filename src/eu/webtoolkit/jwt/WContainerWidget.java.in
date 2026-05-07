@@ -214,7 +214,7 @@ super.remove();
   public void insertBefore(WWidget widget, WWidget  before) {
    int index = this.getIndexOf(before);
   if ( index == - 1) {
-    logger.error(new StringWriter().append("insertBefore(): before is not in container, appending at back").toString());
+    logger.warn(new StringWriter().append("insertBefore(): before is not in container, appending at back").toString());
 index =    this.children_.size ();
 } 
    this.insertWidget (index, widget);
@@ -958,7 +958,7 @@ if (   this.layout_ != null) {
    this.flags_.set (BIT_LAYOUT_NEEDS_RERENDER);
   this.repaint ();
 }
-  private WLayout  getRealLayout() {
+   WLayout  getRealLayout() {
   return   this.layout_;
   }
    WLayout  getLogicalLayout() {

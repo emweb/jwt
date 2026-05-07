@@ -365,6 +365,28 @@ if (  this.getEnvironment().agentIsOpera ()) {
   }
   /**
   
+  Finds a widget by id. 
+          
+  <p>
+  
+  This finds a widget in the application&apos;s widget hierarchy. It does not only consider widgets in the {@link WApplication#getRoot() getRoot()}, but also widgets that are placed outside this root, such as in dialogs, or other &quot;roots&quot; such as all the bound widgets in a widgetset application.
+  
+  <p>
+  @see WObject#getId()
+  @see WWidget#findById(String id)
+  
+  
+          
+  */
+  public WWidget  findById(final String id) {
+   WWidget  result =    this.domRoot_.findById (id);
+  if ( ! ( result != null) &&    this.domRoot2_ != null) {
+    result =     this.domRoot2_.findById (id);
+}
+  return result;
+  }
+  /**
+  
   Returns a reference to the inline style sheet. 
           
   <p>
@@ -2481,8 +2503,8 @@ if (name.length()==0) {
   this.loadingIndicator_ = indicator;
 if (   this.loadingIndicator_ != null) { 
        this.domRoot_.addWidget (indicator);
-   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_13_0.inline('" +    this.loadingIndicator_.getId() + "');}");
-   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_13_0.hide('" +    this.loadingIndicator_.getId() + "');}");
+   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_13_2.inline('" +    this.loadingIndicator_.getId() + "');}");
+   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_13_2.hide('" +    this.loadingIndicator_.getId() + "');}");
     this.loadingIndicator_.hide ();
 }
   }
@@ -2717,12 +2739,15 @@ if (   this.loadingIndicator_ != null) {
    boolean isDebug() {
   return    this.session_.isDebug();
   }
-  public void setFocus(final String id, int selectionStart, int selectionEnd) { 
+  public void setFocus(final String id, int selectionStart, int selectionEnd) {
+   final boolean didFocusChange =!   this.focusId_.equals(id); 
     this.focusId_=  id;
   this.selectionStart_ = selectionStart;
   this.selectionEnd_ = selectionEnd;
-  this.focusChanged_.trigger();
+if (didFocusChange) {
+      this.focusChanged_.trigger();
 }
+  }
   public void setFocus(WWidget  widget, int selectionStart, int selectionEnd) { 
    this.setFocusedWidget (widget);
  String widgetId  =   widget != null?  widget.getId(): ""; 
@@ -2753,7 +2778,7 @@ if (   this.loadingIndicator_ != null) {
           
   <p>
   
-  This returns the widget that has focus, or <code>null</code> if no widget has focus.
+  This returns the widget that has focus, or <code>null</code> if no widget has focus or if the focused widget has been deleted.
   
   <p>
   @see WApplication#getFocus()
@@ -2765,7 +2790,7 @@ if (   this.loadingIndicator_ != null) {
   */
   public WWidget  getFocusedWidget() {
   if ( ! (   this.focusedWidget_ != null) || !    this.focusedWidget_.getId().equals(  this.focusId_)) {
-      this.focusedWidget_ =    this.focusId_.length()==0? null:    this.getRoot().findById (  this.focusId_);
+      this.focusedWidget_ =    this.focusId_.length()==0? null:   this.findById (  this.focusId_);
 }
   return   this.focusedWidget_;
   }
@@ -3039,7 +3064,7 @@ if (   this.session_.isUseUglyInternalPaths()) {
 if (   this.domRoot2_ != null) { 
        this.domRoot2_.enableAjax ();
 } 
-   this.doJavaScript (  "Wt4_13_0.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+   this.doJavaScript (  "Wt4_13_2.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
 }
   /**
   
@@ -3442,7 +3467,7 @@ if (!   this.internalPathValid_) {
   for ( int i =    this.javaScriptPreamble_.size () -   this.newJavaScriptPreamble_; 
   i <    this.javaScriptPreamble_.size ();++ i) {
      final WJavaScriptPreamble preamble =  this.javaScriptPreamble_.get(i);
-     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_13_0";
+     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_13_2";
     if (  preamble.type == JavaScriptObjectType.JavaScriptFunction) {
       out.append(scope).append('.').append(  preamble.name).append(" = function() { return (").append(  preamble.src).append(").apply(").append(scope).append(", arguments) };\n");
 }
@@ -3481,10 +3506,10 @@ if (!   this.internalPathValid_) {
   this.notificationPermissionChanged_.trigger( this.getEnv().getNotificationPermission());
 }
    void setAsFocus(final String id) {
-  if ( ! (  this.getRoot() != null) ||   this.beingDeleted_) {
+  if (  this.beingDeleted_) {
     return ;
   }
-   WWidget  w =   this.getRoot().findById (id);
+   WWidget  w =  this.findById (id);
   if ( w != null) { 
      w.setFocus ();
 }

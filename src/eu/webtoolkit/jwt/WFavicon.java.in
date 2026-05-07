@@ -55,6 +55,7 @@ The state of the {@link WFavicon} can be changed using {@link WFavicon#update() 
 public abstract class WFavicon {
   private static Logger logger = LoggerFactory.getLogger(WFavicon.class);
   
+  // public void  destroy() ;
   /**
   
   Returns the url to the favicon. 
