@@ -414,6 +414,7 @@ return false;
   this.conditions_ = new HashSet<String>();
   this.text_ = new WString();
   this.errorText_ = "";
+  this.boundWidgetsJs_ = new StringBuilder();
   this.encodeInternalPaths_ = false;
   this.encodeTemplateText_ = true;
   this.changed_ = false;
@@ -450,6 +451,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.conditions_ = new HashSet<String>();
   this.text_ = new WString();
   this.errorText_ = "";
+  this.boundWidgetsJs_ = new StringBuilder();
   this.encodeInternalPaths_ = false;
   this.encodeTemplateText_ = true;
   this.changed_ = false;
@@ -873,7 +875,7 @@ if (    this.previouslyRendered_ != null &&     this.previouslyRendered_.contain
 }
       else  { 
          this.applyArguments (w, args);
-  w.htmlText (result);
+  w.htmlText (result,   this.boundWidgetsJs_);
 }
       if (   this.newlyRendered_ != null) {
            this.newlyRendered_.add(w);
@@ -1316,8 +1318,10 @@ if (  this.encodeTemplateText_) {
   this.newlyRendered_ = newlyRendered;
  StringWriter html  = new StringWriter(); 
      this.renderTemplate (html);
+ element.callJavaScript (  this.boundWidgetsJs_.toString());
   this.previouslyRendered_ = null;
   this.newlyRendered_ = null;
+  this.boundWidgetsJs_.setLength(0);
 for ( int i =0; 
     i <  newlyRendered.size ();++ i) {
        WWidget  w =newlyRendered.get(i);
@@ -1463,6 +1467,7 @@ return ;
   private Set<String> conditions_ ;
   private WString text_ ;
   private String errorText_ ;
+  private StringBuilder boundWidgetsJs_ ;
   private boolean encodeInternalPaths_ ;
   private boolean encodeTemplateText_ ;
   private boolean changed_ ;
@@ -1590,7 +1595,7 @@ state = Next;
   private void unrenderWidget(WWidget  w, final DomElement el) {
    String removeJs  =   w.renderRemoveJs (false);
   if ( removeJs.charAt(0) == '_') { 
-    el.callJavaScript (  "Wt4_13_2.remove('" + removeJs.substring(1) + "');", true);
+    el.callJavaScript (  "Wt4_13_3.remove('" + removeJs.substring(1) + "');", true);
 }
   else  { 
     el.callJavaScript (removeJs, true);

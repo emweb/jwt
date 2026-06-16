@@ -7,6 +7,7 @@ package eu.webtoolkit.jwt;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,24 +187,10 @@ public abstract class WResource extends WObject {
 				// suggestions
 				// First filename is for browsers that don't support RFC 5987
 				// Second filename is for browsers that do support RFC 5987
-				String fileField;
-				// We cannot query wApp here, because wApp doesn't exist for
-				// static resources.
-				String userAgent = request.getUserAgent();
-				boolean isIE = userAgent.contains("MSIE");
-				boolean isChrome = userAgent.contains("Chrome");
-				if (isIE || isChrome) {
-					// filename="foo-%c3%a4-%e2%82%ac.html"
-					// Note: IE never converts %20 back to space, so avoid escaping
-					// IE will also not url decode the filename if the file has no ASCII
-					// extension (e.g. .txt)
-					fileField = "filename=\""
-							+ StringUtils.urlEncode(suggestedFileName_, " ")
-							+ "\";";
-				} else {
-					// Binary UTF-8 sequence: for FF3, Safari, Chrome, Chrome9
-					fileField = "filename=\"" + suggestedFileName_ + "\";";
-				}
+				String normalized = Normalizer.normalize(suggestedFileName_, Normalizer.Form.NFKD);
+				String strippedAccents = normalized.replaceAll("\\p{M}", "");
+				String asciiFilename = strippedAccents.replaceAll("[^\\x00-\\x7F]", "?");
+				String fileField = "filename=\"" + asciiFilename + "\";";
 				// Next will be picked by RFC 5987 in favour of the
 				// one without specified encoding (Chrome9,
 				fileField += StringUtils.encodeHttpHeaderField("filename",

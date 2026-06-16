@@ -440,10 +440,8 @@ if (   this.menu_ != null) {
      WApplication.getInstance().removeGlobalWidget (menu);
 } 
    this.addWidget (menu);
-if (      this.subMenu_.isPopup () &&   this.getParentMenu() != null &&    this.getParentMenu().isPopup ()) { 
-        this.subMenu_.getWebWidget().setZIndex (Math.max(   this.getParentMenu().getZIndex() + 1000,    this.subMenu_.getZIndex()));
-}
-  if ( popup != null) { 
+  this.updateMenuZIndex ();
+if ( popup != null) { 
      this.setSelectable (false);
   popup.setButton ( this.getAnchor());
   this.updateInternalPath ();
@@ -1018,10 +1016,8 @@ if (iconPath.length()!=0) {
    void setParentMenu(WMenu  menu) {  
   this.menu_ = menu;
   this.updateInternalPath ();
-if (    menu != null &&   menu.isPopup () &&    this.subMenu_ != null &&     this.subMenu_.isPopup ()) { 
-        this.subMenu_.getWebWidget().setZIndex (Math.max(  menu.getZIndex() + 1000,    this.subMenu_.getZIndex()));
+  this.updateMenuZIndex ();
 }
-  }
   private void selectNotLoaded() {
   if (!  this.isContentsLoaded()) { 
      this.select ();
@@ -1117,6 +1113,19 @@ selectFromCheckbox = true;
 }
     else  {
           this.checkBox_.checked ().trigger();
+}
+  }
+  }
+  private void updateMenuZIndex() {
+  if (   ! (   this.subMenu_ != null) || !     this.subMenu_.isPopup () || ! (   this.menu_ != null) || !     this.menu_.isPopup ()) {
+    return ;
+  }
+   int currentZIndex =   this.subMenu_.getZIndex();
+   int newZIndex =Math.max(    this.menu_.getZIndex() + 1000, currentZIndex);
+  if ( newZIndex != currentZIndex) { 
+        this.subMenu_.getWebWidget().setZIndex (newZIndex);
+for (WMenuItem  submenuItem :   this.subMenu_.getItems()) { 
+       submenuItem.updateMenuZIndex ();
 }
   }
   }

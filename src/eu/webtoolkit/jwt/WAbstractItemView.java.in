@@ -105,6 +105,7 @@ if (! isReset) {
    this.configureModelDragDrop ();
   this.setRootIndex (null);
   this.setHeaderHeight (  this.headerLineHeight_);
+  this.currentSortColumn_ = - 1;
 }
   /**
   

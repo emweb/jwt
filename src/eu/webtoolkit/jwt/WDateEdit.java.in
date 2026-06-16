@@ -379,6 +379,7 @@ if (  this.isHidden ()) {
 } 
      this.popup_.setAnchorWidget (this);
     this.popup_.setTransient (true);
+  WApplication.getInstance().removeGlobalWidget (  this.popup_);
     this.oCalendar_.activated ().addListener(  this.popup_, (WDate e1) -> {
   	WDateEdit.this.popup_.hide();
   });
@@ -405,7 +406,8 @@ if (  this.isHidden ()) {
   }
   protected void render(EnumSet<RenderFlag> flags) {
   if ( flags.contains(RenderFlag.Full) && !  this.isNativeControl()) { 
-     this.defineJavaScript ();
+     WApplication.getInstance().addGlobalWidget (  this.popup_);
+  this.defineJavaScript ();
  WDateValidator dv  =  this.getDateValidator();
     if ( dv != null) { 
        this.setTop ( dv.getTop());
@@ -511,7 +513,7 @@ if (  this.isHidden ()) {
   private void defineJavaScript() {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WDateEdit.js", wtjs1 ());
- String jsObj  =       "new Wt4_13_2.WDateEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
+ String jsObj  =       "new Wt4_13_3.WDateEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
    this.setJavaScriptMember (" WDateEdit", jsObj);
  final AbstractEventSignal b =  this.mouseMoved ();
    final AbstractEventSignal c =  this.keyWentDown (); 

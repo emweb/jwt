@@ -469,6 +469,7 @@ if (  this.isHidden ()) {
 } 
      this.popup_.setAnchorWidget (this);
     this.popup_.setTransient (true);
+  WApplication.getInstance().removeGlobalWidget (  this.popup_);
   this.scheduleThemeStyleApply ( WApplication.getInstance().getTheme(),   this.popup_, WidgetThemeRole.TimePickerPopup);
   this.escapePressed ().addListener(  this.popup_, () -> {
   	WTimeEdit.this.popup_.hide();
@@ -499,7 +500,8 @@ if (  this.isHidden ()) {
   }
   protected void render(EnumSet<RenderFlag> flags) {
   if ( flags.contains(RenderFlag.Full) && !  this.isNativeControl()) { 
-     this.defineJavaScript ();
+     WApplication.getInstance().addGlobalWidget (  this.popup_);
+  this.defineJavaScript ();
 } 
    super.render (flags);
 }
@@ -587,7 +589,7 @@ if (! (currentValue!=null && currentValue.isValid())) {
   private void defineJavaScript() {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WTimeEdit.js", wtjs1 ());
- String jsObj  =       "new Wt4_13_2.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
+ String jsObj  =       "new Wt4_13_3.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
    this.setJavaScriptMember (" WTimeEdit", jsObj);
  final AbstractEventSignal b =  this.mouseMoved ();
    final AbstractEventSignal c =  this.keyWentDown (); 

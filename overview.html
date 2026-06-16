@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.13.2</title>
+<title>JWt 4.13.3</title>
 </head>
 <body>
 
@@ -24,6 +24,95 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.13.3 (June 16, 2026)</h2>
+
+<p>JWt 4.13.3 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14513" target="_blank">Issue #14513</a>:
+    fixed form data sometimes being updated for events where it should not be updated,
+    or not being updated for events where it should. This was mainly causing issues with
+    Firefox.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14150" target="_blank">Issue #14150</a>:
+    fixed
+    sub-sub-<a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a> sometimes popping
+    up behind its parent menu.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14575" target="_blank">Issue #14575</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDateEdit.html" target="_blank">WDateEdit</a> and
+    <a href="eu/webtoolkit/jwt/WTimeEdit.html" target="_blank">WTimeEdit</a> popups missing some style classes when the editor started hidden.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12407" target="_blank">Issue #12407</a>:
+    fixed submenus wrongly selecting themselves when clearing their selection using
+    <a href="eu/webtoolkit/jwt/WMenu.html#select(int)" target="_blank">WMenu.select(-1)</a>. This meant that
+    instead of clearing the selection of a submenu, calling
+    <a href="eu/webtoolkit/jwt/WMenu.html#select(int)" target="_blank">WMenu.select(-1)</a> would actually
+    select the first item of the submenu.
+  </li>
+  <li>
+  <a href="https://redmine.emweb.be/issues/14576" target="_blank">Issue #14576</a>:
+    fixed adding an empty path component or changing a path component to an empty one in a
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> would change the selected
+    item to the one with the empty path component if the
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> had internal path enabled.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/10923" target="_blank">Issue #10923</a>:
+    fixed various entries of <a href="eu/webtoolkit/jwt/WEnvironment.html" target="_blank">WEnvironment</a> properties
+    not being set in
+    <a href="eu/webtoolkit/jwt/EntryPointType.html#WidgetSet" target="_blank">Widgetset</a> mode.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14527" target="_blank">Issue #14527</a>:
+    fixed resize handles in layouts adding extra space at the end of a row or column.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/12429" target="_blank">Issue #12429</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html" target="_blank">WAbstractItemView</a> not resetting
+    the sorted column when changing or resetting its model.
+  </li>
+  <li>
+  <a href="https://redmine.emweb.be/issues/14572" target="_blank">Issue #14572</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#scrollTo(eu.webtoolkit.jwt.WModelIndex,eu.webtoolkit.jwt.ScrollHint,eu.webtoolkit.jwt.ScrollHint)" target="_blank">WAbstractItemView.scrollTo()</a>
+    not fully scrolling the column to the left when it should, leading to the right border of the last column being hidden.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14576" target="_blank">Issue #14576</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTemplate.html" target="_blank">WTemplate</a> with bound widgets executing JavaScript code on the client side when calling
+    <a href="eu/webtoolkit/jwt/WTemplate.html#renderTemplate(java.io.Writer)" target="_blank">WTemplate.renderTemplate()</a>.
+
+    Additionally,
+    <a href="eu/webtoolkit/jwt/WWidget.html#htmlText(java.io.Writer,java.lang.StringBuilder)" target="_blank">WWidget.htmlText()</a> will no longer execute JavaScript code,
+    but will instead stream the JavaScript code to the optional <code>StringBuilder</code>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14579" target="_blank">Issue #14579</a>:
+    ensured that
+    <a href="eu/webtoolkit/jwt/WResource.html" target="_blank">WResource</a> suggested file names
+    fallback for browser that do not support RFC 5987 are sent without non-ASCII characters.
+  </li>
+</ul>
+
+<p>JWt 4.13.3 also comes with the following improvements: </p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14473" target="_blank">Issue #14473</a>:
+    made
+    <a href="eu/webtoolkit/jwt/WDialog.html#positionAt(eu.webtoolkit.jwt.WMouseEvent)" target="_blank">WDialog.positionAt(WMouseEvent)</a>
+    also show the dialog.
+  </li>
+</ul>
 
 <h2>Release 4.13.2 (May 7, 2026)</h2>
 

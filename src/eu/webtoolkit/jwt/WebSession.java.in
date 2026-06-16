@@ -25,6 +25,18 @@ import org.slf4j.LoggerFactory;
  class WebSession {
   private static Logger logger = LoggerFactory.getLogger(WebSession.class);
   
+  static class SignalProcessAction {
+    private static Logger logger = LoggerFactory.getLogger(SignalProcessAction.class);
+    
+    public  SignalProcessAction(int number, boolean updateCache, boolean handleSignal) {
+    this.number = number;
+    this.updateCache = updateCache;
+    this.handleSignal = handleSignal;
+    }
+    public int number ;
+    public boolean updateCache ;
+    public boolean handleSignal ;
+  }
   enum State {
     JustCreated,
     ExpectLoad,
@@ -977,12 +989,15 @@ return url;
             return EventType.Other;
           }
           else  {
-             List<Integer> signalOrder  =   this.getSignalProcessingOrder (event);
+             List<WebSession.SignalProcessAction> signalActions  =   this.getSignalProcessingOrder (event);
              int timerSignals =0;
             for ( int i =0; 
-            i <  signalOrder.size ();++ i) {
-               int signalI =signalOrder.get(i);
-               String se  =   signalI > 0?  'e' + String.valueOf(signalI): "";
+            i <  signalActions.size ();++ i) {
+               WebSession.SignalProcessAction signalI  = signalActions.get(i);
+              if (!  signalI.handleSignal) {
+                continue;
+              }
+               String se  =    signalI.number > 0?  'e' + String.valueOf( signalI.number): "";
                String  s =  this.getSignal (request, se);
               if (! ( s != null)) {
                 break;
@@ -1043,7 +1058,7 @@ logger.debug(new StringWriter().append("Setting to expire in ").append(String.va
     }
     public  Handler() {
     this.nextSignal = - 1;
-    this.signalOrder = new ArrayList<Integer>();
+    this.signalActions = new ArrayList<WebSession.SignalProcessAction>();
     this.prevHandler_ = null;
     this.session_ = null;
     this.request_ = null;
@@ -1053,7 +1068,7 @@ logger.debug(new StringWriter().append("Setting to expire in ").append(String.va
 }
     public  Handler(final WebSession session, final WebRequest request, final WebResponse response) {
     this.nextSignal = - 1;
-    this.signalOrder = new ArrayList<Integer>();
+    this.signalActions = new ArrayList<WebSession.SignalProcessAction>();
     this.prevHandler_ = null;
     this.session_ = session;
     this.request_ = request;
@@ -1064,7 +1079,7 @@ logger.debug(new StringWriter().append("Setting to expire in ").append(String.va
 }
     public  Handler(final WebSession session, WebSession.Handler.LockOption lockOption) {
     this.nextSignal = - 1;
-    this.signalOrder = new ArrayList<Integer>();
+    this.signalActions = new ArrayList<WebSession.SignalProcessAction>();
     this.prevHandler_ = null;
     this.session_ = session;
     this.request_ = null;
@@ -1084,7 +1099,7 @@ break;
 }
     public  Handler(WebSession  session) {
     this.nextSignal = - 1;
-    this.signalOrder = new ArrayList<Integer>();
+    this.signalActions = new ArrayList<WebSession.SignalProcessAction>();
     this.prevHandler_ = null;
     this.session_ = session;
     this.request_ = null;
@@ -1134,7 +1149,7 @@ if (    this.session_.triggerUpdate_) {
   this.response_ = response;
 }
     public int nextSignal ;
-    public List<Integer> signalOrder ;
+    public List<WebSession.SignalProcessAction> signalActions ;
      static void attachThreadToSession(final WebSession session) {
     attachThreadToHandler ((WebSession.Handler)null);
 if (! ( session != null)) {
@@ -1332,14 +1347,20 @@ if (forcePlain) {
 }
             else  { 
                handler.getResponse().setResponseType (WebRequest.ResponseType.Script);
-  this.init (request);
-    this.env_.enableAjax (request);
+ String  wtt = request.getParameter ("wtt");
+              if (  wtt != null &&  wtt.equals("widgetset")) { 
+                   this.env_.enableAjax (request);
 if (!   this.start (handler.getResponse())) {
-                throw new WException("Could not start application.");
+                  throw new WException("Could not start application.");
 } 
-                 this.app_.notify (new WEvent(new WEvent.Impl(handler)));
+                   this.app_.notify (new WEvent(new WEvent.Impl(handler)));
   this.setExpectLoad ();
 }
+              else  { 
+                 this.init (request);
+  this.serveResponse (handler);
+}
+            }
             break;
             default:
             assert false;
@@ -1515,7 +1536,7 @@ if ( handler.getResponse() != null) {
    this.setState (WebSession.State.Loaded,    this.controller_.getConfiguration().getSessionTimeout());
 if (wasSuspended) {
     if (    this.env_.hasAjax() &&     this.controller_.getConfiguration().reloadIsNewSession ()) { 
-         this.app_.doJavaScript ("Wt4_13_2.history.removeSessionId()");
+         this.app_.doJavaScript ("Wt4_13_3.history.removeSessionId()");
   this.sessionIdInUrl_ = false;
 }
         this.app_.unsuspended ().trigger();
@@ -1713,14 +1734,21 @@ return ;
    String signalId  =     this.app_.encodeSignal (objectId, name);
   return   this.decodeSignal (signalId,  checkExposed && ! name.equals("resized"));
   }
-  private String[] getFormParamValues(final WebRequest request, final String se, final String name) {
-   String[]  requestParam = request.getParameterValues ( se + name);
+  private String[] getFormParamValues(final WebRequest request, final String name, final WebSession.SignalProcessAction spa) {
    final Configuration conf =   this.controller_.getConfiguration();
+   int signalNumber = spa.number;
+   String[]  requestParam ;
+  do  {
+     String se  =   signalNumber > 0?  'e' + String.valueOf(signalNumber): "";
+    requestParam =  request.getParameterValues ( se + name);
+ signalNumber--;
+}
+  while (   conf.isCacheFormData() && !  spa.updateCache && ( requestParam.length == 0) &&  signalNumber >= 0);
   if (! ( requestParam.length == 0)) {
     if (   requestParam[0].equals("Wt-null")) {
       requestParam = new String[0];
 }
-    if (conf.isCacheFormData()) {  
+    if ( conf.isCacheFormData() &&  spa.updateCache) {  
       this.formDataCache_.put(name, requestParam);
 }
     return  requestParam;
@@ -1735,10 +1763,10 @@ return ;
   }
   return  requestParam;
   }
-  private WObject.FormData getFormData(final WebRequest request, final String se, final String name) {
+  private WObject.FormData getFormData(final WebRequest request, final String name, final WebSession.SignalProcessAction spa) {
    List<UploadedFile> files  = new ArrayList<UploadedFile>();
   CollectionUtils.findInMultimap(request.getUploadedFiles(), name, files);
- final String[] paramValues =  this.getFormParamValues (request, se, name);
+ final String[] paramValues =  this.getFormParamValues (request, name, spa);
   return new WObject.FormData(paramValues, files);
   }
    boolean inFormDataCache(final String name) {
@@ -1844,10 +1872,11 @@ break;
   s.processDynamic (jsEvent);
 }
   }
-  private List<Integer> getSignalProcessingOrder(final WEvent e) {
+  private List<WebSession.SignalProcessAction> getSignalProcessingOrder(final WEvent e) {
    final WebSession.Handler handler =   e.impl_.handler;
-   List<Integer> highPriority  = new ArrayList<Integer>();
-   List<Integer> normalPriority  = new ArrayList<Integer>();
+   final Configuration conf =   this.controller_.getConfiguration();
+   List<WebSession.SignalProcessAction> highPriority  = new ArrayList<WebSession.SignalProcessAction>();
+   List<WebSession.SignalProcessAction> normalPriority  = new ArrayList<WebSession.SignalProcessAction>();
   for ( int i =0;;
   ++ i) {
      final WebRequest request = handler.getRequest();
@@ -1862,15 +1891,21 @@ break;
       }
       else  {
         if (  signal.getName() == WFormWidget.CHANGE_SIGNAL) {
-          highPriority.add(i);
+          if (   highPriority.size () != i && conf.isCacheFormData()) {
+            highPriority.add(new WebSession.SignalProcessAction(i, false, true));
+normalPriority.add(new WebSession.SignalProcessAction(i, true, false));
 }
+          else  {
+            highPriority.add(new WebSession.SignalProcessAction(i, true, true));
+}
+        }
         else  {
-          normalPriority.add(i);
+          normalPriority.add(new WebSession.SignalProcessAction(i, true, true));
 }
       }
     }
     else  {
-      normalPriority.add(i);
+      normalPriority.add(new WebSession.SignalProcessAction(i, true, true));
 }
   }
   highPriority.addAll(normalPriority);
@@ -1879,17 +1914,17 @@ return highPriority;
   private void notifySignal(final WEvent e) throws IOException{
    final WebSession.Handler handler =   e.impl_.handler;
   if (  handler.nextSignal == - 1) {
-    Utils.copyList(  this.getSignalProcessingOrder (e),  handler.signalOrder);
+    Utils.copyList(  this.getSignalProcessingOrder (e),  handler.signalActions);
  handler.nextSignal = 0;
 }
   for ( int i = handler.nextSignal; 
-  i <   handler.signalOrder.size ();++ i) {
+  i <   handler.signalActions.size ();++ i) {
     if (! ( handler.getRequest() != null)) {
       return ;
     }
      final WebRequest request = handler.getRequest();
-     int signalI = handler.signalOrder.get(i);
-     String se  =   signalI > 0?  'e' + String.valueOf(signalI): "";
+     WebSession.SignalProcessAction signalI  =  handler.signalActions.get(i);
+     String se  =    signalI.number > 0?  'e' + String.valueOf( signalI.number): "";
      String  signalE =  this.getSignal (request, se);
     if (! ( signalE != null)) {
       return ;
@@ -1914,7 +1949,7 @@ if (   this.getType() != EntryPointType.WidgetSet ||  !  signalE.equals("none") 
       }
       else  {
         if (!  signalE.equals("poll")) { 
-           this.propagateFormValues (e, se);
+           this.propagateFormValues (e, se, signalI);
  boolean discardStateless = !  request.isWebSocketMessage () &&  i == 0;
           if (discardStateless) { 
               this.renderer_.saveChanges ();
@@ -1924,7 +1959,7 @@ if ( signalE.equals("hash")) {
              String  hashE = request.getParameter ( se + "_");
             if ( hashE != null) { 
                this.changeInternalPath ( hashE, handler.getResponse());
-    this.app_.doJavaScript ("Wt4_13_2.scrollHistory();");
+    this.app_.doJavaScript ("Wt4_13_3.scrollHistory();");
 }
             else  { 
                this.changeInternalPath ("", handler.getResponse());
@@ -1961,7 +1996,7 @@ if (  kind == WebSession.SignalKind.LearnedStateless && discardStateless) {
   } 
      this.app_.getJustRemovedSignals().clear ();
 }
-  private void propagateFormValues(final WEvent e, final String se) {
+  private void propagateFormValues(final WEvent e, final String se, final WebSession.SignalProcessAction spa) {
    final WebRequest request =    e.impl_.handler.getRequest(); 
     this.renderer_.updateFormObjectsList (  this.app_);
  Map<String, WObject> formObjects  =   this.renderer_.getFormObjects();
@@ -1994,10 +2029,11 @@ if (  kind == WebSession.SignalKind.LearnedStateless && discardStateless) {
      WObject  obj = i.getValue();
     if (! ( 0L != 0)) {
        WWidget  w =ObjectUtils.cast(obj, WWidget.class);
-      if (  w != null && !   w.isEnabled ()) {
+       WObject.FormData data  =   this.getFormData (request, formName, spa);
+      if ( !  spa.handleSignal ||   w != null && !   w.isEnabled ()) {
         continue;
       } 
-       obj.setFormData (  this.getFormData (request, se, formName));
+       obj.setFormData (data);
 }
     else  { 
        obj.setRequestTooLarge (0L);

@@ -513,7 +513,7 @@ super.remove();
    String side  =   orientation == Orientation.Horizontal? ".Horizontal": ".Vertical";
    String canAdjustX  =  adjustOrientations.contains(Orientation.Horizontal)? "true": "false";
    String canAdjustY  =  adjustOrientations.contains(Orientation.Vertical)? "true": "false"; 
-   this.doJavaScript (           "Wt4_13_2.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_13_2" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
+   this.doJavaScript (           "Wt4_13_3.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_13_3" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
 }
   /** 
   
@@ -1166,7 +1166,7 @@ super.remove();
           
   */
   public String getJsRef() {
-  return   "Wt4_13_2.$('" +  this.getId() + "')";
+  return   "Wt4_13_3.$('" +  this.getId() + "')";
   }
   /**
   
@@ -1486,16 +1486,47 @@ super.remove();
   Streams the widget as CharEncoding::UTF8-encoded (HTML-compatible) XHTML.
   
   <p>
-  This may be useful as a debugging tool for the web-savvy, or in other rare situations. Usually, you will not deal directly with HTML, and calling this method on a widget that is rendered may interfere with the library keeping track of changes to the widget. 
+  This may be useful as a debugging tool for the web-savvy, or in other rare situations. Usually, you will not deal directly with HTML, and calling this method on a widget that is rendered may interfere with the library keeping track of changes to the widget.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Before JWt 4.13.3, this method would execute the JavaScript code that would have been called as part of adding this widget to the DOM tree. So that they are available in the DOM tree with the correct handlers and functions. This is no longer the case. If you still want to execute the JavaScript code, you can use the {@link WWidget#htmlText(Writer out, StringBuilder js) htmlText()} method instead, and call the JavaScript code streamed to the WStringStream yourself using {@link WApplication#doJavaScript(String javascript, boolean afterLoaded) WApplication#doJavaScript()}. 
+  </i></p>
+  
+  
           
   */
   public void htmlText(final Writer out) {
+   StringBuilder js  = new StringBuilder(); 
+   this.htmlText (out, js);
+}
+  /**
+  
+  Streams the (X)HTML representation. 
+          
+  <p>
+  
+  Streams the widget as CharEncoding::UTF8-encoded (HTML-compatible) XHTML. This returns the same (X)HTML content as adding the {@link WWidget} to the DOM tree. The JavaScript that would have been called as part of adding this widget to the DOM tree has been stored in <code>js</code>.
+  
+  <p>
+  This may be useful as a debugging tool for the web-savvy, or in other rare situations. Usually, you will not deal directly with HTML, and calling this method on a widget that is rendered may interfere with the library keeping track of changes to the widget.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If your intention is to execute the JavaScript code, you can use {@link WApplication#doJavaScript(String javascript, boolean afterLoaded) WApplication#doJavaScript()} with the JavaScript code streamed to <code>js</code>.
+  </i></p>
+  
+  @see WTemplate
+  
+  
+          
+  */
+  public void htmlText(final Writer out, final StringBuilder js) {
    DomElement  element =  this.createSDomElement (WApplication.getInstance());
    List<DomElement.TimeoutEvent> timeouts  = new ArrayList<DomElement.TimeoutEvent>();
    EscapeOStream sout  = new EscapeOStream(out);
-   EscapeOStream js  = new EscapeOStream(); 
-   element.asHTML (sout, js, timeouts);
-  WApplication.getInstance().doJavaScript (js.toString());
+   EscapeOStream sjs  = new EscapeOStream(js); 
+   element.asHTML (sout, sjs, timeouts);
 
 }
   /**

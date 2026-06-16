@@ -1140,7 +1140,7 @@ bestI = i;
           
   */
    void select(int index, boolean changePath) {
-  if (   this.parentItem_ != null) {
+  if (    this.parentItem_ != null &&  index != - 1) {
      WMenu  parentItemMenu =   this.parentItem_.getParentMenu();
     if (   parentItemMenu.getCurrentItem() !=   this.parentItem_ &&     this.parentItem_.isSelectable ()) { 
        parentItemMenu.select (  parentItemMenu.indexOf (  this.parentItem_), false);
@@ -1206,9 +1206,13 @@ if ( self != null) {
    void itemPathChanged(WMenuItem  item) {
   if (   this.internalPathEnabled_ &&  item.isInternalPathEnabled()) {
      WApplication  app =WApplication.getInstance();
-    if (  app.internalPathMatches (   this.basePath_ +  item.getPathComponent())) { 
-       item.setFromInternalPath ( app.getInternalPath());
+    if (  app.internalPathMatches (   this.basePath_ +  item.getPathComponent())) {
+       String appPath  =   app.internalSubPath (  this.basePath_);
+       WMenuItem  current = this.getCurrentItem();
+      if ( ! ( current != null) ||  match (appPath,  item.getPathComponent()) > match (appPath,  current.getPathComponent())) { 
+         item.setFromInternalPath ( app.getInternalPath());
 }
+    }
   }
   }
    void selectVisual(WMenuItem  item) { 

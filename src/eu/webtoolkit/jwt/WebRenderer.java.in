@@ -149,12 +149,21 @@ if (   this.session_.getApp() != null) {
 }
     break;
     case Script:
-     boolean hybridPage =   this.session_.isProgressiveBoot() ||   this.session_.getEnv().hasAjax();
-    if (! hybridPage) { 
-       this.setRendered (false);
+    if (    this.session_.getType() == EntryPointType.WidgetSet && !   this.session_.getEnv().hasAjax()) { 
+       this.addTestCookie (response);
+  this.setHeaders (response, "text/javascript; charset=UTF-8");
+ StringBuilder out  = new StringBuilder(); 
+       this.streamBootJS (response, false, out);
+ response.out ().append(out.toString());
+}
+    else  {
+       boolean hybridPage =   this.session_.isProgressiveBoot() ||   this.session_.getEnv().hasAjax();
+      if (! hybridPage) { 
+         this.setRendered (false);
 } 
-     this.serveMainscript (response);
-break;
+       this.serveMainscript (response);
+}
+    break;
   }
   }
   public void serveError(int status, final WebResponse response, final String message) throws IOException{
@@ -337,7 +346,7 @@ if (! invisibleToo) {
   private boolean cookieUpdateNeeded_ ;
   private void setHeaders(final WebResponse response, final String mimeType) {
   for (Cookie cookie :  this.cookiesToSet_) { 
-    response.addCookie (cookie);
+     this.addCookie (response, cookie);
 } 
     this.cookiesToSet_.clear ();
   this.cookieUpdateNeeded_ = false;
@@ -347,6 +356,14 @@ if (! invisibleToo) {
   response.addHeader ("Cache-Control", "no-cache, no-store, must-revalidate");
  response.addHeader ("Pragma", "no-cache");
  response.addHeader ("Expires", "0");
+}
+  private void addCookie(final WebResponse response, final Cookie cookie) { 
+  response.addCookie (cookie);
+}
+  private void addTestCookie(final WebResponse response) {
+   StringBuilder cookie  = new StringBuilder();
+  cookie.append("WtTestCookie=ok;").append(" Version=1;").append(" Max-Age=60;").append(" Path=/;").append("httponly;").append("secure;").append("SameSite=None");
+ response.addHeader ("Set-Cookie", cookie.toString());
 }
   private void serveJavaScriptUpdate(final WebResponse response) throws IOException{
   if (!  response.isWebSocketMessage ()) { 
@@ -403,7 +420,7 @@ return ;
  script.setCondition ("SHOW_ERROR",  conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
  script.setCondition ("UGLY_INTERNAL_PATHS",   this.session_.isUseUglyInternalPaths());
  script.setCondition ("DYNAMIC_JS", false);
- script.setVar ("WT_CLASS", "Wt4_13_2");
+ script.setVar ("WT_CLASS", "Wt4_13_3");
  script.setVar ("APP_CLASS",  app.getJavaScriptClass());
  script.setCondition ("STRICTLY_SERIALIZED_EVENTS",  conf.serializedEvents ());
  script.setCondition ("WEB_SOCKETS",  conf.webSockets ());
@@ -458,12 +475,12 @@ if (   this.session_.getType() == EntryPointType.WidgetSet) {
     else  {
        boolean enabledAjax =  app.enableAjax_;
       if (  app.enableAjax_) {
-          this.collectedJS1_.append("var form = Wt4_13_2.getElement('Wt-form'); if (form) {").append(  this.beforeLoadJS_.toString());
+          this.collectedJS1_.append("var form = Wt4_13_3.getElement('Wt-form'); if (form) {").append(  this.beforeLoadJS_.toString());
   this.beforeLoadJS_.setLength(0);
-  this.collectedJS1_.append("var domRoot=").append(   app.domRoot_.getJsRef()).append(';').append("Wt4_13_2.progressed(domRoot);");
+  this.collectedJS1_.append("var domRoot=").append(   app.domRoot_.getJsRef()).append(';').append("Wt4_13_3.progressed(domRoot);");
  int librariesLoaded =  this.loadScriptLibraries (  this.collectedJS1_, app); 
          app.streamBeforeLoadJavaScript (  this.collectedJS1_, false);
-  this.collectedJS2_.append("Wt4_13_2.resolveRelativeAnchors();").append("domRoot.style.visibility = 'visible';").append( app.getJavaScriptClass()).append("._p_.doAutoJavaScript();");
+  this.collectedJS2_.append("Wt4_13_3.resolveRelativeAnchors();").append("domRoot.style.visibility = 'visible';").append( app.getJavaScriptClass()).append("._p_.doAutoJavaScript();");
   this.loadScriptLibraries (  this.collectedJS2_, app, librariesLoaded);
   this.collectedJS2_.append('}');
   app.enableAjax_ = false;
@@ -493,7 +510,7 @@ if (!  app.getEnvironment().isInternalPathUsingFragments()) {
 if (enabledAjax) {
         out.append("\nif (typeof document.readyState === 'undefined')").append(" setTimeout(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);").append("}, 400);").append("else ");
 }
-      out.append("Wt4_13_2.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);});\n");
+      out.append("Wt4_13_3.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);});\n");
 }
   }
    response.out ().append(out.toString());
@@ -746,7 +763,7 @@ out.append(  this.collectedJS1_.toString());
 if (widgetset) {
      String  historyE =  app.getEnvironment().getParameter ("Wt-history");
     if ( historyE != null) {
-      out.append("Wt4_13_2").append(".history.initialize('").append( historyE.charAt(0)).append("-field', '").append( historyE.charAt(0)).append("-iframe', '');\n");
+      out.append("Wt4_13_3").append(".history.initialize('").append( historyE.charAt(0)).append("-field', '").append( historyE.charAt(0)).append("-iframe', '');\n");
 }
   } 
    app.streamAfterLoadJavaScript (out);
@@ -758,7 +775,7 @@ if (! widgetset) {
     out.append("};\n");
 } 
    this.renderSetServerPush (out);
-out.append("Wt4_13_2.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(").append(! widgetset).append(");});\n");
+out.append("Wt4_13_3.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(").append(! widgetset).append(");});\n");
   this.loadScriptLibraries (out, app, librariesLoaded);
 }
   // private void serveWidgetSet(final WebResponse request) ;
@@ -930,7 +947,7 @@ if (  app.hasQuit ()) {
 }
   }
   private void loadStyleSheet(final StringBuilder out, WApplication  app, final WLinkedCssStyleSheet sheet) {
-  out.append("Wt4_13_2").append(".addStyleSheet('").append( sheet.getLink().resolveUrl (app)).append("', '").append(sheet.getMedia()).append("');\n ");
+  out.append("Wt4_13_3").append(".addStyleSheet('").append( sheet.getLink().resolveUrl (app)).append("', '").append(sheet.getMedia()).append("');\n ");
 }
   private void loadStyleSheets(final StringBuilder out, WApplication  app) {
    int first =    app.styleSheets_.size () -   app.styleSheetsAdded_;
@@ -944,7 +961,7 @@ if (  app.hasQuit ()) {
   private void removeStyleSheets(final StringBuilder out, WApplication  app) {
   for ( int i =  (int)    app.styleSheetsToRemove_.size () - 1; 
   i > - 1;-- i) {
-    out.append("Wt4_13_2").append(".removeStyleSheet('").append(   app.styleSheetsToRemove_.get(i).getLink().resolveUrl (app)).append("');\n ");
+    out.append("Wt4_13_3").append(".removeStyleSheet('").append(   app.styleSheetsToRemove_.get(i).getLink().resolveUrl (app)).append("');\n ");
   app.styleSheetsToRemove_.remove( 0 + i);
 }
   }
@@ -1185,9 +1202,15 @@ if ( conf.isUseScriptNonce() && nonce.length()==0) {
  boot.setVar ("SESSION_ID",   this.session_.getSessionId());
  boot.setVar ("APP_CLASS", "Wt");
  boot.streamUntil (out, "BOOT_JS");
-if (! ( hybrid &&     this.session_.getApp().hasQuit ())) {
-     FileServe bootJs  = new FileServe(WtServlet.Boot_js); 
-    bootJs.setVar ("SELF_URL",   this.safeJsStringLiteral (  this.session_.getBootstrapUrl(response, WebSession.BootstrapOption.ClearInternalPath)));
+if (! ( hybrid &&     this.session_.getApp().hasQuit ())) { 
+     this.streamBootJS (response, hybrid, out);
+}
+   response.out ().append(out.toString());
+}
+  private void streamBootJS(final WebResponse response, boolean hybrid, final StringBuilder out) throws IOException{
+   final Configuration conf =   this.session_.getController().getConfiguration();
+   FileServe bootJs  = new FileServe(WtServlet.Boot_js); 
+  bootJs.setVar ("SELF_URL",   this.safeJsStringLiteral (  this.session_.getBootstrapUrl(response, WebSession.BootstrapOption.ClearInternalPath)));
  bootJs.setVar ("SESSION_ID",   this.session_.getSessionId());
   this.expectedAckId_ =   this.scriptId_ = MathUtils.randomInt();
   this.ackErrs_ = 0;
@@ -1199,16 +1222,15 @@ if (! ( hybrid &&     this.session_.getApp().hasQuit ())) {
  bootJs.setVar ("APP_CLASS", "Wt");
  bootJs.setVar ("PATH_INFO",   this.safeJsStringLiteral (   this.session_.pagePathInfo_));
  bootJs.setVar ("DELAY_LOAD_AT_BOOT", conf.isDelayLoadAtBoot());
- bootJs.setCondition ("COOKIE_CHECKS", conf.isCookieChecks());
+ boolean testCookieSupport = conf.isCookieChecks() &&    this.session_.getType() != EntryPointType.WidgetSet; 
+  bootJs.setCondition ("COOKIE_CHECKS", testCookieSupport);
  bootJs.setCondition ("HYBRID", hybrid);
  bootJs.setCondition ("PROGRESS",  hybrid && !   this.session_.getEnv().hasAjax());
  bootJs.setCondition ("DEFER_SCRIPT", true);
  bootJs.setCondition ("WEBGL_DETECT", conf.isWebglDetect());
  String internalPath  =  hybrid?    this.session_.getApp().getInternalPath():   this.session_.getEnv().getInternalPath(); 
-    bootJs.setVar ("INTERNAL_PATH",   this.safeJsStringLiteral (internalPath));
+  bootJs.setVar ("INTERNAL_PATH",   this.safeJsStringLiteral (internalPath));
  bootJs.stream (out);
-}
-   response.out ().append(out.toString());
 }
   private void addResponseAckPuzzle(final StringBuilder out) {
    String puzzle  = "";
