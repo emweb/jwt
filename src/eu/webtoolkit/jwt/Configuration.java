@@ -183,7 +183,7 @@ public class Configuration {
   // Debug
 	private ErrorReporting errorReporting = ErrorReporting.ErrorMessage;
 	private ClientSideErrorReportLevel clientSideErrorReportLevel = ClientSideErrorReportLevel.Framework;
-	private boolean cacheFormData = true;
+	private boolean cacheFormData = false;
 	private float maxFormDataResendRatio = 0.5f;
 
   // Request management
