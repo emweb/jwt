@@ -65,8 +65,11 @@ if (  series.getColorMap() == null) {
 }
     else  { 
         series.getColorMap().createStrip (painter, new WRectF(0, offset, labelWidth, textHeight));
-} 
-     painter.drawText ( labelWidth + 10, 0, 100, lineHeight, EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),  series.getTitle());
+}
+     WPen pen  =  painter.getPen(); 
+     painter.setPen (new WPen(  this.legendTextColor_));
+  painter.drawText ( labelWidth + 10, 0, 100, lineHeight, EnumUtils.or(EnumSet.of(AlignmentFlag.Left), AlignmentFlag.Middle),  series.getTitle());
+  painter.setPen (pen);
 if ( count ==   this.legendColumns_) { 
        painter.translate ( - (   this.legendColumns_ - 1) *   this.legendColumnWidth_.getValue(), lineHeight);
 count = 0;

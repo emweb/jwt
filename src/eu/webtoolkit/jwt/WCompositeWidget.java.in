@@ -168,6 +168,9 @@ if (   this.impl_ != null) {
   public WLength getMaximumHeight() {
   return    this.impl_.getMaximumHeight();
   }
+  public void anchorAt(WWidget  widget, Orientation orientation) { 
+     this.impl_.anchorAt (widget, orientation);
+}
   public void setLineHeight(final WLength height) { 
      this.impl_.setLineHeight (height);
 }
@@ -245,6 +248,21 @@ if (   this.impl_ != null) {
 }
   public boolean isPopup() {
   return     this.impl_.isPopup ();
+  }
+  public String getPositionAnchorName() {
+  return    this.impl_.getPositionAnchorName();
+  }
+  public void becomePositionAnchor() { 
+     this.impl_.becomePositionAnchor ();
+}
+  public void setPositionAnchor(final String anchorName) { 
+     this.impl_.setPositionAnchor (anchorName);
+}
+  public void setPositionAnchor(WWidget  anchor) { 
+     this.impl_.setPositionAnchor (anchor);
+}
+  public String getPositionAnchor() {
+  return    this.impl_.getPositionAnchor();
   }
   public void setInline(boolean isInline) {
   // this.resetLearnedSlot(WWidget.show);

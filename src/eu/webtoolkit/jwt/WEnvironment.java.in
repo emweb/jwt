@@ -64,7 +64,7 @@ public class WEnvironment {
           
   */
   public static String getJavaScriptWtScope() {
-  return "Wt4_13_4";
+  return "Wt4_14_0";
   }
   /**
   
@@ -181,6 +181,40 @@ public class WEnvironment {
   }
   /**
   
+  Returns a secure cookie value. 
+          
+  <p>
+  
+  Helper function that add the __Secure- prefix to the cookie name and calls {@link WEnvironment#getCookie(String cookieName) getCookie()}.
+  
+  <p>
+  @see WEnvironment#getCookie(String cookieName)
+  
+  
+          
+  */
+  public String  getSecureCookie(final String cookieName) {
+  return   this.getCookie ( "__Secure-" + cookieName);
+  }
+  /**
+  
+  Returns a host cookie value. 
+          
+  <p>
+  
+  Helper function that add the __Host- prefix to the cookie name and calls {@link WEnvironment#getCookie(String cookieName) getCookie()}.
+  
+  <p>
+  @see WEnvironment#getCookie(String cookieName)
+  
+  
+          
+  */
+  public String  getHostCookie(final String cookieName) {
+  return   this.getCookie ( "__Host-" + cookieName);
+  }
+  /**
+  
   Returns a header value. 
           
   <p>
@@ -277,6 +311,27 @@ public class WEnvironment {
   */
   public WNotification.Permission getNotificationPermission() {
   return   this.notificationPermission_;
+  }
+  public boolean isPositionAnchorSupported() {
+  return   this.positionAnchorSupported_;
+  }
+  /**
+  
+  Returns the original visibility state of the page. 
+          
+  <p>
+  
+  This returns the visibility state of the page as it was when ajax was enabled.
+  
+  <p>
+  @see WApplication#visibilityChanged()
+  @see WApplication#getVisibilityState()
+  
+  
+          
+  */
+  public VisibilityState getVisibilityState() {
+  return   this.visibilityState_;
   }
   /**
   
@@ -383,6 +438,23 @@ public class WEnvironment {
   */
   public String getTimeZoneName() {
   return   this.timeZoneName_;
+  }
+  /**
+  
+  Returns the preferred color scheme as reported by the client. 
+          
+  <p>
+  
+  Returns the preferred color scheme for the client, which is either &quot;light&quot; or &quot;dark&quot;. In case the client has no preference, or the browser does not support this, the empty string is returned.
+  
+  <p>
+  @see WTheme#setColorMode(String mode)
+  
+  
+          
+  */
+  public String getPreferredColorScheme() {
+  return   this.preferredColorScheme_;
   }
   /**
   
@@ -527,7 +599,8 @@ public class WEnvironment {
           
   */
   public boolean isTreatLikeBot() {
-  return    this.agentIsSpiderBot () ||   this.isLikelyBotGetRequest ();
+   final Configuration conf =    this.session_.getController().getConfiguration();
+  return    this.agentIsSpiderBot () ||   conf.isInvalidWtdSuspicious () &&   this.isLikelyBotGetRequest ();
   }
   /**
   
@@ -648,7 +721,7 @@ public class WEnvironment {
           
   */
   public static String getLibraryVersion() {
-  return "4.13.4";
+  return "4.14.0";
   }
   // public void libraryVersion(final bad java simple ref int series, final bad java simple ref int major, final bad java simple ref int minor) ;
   /**
@@ -914,11 +987,14 @@ public class WEnvironment {
   protected boolean isLikelyBotGetRequest_ ;
   protected boolean notificationSupported_ ;
   protected WNotification.Permission notificationPermission_ ;
+  protected boolean positionAnchorSupported_ ;
+  protected VisibilityState visibilityState_ ;
    Map<String, String[]> parameters_ ;
    Map<String, String> cookies_ ;
    Locale locale_ ;
    Duration timeZoneOffset_ ;
   protected String timeZoneName_ ;
+  protected String preferredColorScheme_ ;
    String host_ ;
    String userAgent_ ;
    String urlScheme_ ;
@@ -944,11 +1020,14 @@ public class WEnvironment {
   this.isLikelyBotGetRequest_ = false;
   this.notificationSupported_ = false;
   this.notificationPermission_ = WNotification.Permission.Default;
+  this.positionAnchorSupported_ = false;
+  this.visibilityState_ = VisibilityState.Unknown;
   this.parameters_ = new HashMap<String, String[]>();
   this.cookies_ = new HashMap<String, String>();
   this.locale_ = new Locale("");
   this.timeZoneOffset_ = Duration.ofMinutes(0);
   this.timeZoneName_ = "";
+  this.preferredColorScheme_ = "";
   this.host_ = "";
   this.userAgent_ = "";
   this.urlScheme_ = "";
@@ -1199,11 +1278,14 @@ if ( t != -1) {
   this.isLikelyBotGetRequest_ = false;
   this.notificationSupported_ = false;
   this.notificationPermission_ = WNotification.Permission.Default;
+  this.positionAnchorSupported_ = false;
+  this.visibilityState_ = VisibilityState.Unknown;
   this.parameters_ = new HashMap<String, String[]>();
   this.cookies_ = new HashMap<String, String>();
   this.locale_ = new Locale("");
   this.timeZoneOffset_ = Duration.ofMinutes(0);
   this.timeZoneName_ = "";
+  this.preferredColorScheme_ = "";
   this.host_ = "";
   this.userAgent_ = "";
   this.urlScheme_ = "";
@@ -1301,6 +1383,17 @@ if (! (  request.getParameter ("htmlHistory") != null)) {
 if (  this.notificationSupported_) { 
      this.setNotificationPermission ( notifE);
 }
+   String  preferredColorSchemeE = request.getParameter ("pcs"); 
+    this.preferredColorScheme_=    preferredColorSchemeE != null?  preferredColorSchemeE: "";
+if ( !   this.preferredColorScheme_.equals("light") && !   this.preferredColorScheme_.equals("dark")) {
+      this.preferredColorScheme_="";
+}
+   String  anchorE = request.getParameter ("anchor");  
+  this.positionAnchorSupported_ =   anchorE != null?  anchorE.equals("true"): false;
+ String  viSE = request.getParameter ("viS");
+  if ( viSE != null) { 
+     this.setVisibilityState ( viSE);
+}
    String  hashE = request.getParameter ("_");
   if ( hashE != null) { 
      this.setInternalPath ( hashE);
@@ -1343,6 +1436,19 @@ if (  this.notificationSupported_) {
         this.notificationPermission_ = WNotification.Permission.Default;
 }
     }
+  }
+  }
+  private void setVisibilityState(final String visibilityState) {
+  if (visibilityState.equals("visible")) {  
+    this.visibilityState_ = VisibilityState.Visible;
+}
+  else  {
+    if (visibilityState.equals("hidden")) {  
+      this.visibilityState_ = VisibilityState.Hidden;
+}
+    else  {  
+      this.visibilityState_ = VisibilityState.Unknown;
+}
   }
   }
    boolean agentSupportsAjax() {

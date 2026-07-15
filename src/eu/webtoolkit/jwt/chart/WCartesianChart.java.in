@@ -969,10 +969,10 @@ return result;
           
   <p>
   
-  This configures the font, border and background for the legend.
+  This configures the font, border, background and color for the legend.
   
   <p>
-  The default font is a 10pt sans serif font (the same as the default axis label font), the default <code>border</code> is PenStyle::None and the default <code>background</code> is BrushStyle::None.
+  The default font is a 10pt sans serif font (the same as the default axis label font), the default <code>border</code> is PenStyle::None, the default <code>background</code> is BrushStyle::None, and the default <code>textColor</code> is black.
   
   <p>
   @see WCartesianChart#setLegendEnabled(boolean enabled)
@@ -980,10 +980,17 @@ return result;
   
           
   */
-  public void setLegendStyle(final WFont font, final WPen border, final WBrush background) { 
-    this.legend_.setLegendStyle (font, border, background);
+  public void setLegendStyle(final WFont font, final WPen border, final WBrush background, final WColor textColor) { 
+    this.legend_.setLegendStyle (font, border, background, textColor);
   this.update ();
 }
+  /** 
+  
+  Configures the legend decoration. 
+          
+  <p>Calls {@link #setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor) setLegendStyle(font, border, background, new WColor(0, 0, 0))} */public  final void setLegendStyle(final WFont font, final WPen border, final WBrush background)  {
+    setLegendStyle(font, border, background, new WColor(0, 0, 0));
+  }
   /**
   
   Returns the legend location. 
@@ -1060,7 +1067,7 @@ return result;
           
   <p>
   
-  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -1074,7 +1081,7 @@ return result;
           
   <p>
   
-  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -1084,11 +1091,25 @@ return result;
   }
   /**
   
+  Returns the legend text color. 
+          
+  <p>
+  
+  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
+  
+  
+          
+  */
+  public WColor getLegendTextColor() {
+  return   this.legend_.getLegendTextColor();
+  }
+  /**
+  
   Returns the legend background brush. 
           
   <p>
   
-  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesianChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -3230,7 +3251,7 @@ if (   this.hasDeferredToolTips_ && !   this.jsDefined_) {
      StringBuilder ss  = new StringBuilder();
      int selectedCurve =    this.selectedSeries_ != null?  this.getSeriesIndexOf(   this.selectedSeries_): - 1;
      int followCurve =    this.followCurve_ != null?  this.getSeriesIndexOf(   this.followCurve_): - 1;
-    ss.append("new Wt4_13_4.WCartesianChart(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",{curveManipulation:").append(StringUtils.asString(  this.curveManipulationEnabled_).toString()).append(",seriesSelection:").append(StringUtils.asString(  this.seriesSelectionEnabled_).toString()).append(",selectedCurve:").append(selectedCurve).append(",isHorizontal:").append(StringUtils.asString(  this.getOrientation() == Orientation.Horizontal).toString()).append(",zoom:").append(StringUtils.asString(  this.zoomEnabled_).toString()).append(",pan:").append(StringUtils.asString(  this.panEnabled_).toString()).append(",crosshair:").append(StringUtils.asString(  this.crosshairEnabled_).toString()).append(",crosshairXAxis:").append(  this.crosshairXAxis_).append(",crosshairYAxis:").append(  this.crosshairYAxis_).append(",crosshairColor:").append(jsStringLiteral (  this.crosshairColor_.getCssText(true))).append(",followCurve:").append(followCurve).append(",xTransforms:[");
+    ss.append("new Wt4_14_0.WCartesianChart(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",{curveManipulation:").append(StringUtils.asString(  this.curveManipulationEnabled_).toString()).append(",seriesSelection:").append(StringUtils.asString(  this.seriesSelectionEnabled_).toString()).append(",selectedCurve:").append(selectedCurve).append(",isHorizontal:").append(StringUtils.asString(  this.getOrientation() == Orientation.Horizontal).toString()).append(",zoom:").append(StringUtils.asString(  this.zoomEnabled_).toString()).append(",pan:").append(StringUtils.asString(  this.panEnabled_).toString()).append(",crosshair:").append(StringUtils.asString(  this.crosshairEnabled_).toString()).append(",crosshairXAxis:").append(  this.crosshairXAxis_).append(",crosshairYAxis:").append(  this.crosshairYAxis_).append(",crosshairColor:").append(jsStringLiteral (  this.crosshairColor_.getCssText(true))).append(",followCurve:").append(followCurve).append(",xTransforms:[");
 for ( int i =0; 
     i <  this.getXAxisCount();++ i) {
       if ( i != 0) {
@@ -4254,7 +4275,7 @@ break;
     painter.setPen ( this.getLegendBorder().clone());
  painter.setBrush ( this.getLegendBackground());
  painter.drawRect (  x + xOffset -  legendPadding / 2,   y + yOffset -  legendPadding / 2,  legendWidth + legendPadding,  legendHeight + legendPadding);
- painter.setPen (new WPen());
+ painter.setPen (new WPen( this.getLegendTextColor()));
  painter.setFont ( this.getLegendFont());
  int item =0;
     for ( int i =0; 
@@ -4274,6 +4295,7 @@ break;
      int x =  this.getPlotAreaPadding(Side.Left) +  (  w -  this.getPlotAreaPadding(Side.Left) -  this.getPlotAreaPadding(Side.Right)) / 2; 
     painter.save ();
  painter.setFont ( this.getTitleFont());
+ painter.setPen (new WPen( this.getTitleColor()));
  double titleHeight =  this.getTitleFont().getSizeLength().toPixels ();
      final int TITLE_PADDING =10;
      final int TITLE_WIDTH =1000;
@@ -5676,7 +5698,7 @@ if ( ! (axis.getTitle().length()==0) &&  axis.getTitleOrientation() == Orientati
    WApplication  app =WApplication.getInstance();
   if (  app != null && (   this.isInteractive () ||   this.hasDeferredToolTips_)) { 
      app.loadJavaScript ("js/ChartCommon.js", wtjs2 ());
-  app.doJavaScript (   "if (!Wt4_13_4.chartCommon) {Wt4_13_4.chartCommon = new " + "Wt4_13_4.ChartCommon(" +  app.getJavaScriptClass() + "); }", false);
+  app.doJavaScript (   "if (!Wt4_14_0.chartCommon) {Wt4_14_0.chartCommon = new " + "Wt4_14_0.ChartCommon(" +  app.getJavaScriptClass() + "); }", false);
   app.loadJavaScript ("js/WCartesianChart.js", wtjs1 ());
   this.jsDefined_ = true;
 }

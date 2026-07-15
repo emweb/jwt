@@ -879,19 +879,21 @@ default:
   this.flags_.clear(BIT_ADJUST_CHILDREN_ALIGN);
 }
   if (   this.flags_.get(BIT_PADDINGS_CHANGED) ||   all &&    this.padding_ != null && ! (        this.padding_[0].isAuto () &&      this.padding_[1].isAuto () &&      this.padding_[2].isAuto () &&      this.padding_[3].isAuto ())) {
-    if (      this.padding_[0].equals(    this.padding_[1]) &&     this.padding_[0].equals(    this.padding_[2]) &&     this.padding_[0].equals(    this.padding_[3])) { 
-      element.setProperty (Property.StylePadding,     this.padding_[0].getCssText());
+    if (    this.padding_[0].equals(    this.padding_[2])) { 
+      element.setProperty (Property.StylePaddingBlock,     this.padding_[0].getCssText());
 }
     else  {
        StringBuilder s  = new StringBuilder();
-      for ( int i =0; 
-      i < 4;++ i) {
-        if ( i != 0) {
-          s.append(' ');
+      s.append(      this.padding_[0].isAuto ()? "0":     this.padding_[0].getCssText()).append(' ').append(      this.padding_[2].isAuto ()? "0":     this.padding_[2].getCssText());
+ element.setProperty (Property.StylePaddingBlock, s.toString());
 }
-        s.append(      this.padding_[i].isAuto ()? "0":     this.padding_[i].getCssText());
-} 
-      element.setProperty (Property.StylePadding, s.toString());
+    if (    this.padding_[1].equals(    this.padding_[3])) { 
+      element.setProperty (Property.StylePaddingInline,     this.padding_[1].getCssText());
+}
+    else  {
+       StringBuilder s  = new StringBuilder();
+      s.append(      this.padding_[3].isAuto ()? "0":     this.padding_[3].getCssText()).append(' ').append(      this.padding_[1].isAuto ()? "0":     this.padding_[1].getCssText());
+ element.setProperty (Property.StylePaddingInline, s.toString());
 }
       this.flags_.clear(BIT_PADDINGS_CHANGED);
 }

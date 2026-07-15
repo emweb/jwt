@@ -205,7 +205,7 @@ return container;
    WContainerWidget container =new WContainerWidget();
    WNavigationBar  navigation =new WNavigationBar((WContainerWidget) container); 
    navigation.setResponsive (true);
-  navigation.addStyleClass ("navbar-light bg-light");
+  navigation.addStyleClass ("bg-body-secondary");
   navigation.setTitle ("Corpy Inc.", new WLink ("https://www.google.com/search?q=corpy+inc"));
  WStackedWidget  contentsStack =new WStackedWidget((WContainerWidget) container); 
    contentsStack.addStyleClass ("contents");

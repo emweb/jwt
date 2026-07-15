@@ -420,7 +420,7 @@ return ;
  script.setCondition ("SHOW_ERROR",  conf.getErrorReporting() == Configuration.ErrorReporting.ErrorMessage);
  script.setCondition ("UGLY_INTERNAL_PATHS",   this.session_.isUseUglyInternalPaths());
  script.setCondition ("DYNAMIC_JS", false);
- script.setVar ("WT_CLASS", "Wt4_13_4");
+ script.setVar ("WT_CLASS", "Wt4_14_0");
  script.setVar ("APP_CLASS",  app.getJavaScriptClass());
  script.setCondition ("STRICTLY_SERIALIZED_EVENTS",  conf.serializedEvents ());
  script.setCondition ("WEB_SOCKETS",  conf.webSockets ());
@@ -430,6 +430,7 @@ return ;
  script.setVar ("QUITTED_STR", WString.toWString(WString.tr ("Wt.QuittedMessage")).getJsStringLiteral());
  script.setVar ("MAX_FORMDATA_SIZE", conf.getMaxFormDataSize());
  script.setVar ("MAX_PENDING_EVENTS", conf.getMaxPendingEvents());
+ script.setVar ("NO_DEFAULT_CLASS", WWebWidget.jsStringLiteral (WInteractWidget.noDefault));
  String deployPath  =    this.session_.getEnv().publicDeploymentPath_;
   if (deployPath.length()==0) { 
     deployPath=    this.session_.getDeploymentPath();
@@ -475,12 +476,12 @@ if (   this.session_.getType() == EntryPointType.WidgetSet) {
     else  {
        boolean enabledAjax =  app.enableAjax_;
       if (  app.enableAjax_) {
-          this.collectedJS1_.append("var form = Wt4_13_4.getElement('Wt-form'); if (form) {").append(  this.beforeLoadJS_.toString());
+          this.collectedJS1_.append("var form = Wt4_14_0.getElement('Wt-form'); if (form) {").append(  this.beforeLoadJS_.toString());
   this.beforeLoadJS_.setLength(0);
-  this.collectedJS1_.append("var domRoot=").append(   app.domRoot_.getJsRef()).append(';').append("Wt4_13_4.progressed(domRoot);");
+  this.collectedJS1_.append("var domRoot=").append(   app.domRoot_.getJsRef()).append(';').append("Wt4_14_0.progressed(domRoot);");
  int librariesLoaded =  this.loadScriptLibraries (  this.collectedJS1_, app); 
          app.streamBeforeLoadJavaScript (  this.collectedJS1_, false);
-  this.collectedJS2_.append("Wt4_13_4.resolveRelativeAnchors();").append("domRoot.style.visibility = 'visible';").append( app.getJavaScriptClass()).append("._p_.doAutoJavaScript();");
+  this.collectedJS2_.append("Wt4_14_0.resolveRelativeAnchors();").append("domRoot.style.visibility = 'visible';").append( app.getJavaScriptClass()).append("._p_.doAutoJavaScript();");
   this.loadScriptLibraries (  this.collectedJS2_, app, librariesLoaded);
   this.collectedJS2_.append('}');
   app.enableAjax_ = false;
@@ -510,7 +511,7 @@ if (!  app.getEnvironment().isInternalPathUsingFragments()) {
 if (enabledAjax) {
         out.append("\nif (typeof document.readyState === 'undefined')").append(" setTimeout(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);").append("}, 400);").append("else ");
 }
-      out.append("Wt4_13_4.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);});\n");
+      out.append("Wt4_14_0.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(true);});\n");
 }
   }
    response.out ().append(out.toString());
@@ -585,7 +586,7 @@ for ( int i =0;
   i <    app.scriptLibraries_.size ();++ i) {
      String url  =    app.scriptLibraries_.get(i).uri;
      String nonce  = "";
-    if (conf.isUseScriptNonce()) { 
+    if ( conf.mustAddScriptNonce ()) { 
       nonce=    " nonce=\"" + response.getNonce() + "\"";
 }
     if (   app.scriptLibraries_.get(i).beforeLoadJS.length()!=0) {
@@ -763,7 +764,7 @@ out.append(  this.collectedJS1_.toString());
 if (widgetset) {
      String  historyE =  app.getEnvironment().getParameter ("Wt-history");
     if ( historyE != null) {
-      out.append("Wt4_13_4").append(".history.initialize('").append( historyE.charAt(0)).append("-field', '").append( historyE.charAt(0)).append("-iframe', '');\n");
+      out.append("Wt4_14_0").append(".history.initialize('").append( historyE.charAt(0)).append("-field', '").append( historyE.charAt(0)).append("-iframe', '');\n");
 }
   } 
    app.streamAfterLoadJavaScript (out);
@@ -775,7 +776,7 @@ if (! widgetset) {
     out.append("};\n");
 } 
    this.renderSetServerPush (out);
-out.append("Wt4_13_4.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(").append(! widgetset).append(");});\n");
+out.append("Wt4_14_0.ready(function() { ").append( app.getJavaScriptClass()).append("._p_.load(").append(! widgetset).append(");});\n");
   this.loadScriptLibraries (out, app, librariesLoaded);
 }
   // private void serveWidgetSet(final WebResponse request) ;
@@ -947,7 +948,7 @@ if (  app.hasQuit ()) {
 }
   }
   private void loadStyleSheet(final StringBuilder out, WApplication  app, final WLinkedCssStyleSheet sheet) {
-  out.append("Wt4_13_4").append(".addStyleSheet('").append( sheet.getLink().resolveUrl (app)).append("', '").append(sheet.getMedia()).append("');\n ");
+  out.append("Wt4_14_0").append(".addStyleSheet('").append( sheet.getLink().resolveUrl (app)).append("', '").append(sheet.getMedia()).append("');\n ");
 }
   private void loadStyleSheets(final StringBuilder out, WApplication  app) {
    int first =    app.styleSheets_.size () -   app.styleSheetsAdded_;
@@ -961,7 +962,7 @@ if (  app.hasQuit ()) {
   private void removeStyleSheets(final StringBuilder out, WApplication  app) {
   for ( int i =  (int)    app.styleSheetsToRemove_.size () - 1; 
   i > - 1;-- i) {
-    out.append("Wt4_13_4").append(".removeStyleSheet('").append(   app.styleSheetsToRemove_.get(i).getLink().resolveUrl (app)).append("');\n ");
+    out.append("Wt4_14_0").append(".removeStyleSheet('").append(   app.styleSheetsToRemove_.get(i).getLink().resolveUrl (app)).append("');\n ");
   app.styleSheetsToRemove_.remove( 0 + i);
 }
   }
@@ -1189,9 +1190,9 @@ if ( !  this.isPreLearning() && !  app.getEnvironment().isInternalPathUsingFragm
  page.setVar ("HEADDECLARATIONS",  this.getHeadDeclarations());
  page.setCondition ("FORM",  !   this.session_.getEnv().isTreatLikeBot() && !   this.session_.getEnv().hasAjax());
  page.setCondition ("BOOT_STYLE", true);
- page.setCondition ("USE_NONCE", conf.isUseScriptNonce());
+ page.setCondition ("USE_NONCE",  conf.mustAddScriptNonce ());
  page.setVar ("NONCE", nonce);
-if ( conf.isUseScriptNonce() && nonce.length()==0) {
+if (  conf.mustAddScriptNonce () && nonce.length()==0) {
     logger.warn(new StringWriter().append("An empty nonce has been defined. This may result in the CSP header not being correctly defined and used.").toString());
 }
   }

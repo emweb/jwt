@@ -394,7 +394,7 @@ if (readOnly) {
   if (  this.isRendered ()) {
      String result  =   this.getJsRef() + ".ed.remove();";
     if (! recursive) { 
-      result+=    "Wt4_13_4.remove('" +  this.getId() + "');";
+      result+=    "Wt4_14_0.remove('" +  this.getId() + "');";
 }
     return result;
   }
@@ -491,7 +491,7 @@ result.add(e);
 initTinyMCE ();
   this.version_ = getTinyMCEVersion ();
  StringBuilder js  = new StringBuilder();
-  js.append("new Wt4_13_4.WTextEdit(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append(  this.version_).append(");");
+  js.append("new Wt4_14_0.WTextEdit(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append(  this.version_).append(");");
   this.setJavaScriptMember (" WTextEdit", js.toString());
   this.setJavaScriptMember (WT_RESIZE_JS,   "function(e, w, h, s) { var obj = " +  this.getJsRef() + ".wtObj; obj.wtResize(e, w, h, s); };");
  String direction  =    app.getLayoutDirection() == LayoutDirection.LeftToRight? "ltr": "rtl"; 

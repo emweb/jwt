@@ -231,7 +231,22 @@ return true;
    WApplication  app =WApplication.getInstance();
    final WEnvironment env = app.getEnvironment();
   if ( this.getBaseAuth().isAuthTokensEnabled()) {
-     String  token = env.getCookie ( this.getBaseAuth().getMfaTokenCookieName());
+     AuthCookiePrefix prefix = this.getActualCookiePrefix();
+     final String cookieName = this.getBaseAuth().getMfaTokenCookieName();
+     String  token =null;
+    switch (prefix) {
+      case Empty:
+      token =  env.getCookie (cookieName);
+break;
+      case Secure:
+      token =  env.getSecureCookie (cookieName);
+break;
+      case Host:
+      token =  env.getHostCookie (cookieName);
+break;
+      default:
+      break;
+    }
     if ( token != null) {
       logger.info(new StringWriter().append("processMfaToken: Processing auth token for MFA for user: ").append( this.getLogin().getUser().getId()).toString());
  AuthTokenResult result  =   this.getBaseAuth().processAuthToken ( token,  this.getUsers(), AuthTokenType.MFA);
@@ -241,7 +256,7 @@ return true;
           logger.info(new StringWriter().append("processMfaToken: Found valid match for auth token for MFA for user: ").append( this.getLogin().getUser().getId()).toString());
 if (result.getNewToken().length()!=0) {
             logger.debug(new StringWriter().append("processMfaToken: Renewing auth token for MFA.").toString());
-  app.setCookie ( this.getBaseAuth().getMfaTokenCookieName(), result.getNewToken(), result.getNewTokenValidity(),  this.getBaseAuth().getMfaTokenCookieDomain(), "",  app.getEnvironment().getUrlScheme().equals("https"));
+  app.setCookie (  this.createMfaCookie (result.getNewToken(), result.getNewTokenValidity()));
 }
            String identity =result.getUser().getIdentity( this.getProvider());
           if (identity.length()!=0) {
@@ -262,7 +277,7 @@ return new User();
         case Invalid: 
         {
           logger.info(new StringWriter().append("processMfaToken: Found no valid match for auth token for MFA for user:").append( this.getLogin().getUser().getId()).append(", removing token").toString());
-  app.setCookie ( this.getBaseAuth().getMfaTokenCookieName(), "", 0,  this.getBaseAuth().getMfaTokenCookieDomain(), "",  app.getEnvironment().getUrlScheme().equals("https"));
+  app.setCookie (  this.createMfaCookie ("", 0));
 return new User();
         }
       }
@@ -282,11 +297,9 @@ return new User();
   protected void setRememberMeCookie(User user) {
    WApplication  app =WApplication.getInstance();
    int duration =  this.getBaseAuth().getMfaTokenValidity() * 60;
-  logger.info(new StringWriter().append("Setting auth token for MFA named: ").append( this.getBaseAuth().getMfaTokenCookieName()).append(" with validity (in seconds): ").append(String.valueOf(duration)).toString());
- Cookie cookie =new Cookie( this.getBaseAuth().getMfaTokenCookieName(),   this.getBaseAuth().createAuthToken (user, AuthTokenType.MFA)); 
-  cookie.setMaxAge (duration);
- cookie.setDomain ( this.getBaseAuth().getMfaTokenCookieDomain());
- cookie.setSecure ( app.getEnvironment().getUrlScheme().equals("https"));
+   final String token =  this.getBaseAuth().createAuthToken (user, AuthTokenType.MFA);
+   Cookie cookie  =   this.createMfaCookie (token, duration);
+  logger.info(new StringWriter().append("Setting auth token for MFA named: ").append(cookie.getName()).append(" with validity (in seconds): ").append(String.valueOf(duration)).toString());
   app.setCookie (cookie);
 }
   /**
@@ -336,6 +349,62 @@ return new User();
   if (  this.getMfaThrottle() != null) { 
        this.mfaThrottle_.updateThrottlingMessage (button,   this.throttlingDelay_);
 }
+  }
+  /**
+  
+  Creates an authentication cookie. 
+          
+  <p>
+  
+  This creates the remember-me cookie and set it&apos;s value to <code>value</code> and it&apos;s duration to <code>duration</code>. The prefix of the cookie is determined by {@link AbstractMfaProcess#getActualCookiePrefix() getActualCookiePrefix()}. 
+          
+  */
+  protected Cookie createMfaCookie(final String value, int duration) {
+   WApplication  app =WApplication.getInstance();
+   AuthCookiePrefix prefix = this.getActualCookiePrefix();
+   final String cookieName = this.getBaseAuth().getMfaTokenCookieName();
+   Cookie cookie  = new Cookie(cookieName, "");
+  switch (prefix) {
+    case Secure: 
+    cookie=  new SecureCookie(cookieName);
+break;
+    case Host: 
+    cookie=  new HostCookie(cookieName);
+break;
+    default:
+    break;
+  }
+  switch (prefix) {
+    case Empty: 
+    cookie.setSecure ( app.getEnvironment().getUrlScheme().equals("https"));
+case Secure: 
+    cookie.setDomain ( this.getBaseAuth().getMfaTokenCookieDomain());
+break;
+    default:
+    break;
+  } 
+  cookie.setValue (value);
+ cookie.setMaxAge (duration);
+return cookie;
+  }
+  /**
+  
+  Returns the cookie prefix of the remember-me cookie. 
+          
+  <p>
+  
+  This returns the prefix that is used for the remember-me cookie. By default it is the value of {@link AuthService#getMfaTokenCookiePrefix()} unless it&apos;s value is {@link AuthCookiePrefix#Auto}. In that case, it will return {@link AuthCookiePrefix#Empty} if the connection is over http, and {@link AuthCookiePrefix#Empty} otherwise. 
+          
+  */
+  protected AuthCookiePrefix getActualCookiePrefix() {
+   AuthCookiePrefix prefix = this.getBaseAuth().getMfaTokenCookiePrefix();
+  if ( prefix != AuthCookiePrefix.Auto) {
+    return prefix;
+  }
+  if (!  WApplication.getInstance().getEnvironment().getUrlScheme().equals("https")) {
+    return AuthCookiePrefix.Empty;
+  }
+  return AuthCookiePrefix.Secure;
   }
   protected AuthService getBaseAuth() {
   return   this.baseAuth_;

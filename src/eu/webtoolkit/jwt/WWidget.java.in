@@ -510,10 +510,12 @@ super.remove();
   if (  this.isHidden ()) { 
      this.show ();
 }
-   String side  =   orientation == Orientation.Horizontal? ".Horizontal": ".Vertical";
+   WWidget  w = widget; 
+   this.setPositionAnchor (w);
+ String side  =   orientation == Orientation.Horizontal? ".Horizontal": ".Vertical";
    String canAdjustX  =  adjustOrientations.contains(Orientation.Horizontal)? "true": "false";
    String canAdjustY  =  adjustOrientations.contains(Orientation.Vertical)? "true": "false"; 
-   this.doJavaScript (           "Wt4_13_4.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_13_4" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
+   this.doJavaScript (           "Wt4_14_0.positionAtWidget('" +  this.getId() + "','" +  widget.getId() + "',Wt4_14_0" + side + "," + "false," + canAdjustX + "," + canAdjustY + ");");
 }
   /** 
   
@@ -535,6 +537,39 @@ super.remove();
           
   <p>Calls {@link #positionAt(WWidget  widget, Orientation orientation, EnumSet adjustOrientations) positionAt(widget, orientation, Orientation.AllOrientations)} */public  final void positionAt(WWidget  widget, Orientation orientation)  {
     positionAt(widget, orientation, Orientation.AllOrientations);
+  }
+  /**
+  
+  Anchors a widget to another widget. 
+          
+  <p>
+  
+  This will use the given <code>widget</code> as position-anchor for this widget. This means that the offsets of this widget will be relative to the given <code>widget</code>, and this widget will be moved together with the given <code>widget</code> when the given <code>widget</code> is moved. This also makes this widget visible only when its position-anchor widget is visible (can be changed using custom CSS).
+  
+  <p>
+  For more information, you can check the CSS documentation for the CSS property &quot;position-area&quot;.
+  
+  <p>
+  <code>orientation</code> specifies the axis on which the widget is anchored to the other widget. For example, when <code>orientation</code> = {@link Orientation#Vertical}, the widget is anchored to the other widget at the top or bottom edge of the given <code>widget</code>, depending on the amount of space available.
+  
+  <p>
+  Contrarily to {@link WWidget#positionAt(WWidget  widget, Orientation orientation, EnumSet adjustOrientations) positionAt()}, the widget will reposition itself dynamically depending on the available space.
+  
+  <p>
+  
+  <p><i><b>Note: </b>This only works if the position-anchors are supported and JavaScript is available. If it is not the case, this will fall back to using {@link WWidget#positionAt(WWidget  widget, Orientation orientation, EnumSet adjustOrientations) positionAt()} instead. 
+  </i></p>
+  
+  
+          
+  */
+  public abstract void anchorAt(WWidget  widget, Orientation orientation) ;
+  /** 
+  
+  Anchors a widget to another widget. 
+          
+  <p>Calls {@link #anchorAt(WWidget  widget, Orientation orientation) anchorAt(widget, Orientation.Vertical)} */public  final void anchorAt(WWidget  widget)  {
+    anchorAt(widget, Orientation.Vertical);
   }
   /**
   
@@ -872,6 +907,109 @@ super.remove();
   public abstract boolean isPopup() ;
   /**
   
+  Returns the position-anchor name of this widget. 
+          
+  <p>
+  
+  Returns the position-anchor name of this widget if it is a position-anchor, or an empty string otherwise.
+  
+  <p>
+  This position-anchor name is used in css rules to position other widgets in relation to this widget.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you are using your own position-anchor names, you should not make them start with &quot;--Wt-&quot;, as this is reserved for JWt&apos;s position-anchor names.
+  </i></p>
+  
+  @see WWidget#becomePositionAnchor()
+  
+  
+          
+  */
+  public abstract String getPositionAnchorName() ;
+  /**
+  
+  Makes this widget a position-anchor. 
+          
+  <p>
+  
+  If the widget is not already a position-anchor, this will generate a unique position-anchor name for this widget (using the {@link WObject#getId()}), which can be used in CSS rules to position other widgets in relation to this widget.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you are using your own position-anchor names, you should not make them start with &quot;--Wt-&quot;, as this is reserved for JWt&apos;s position-anchor names.
+  </i></p>
+  
+  @see WWidget#getPositionAnchorName()
+  
+  
+          
+  */
+  public abstract void becomePositionAnchor() ;
+  /**
+  
+  Returns whether this widget is a position-anchor. 
+          
+  <p>
+  
+  @see WWidget#getPositionAnchorName()
+  @see WWidget#becomePositionAnchor()
+  
+  
+          
+  */
+  public boolean isPositionAnchor() {
+  return  this.getPositionAnchorName().length()!=0;
+  }
+  /**
+  
+  Sets the position-anchor of this widget. 
+          
+  <p>
+  
+  Sets the position-anchor of this widget to <code>anchorName</code>. Setting an empty string removes the position-anchor.
+  
+  <p>
+  @see WWidget#getPositionAnchorName()
+  @see WWidget#becomePositionAnchor()
+  
+  
+          
+  */
+  public abstract void setPositionAnchor(final String anchorName) ;
+  /**
+  
+  Sets a widget as the position-anchor of this widget. 
+          
+  <p>
+  
+  This will set the position-anchor of this widget to the position-anchor name of the given widget. If <code>anchor</code> is not a position-anchor, then it will first be made a position-anchor by calling {@link WWidget#becomePositionAnchor() becomePositionAnchor()}. If <code>anchor</code> is nullptr, the position-anchor of this widget will be removed.
+  
+  <p>
+  @see WWidget#getPositionAnchorName()
+  
+  
+          
+  */
+  public abstract void setPositionAnchor(WWidget  anchor) ;
+  /**
+  
+  Returns the position-anchor of this widget. 
+          
+  <p>
+  
+  Returns the position-anchor name of the position-anchor of this widget. If this widget does not have a position-anchor, returns an empty string instead.
+  
+  <p>
+  @see WWidget#setPositionAnchor(String anchorName)
+  @see WWidget#getPositionAnchorName()
+  
+  
+          
+  */
+  public abstract String getPositionAnchor() ;
+  /**
+  
   Sets whether the widget is displayed inline or as a block. 
           
   <p>
@@ -1166,7 +1304,7 @@ super.remove();
           
   */
   public String getJsRef() {
-  return   "Wt4_13_4.$('" +  this.getId() + "')";
+  return   "Wt4_14_0.$('" +  this.getId() + "')";
   }
   /**
   

@@ -420,11 +420,8 @@ if (   this.map_ != null) {
             
     */
      void applyChangeJS(final StringBuilder ss, long id) {
-    if (  this.flags_.get(BIT_MOVED)) {
-      ss.append("o.wtObj.moveMapItem(").append(id).append(",[");
- char[] buf = new char[30];
-      ss.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
-ss.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("]);");
+    if (  this.flags_.get(BIT_MOVED)) { 
+       this.applyMoveJs (ss, id);
   this.flags_.clear(BIT_MOVED);
 }
     }
@@ -439,6 +436,13 @@ ss.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("]);
      String getAddFunctionJs() {
     return "addMapItem";
     }
+     void applyMoveJs(final StringBuilder ss, long id) {
+    ss.append("o.wtObj.moveMapItem(").append(id).append(",[");
+ char[] buf = new char[30];
+    ss.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
+ss.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16));
+ss.append("]);");
+}
     private WLeafletMap.OrderedAction getOrderedAction() {
     return   this.orderedAction_;
     }
@@ -849,16 +853,9 @@ ss.append(  this.open_).append(");");
     }
     protected void createItemJS(final StringBuilder ss, final StringBuilder postJS, long id) {
      EscapeOStream es  = new EscapeOStream(ss);
-     String optionsStr  =   this.options_.toString();
     es.append("L.popup(");
-if (!   this.options_.entrySet().isEmpty()) {
-      es.append("JSON.parse('");
- es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
-es.append(optionsStr);
- es.popEscape ();
-es.append("')");
-}
-    es.append(").setLatLng(L.latLng(");
+addJsonJs (ss,   this.options_);
+es.append(").setLatLng(L.latLng(");
  char[] buf = new char[30];
     es.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
 es.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("))");
@@ -947,16 +944,9 @@ es.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("))"
     }
     protected void createItemJS(final StringBuilder ss, final StringBuilder postJS, long id) {
      EscapeOStream es  = new EscapeOStream(ss);
-     String optionsStr  =   this.options_.toString();
     es.append("L.tooltip(");
-if (!   this.options_.entrySet().isEmpty()) {
-      es.append("JSON.parse('");
- es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
-es.append(optionsStr);
- es.popEscape ();
-es.append("')");
-}
-    es.append(").setLatLng(L.latLng(");
+addJsonJs (ss,   this.options_);
+es.append(").setLatLng(L.latLng(");
  char[] buf = new char[30];
     es.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
 es.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("))");
@@ -1343,22 +1333,409 @@ if (   this.anchorY_ >= 0) {
       this.options_=  options;
 }
     protected void createItemJS(final StringBuilder ss, final StringBuilder postJS, long id) {
-     String optionsStr  =   this.options_.toString();
      EscapeOStream es  = new EscapeOStream(ss);
     es.append("L.marker([");
  char[] buf = new char[30];
     es.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
 es.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("],");
-if (!   this.options_.entrySet().isEmpty()) {
-      es.append("JSON.parse('");
- es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
-es.append(optionsStr);
- es.popEscape ();
-es.append("')");
-}
-    ss.append(")");
+addJsonJs (ss,   this.options_);
+ss.append(")");
 }
     private com.google.gson.JsonObject options_ ;
+  }
+  /** 
+  
+  An abstract map item drawn the map. 
+      
+  <p>
+  
+  This is the base class for all AbstractMapItems that are drawn on the map. This is an abstract class, so it should not be used directly. 
+      
+  */
+  public static abstract class AbstractDrawnItem extends WLeafletMap.AbstractMapItem {
+    private static Logger logger = LoggerFactory.getLogger(AbstractDrawnItem.class);
+    
+    /**
+    
+    Set the pen used to draw the outline of the item. 
+            
+    <p>
+    
+    This sets the pen used to draw the outline of the item.
+    
+    <p>
+    By default, the default WPen() is used.
+    
+    <p>
+    @see WLeafletMap.AbstractDrawnItem#setBrush(WBrush brush)
+    
+    
+            
+    */
+    public void setPen(final WPen pen) { 
+      this.pen_=  pen;
+   this.flags_.set (BIT_STYLE_CHANGED);
+if (  this.getMap() != null) { 
+        this.getMap().scheduleRender ();
+}
+    }
+    /**
+    
+    Return the pen used to draw the outline of the item. 
+            
+    <p>
+    
+    @see WLeafletMap.AbstractDrawnItem#setPen(WPen pen)
+    
+    
+            
+    */
+    public WPen getPen() {
+    return   this.pen_;
+    }
+    /**
+    
+    Set the brush used to fill the item. 
+            
+    <p>
+    
+    This sets the brush used to fill the item.
+    
+    <p>
+    By default, the default WBrush() is used, which means no fill.
+    
+    <p>
+    @see WLeafletMap.AbstractDrawnItem#setPen(WPen pen)
+    
+    
+            
+    */
+    public void setBrush(final WBrush brush) { 
+      this.brush_=  brush;
+   this.flags_.set (BIT_STYLE_CHANGED);
+if (  this.getMap() != null) { 
+        this.getMap().scheduleRender ();
+}
+    }
+    /**
+    
+    Return the brush used to fill the item. 
+            
+    <p>
+    
+    @see WLeafletMap.AbstractDrawnItem#setBrush(WBrush brush)
+    
+    
+            
+    */
+    public WBrush getBrush() {
+    return   this.brush_;
+    }
+    /**
+    
+    Constructor. 
+            
+    <p>
+    
+    Creates a new {@link AbstractDrawnItem} that is at the give <code>pos</code>, that is drawn with the given <code>pen</code> and filled with the given <code>brush</code>.
+    
+    <p>
+    Since this is an abstract class, this should not be used directly. 
+            
+    */
+    protected  AbstractDrawnItem(final WLeafletMap.Coordinate pos, final WPen pen, final WBrush brush) {
+    super (pos);
+    this.flags_ = new BitSet();
+    this.brush_ = brush;
+    this.pen_ = pen;
+    }
+    /** 
+    
+    Constructor. 
+            
+    <p>Calls {@link #AbstractDrawnItem(WLeafletMap.Coordinate pos, WPen pen, WBrush brush) this(pos, new WPen(), new WBrush())} */protected  AbstractDrawnItem(final WLeafletMap.Coordinate pos)  {
+      this(pos, new WPen(), new WBrush());
+    }
+    /** 
+    
+    Constructor. 
+            
+    <p>Calls {@link #AbstractDrawnItem(WLeafletMap.Coordinate pos, WPen pen, WBrush brush) this(pos, pen, new WBrush())} */protected  AbstractDrawnItem(final WLeafletMap.Coordinate pos, final WPen pen)  {
+      this(pos, pen, new WBrush());
+    }
+    /**
+    
+    Adds the style options to the given JSON object. 
+            
+    <p>
+    
+    This adds the style options (from the pen and brush) to the given JSON object. This should be called on the options that you are adding to the drawn item at creation (in {@link WLeafletMap.AbstractMapItem#createItemJS(StringBuilder ss, StringBuilder postJS, long id) AbstractMapItem#createItemJS()}). 
+            
+    */
+    protected void addStyleOptions(final com.google.gson.JsonObject options) {
+    addPathOptions (options,   this.pen_,   this.brush_);
+}
+    private static final int BIT_STYLE_CHANGED =0;
+    private BitSet flags_ ;
+    private WBrush brush_ ;
+    private WPen pen_ ;
+     void applyChangeJS(final StringBuilder ss, long id) {
+    if (  this.flags_.get(BIT_STYLE_CHANGED)) {
+       com.google.gson.JsonObject options  = new com.google.gson.JsonObject(); 
+       this.addStyleOptions (options);
+if (! options.entrySet().isEmpty()) {
+        ss.append("o.wtObj.setDrawnItemStyle(").append(id).append(",");
+addJsonJs (ss, options);
+ss.append(");");
+}
+        this.flags_.clear(BIT_STYLE_CHANGED);
+} 
+     super.applyChangeJS (ss, id);
+ss.append("o.wtObj.redrawItem(").append(id).append(");");
+}
+    private boolean isChanged() {
+    return  !  this.flags_.isEmpty() ||  super.isChanged();
+    }
+  }
+  /** 
+  
+  A polyline that will be drawn on the map. 
+      
+  <p>
+  
+  A polyline is a series of connected line segments going through a series of points.
+  
+  <p>
+  See <a href="https://leafletjs.com/reference.html#polyline">https://leafletjs.com/reference.html#polyline</a> 
+      
+  */
+  public static class Polyline extends WLeafletMap.AbstractDrawnItem {
+    private static Logger logger = LoggerFactory.getLogger(Polyline.class);
+    
+    /**
+    
+    Create a new polyline going trough the given points. 
+            
+    <p>
+    
+    Creates a new polyline going through the given <code>points</code>, drawn with the given <code>pen</code> and filled with the given <code>brush</code>. 
+            
+    */
+    public  Polyline(final List<WLeafletMap.Coordinate> points, final WPen pen, final WBrush brush) {
+    super (new WLeafletMap.Coordinate(0, 0), pen, brush);
+    this.points_ = new ArrayList<WLeafletMap.Coordinate>(); 
+     this.setPoints (points);
+}
+    /** 
+    
+    Create a new polyline going trough the given points. 
+            
+    <p>Calls {@link #Polyline(List points, WPen pen, WBrush brush) this(points, new WPen(), new WBrush())} */public  Polyline(final List<WLeafletMap.Coordinate> points)  {
+      this(points, new WPen(), new WBrush());
+    }
+    /** 
+    
+    Create a new polyline going trough the given points. 
+            
+    <p>Calls {@link #Polyline(List points, WPen pen, WBrush brush) this(points, pen, new WBrush())} */public  Polyline(final List<WLeafletMap.Coordinate> points, final WPen pen)  {
+      this(points, pen, new WBrush());
+    }
+    /**
+    
+    Create a new polyline going trough the given points. 
+            
+    <p>
+    
+    Creates a new polyline going through the given <code>points</code> and filled with the given <code>brush</code>. 
+            
+    */
+    public  Polyline(final List<WLeafletMap.Coordinate> points, final WBrush brush) {
+    super (new WLeafletMap.Coordinate(0, 0), new WPen(), brush);
+    this.points_ = new ArrayList<WLeafletMap.Coordinate>(); 
+     this.setPoints (points);
+}
+    /**
+    
+    Set the points the polyline go trough. 
+            
+    <p>
+    
+    This sets the points the polyline goes trough to the given list of <code>points</code>. 
+            
+    */
+    public void setPoints(final List<WLeafletMap.Coordinate> points) {
+    Utils.copyList(points,   this.points_);
+ WLeafletMap.Coordinate pos  =    this.points_.isEmpty()? new WLeafletMap.Coordinate(0, 0):   this.points_.get(0); 
+     super.move (pos);
+}
+    /**
+    
+    Return the points the polyline goes trough. 
+            
+    <p>
+    
+    @see WLeafletMap.Polyline#setPoints(List points)
+    
+    
+            
+    */
+    public List<WLeafletMap.Coordinate> getPoints() {
+    return   this.points_;
+    }
+    /**
+    
+    Move the polyline. 
+            
+    <p>
+    
+    This moves the polyline so that its first point is at the given position. The other points are moved by the same offset. 
+            
+    */
+    public void move(final WLeafletMap.Coordinate pos) {
+    if (  this.points_.isEmpty()) {
+      return ;
+    }
+     double deltaLat = pos.getLatitude() -  this.getPosition().getLatitude();
+     double deltaLng = pos.getLongitude() -  this.getPosition().getLongitude();
+    for (WLeafletMap.Coordinate point :  this.points_) { 
+      point.setLatitude ( point.getLatitude() + deltaLat);
+ point.setLongitude ( point.getLongitude() + deltaLng);
+} 
+     super.move (  this.points_.get(0));
+}
+    protected void createItemJS(final StringBuilder ss, final StringBuilder postJS, long id) {
+     com.google.gson.JsonObject options  = new com.google.gson.JsonObject(); 
+     this.addStyleOptions (options);
+ss.append("L.polyline(");
+  this.addJsCoordinates (ss);
+ss.append(",");
+addJsonJs (ss, options);
+ss.append(")");
+}
+    private List<WLeafletMap.Coordinate> points_ ;
+     void applyMoveJs(final StringBuilder ss, long id) {
+    ss.append("o.wtObj.movePolyline(").append(id).append(",");
+  this.addJsCoordinates (ss);
+ss.append(");");
+}
+    private void addJsCoordinates(final StringBuilder ss) {
+     char[] buf = new char[30];
+    ss.append("[");
+for ( int i =0; 
+    i <    this.points_.size ();++ i) {
+      if ( i != 0) {
+        ss.append(",");
+}
+      ss.append("[");
+ss.append(MathUtils.roundJs(  this.points_.get(i).getLatitude(), 16)).append(",");
+ss.append(MathUtils.roundJs(  this.points_.get(i).getLongitude(), 16)).append(",");
+ss.append("]");
+}
+    ss.append("]");
+}
+  }
+  /** 
+  
+  A circle that will be drawn on the map. 
+      
+  */
+  public static class Circle extends WLeafletMap.AbstractDrawnItem {
+    private static Logger logger = LoggerFactory.getLogger(Circle.class);
+    
+    /**
+    
+    Create a new circle at the given position. 
+            
+    <p>
+    
+    Creates a new circle at the given <code>center</code> with the given <code>radius</code> (in meters), drawn with the given <code>pen</code> and filled with the given <code>brush</code>. 
+            
+    */
+    public  Circle(final WLeafletMap.Coordinate center, double radius, final WPen pen, final WBrush brush) {
+    super (center, pen, brush);
+    this.flags_ = new BitSet();
+    this.radius_ = radius;
+    }
+    /** 
+    
+    Create a new circle at the given position. 
+            
+    <p>Calls {@link #Circle(WLeafletMap.Coordinate center, double radius, WPen pen, WBrush brush) this(center, radius, new WPen(), new WBrush())} */public  Circle(final WLeafletMap.Coordinate center, double radius)  {
+      this(center, radius, new WPen(), new WBrush());
+    }
+    /** 
+    
+    Create a new circle at the given position. 
+            
+    <p>Calls {@link #Circle(WLeafletMap.Coordinate center, double radius, WPen pen, WBrush brush) this(center, radius, pen, new WBrush())} */public  Circle(final WLeafletMap.Coordinate center, double radius, final WPen pen)  {
+      this(center, radius, pen, new WBrush());
+    }
+    /**
+    
+    Create a new circle at the given position. 
+            
+    <p>
+    
+    Creates a new circle at the given <code>center</code> with the given <code>radius</code> (in meters) and filled with the given <code>brush</code>. 
+            
+    */
+    public  Circle(final WLeafletMap.Coordinate center, double radius, final WBrush brush) {
+    super (center, new WPen(), brush);
+    this.flags_ = new BitSet();
+    this.radius_ = radius;
+    }
+    /**
+    
+    Set the radius (in meters). 
+            
+    */
+    public void setRadius(double radius) {  
+    this.radius_ = radius;
+   this.flags_.set (BIT_RADIUS_CHANGED);
+if (  this.getMap() != null) { 
+        this.getMap().scheduleRender ();
+}
+    }
+    /**
+    
+    Return the radius (in meters). 
+            
+    <p>
+    
+    @see WLeafletMap.Circle#setRadius(double radius)
+    
+    
+            
+    */
+    public double getRadius() {
+    return   this.radius_;
+    }
+    protected void createItemJS(final StringBuilder ss, final StringBuilder postJS, long id) {
+     com.google.gson.JsonObject options  = new com.google.gson.JsonObject();
+    options.add("radius",(new com.google.gson.JsonPrimitive(  this.radius_)));
+  this.addStyleOptions (options);
+ss.append("L.circle([");
+ char[] buf = new char[30];
+    ss.append(MathUtils.roundJs( this.getPosition().getLatitude(), 16)).append(",");
+ss.append(MathUtils.roundJs( this.getPosition().getLongitude(), 16)).append("],");
+addJsonJs (ss, options);
+ss.append(")");
+}
+    private static final int BIT_RADIUS_CHANGED =0;
+    private BitSet flags_ ;
+    private double radius_ ;
+     void applyChangeJS(final StringBuilder ss, long id) {
+    if (  this.flags_.get(BIT_RADIUS_CHANGED)) {
+      ss.append("o.wtObj.setCircleRadius(").append(id).append(",");
+ char[] buf = new char[30];
+      ss.append(MathUtils.roundJs(  this.radius_, 16)).append(");");
+  this.flags_.clear(BIT_RADIUS_CHANGED);
+} 
+     super.applyChangeJS (ss, id);
+}
+    private boolean isChanged() {
+    return  !  this.flags_.isEmpty() ||  super.isChanged();
+    }
   }
   /**
   
@@ -1385,8 +1762,6 @@ es.append("')");
   this.itemMouseout_ = new JSignal1<Long>(this, "itemMouseout") {};
   this.tileLayers_ = new ArrayList<WLeafletMap.TileLayer>();
   this.renderedTileLayersSize_ = 0;
-  this.overlays_ = new ArrayList<WLeafletMap.Overlay>();
-  this.renderedOverlaysSize_ = 0;
   this.mapItems_ = new ArrayList<WLeafletMap.ItemEntry>(); 
    this.setup ();
 if ( parentContainer != null) parentContainer.addWidget (this);
@@ -1428,8 +1803,6 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.itemMouseout_ = new JSignal1<Long>(this, "itemMouseout") {};
   this.tileLayers_ = new ArrayList<WLeafletMap.TileLayer>();
   this.renderedTileLayersSize_ = 0;
-  this.overlays_ = new ArrayList<WLeafletMap.Overlay>();
-  this.renderedOverlaysSize_ = 0;
   this.mapItems_ = new ArrayList<WLeafletMap.ItemEntry>(); 
    this.setup ();
 if ( parentContainer != null) parentContainer.addWidget (this);
@@ -1546,10 +1919,25 @@ if (  this.isRendered ()) {
   See <a href="https://leafletjs.com/reference.html#polyline">https://leafletjs.com/reference.html#polyline</a> 
           
   */
-  public void addPolyline(final List<WLeafletMap.Coordinate> points, final WPen pen) {
-    this.overlays_.add(new Polyline(points,pen));
-  this.scheduleRender ();
+  public void addPolyline(final List<WLeafletMap.Coordinate> points, final WPen pen) { 
+   this.addPolyline (new Polyline(points,pen));
 }
+  /**
+  
+  Add the given polyline. 
+          
+  */
+  public void addPolyline(WLeafletMap.Polyline polyline) { 
+   this.addItem (polyline);
+}
+  /**
+  
+  Remove the given polyline. 
+          
+  */
+  public WLeafletMap.Polyline removePolyline(WLeafletMap.Polyline  polyline) {
+  return ObjectUtils.cast(  this.removeItem (polyline), Polyline.class);
+  }
   /**
   
   Add a circle. 
@@ -1559,10 +1947,25 @@ if (  this.isRendered ()) {
   This will draw a circle on the map centered at <code>center</code>, with the given <code>radius</code> (in meters), drawn with the given <code>stroke</code> and <code>fill</code>. 
           
   */
-  public void addCircle(final WLeafletMap.Coordinate center, double radius, final WPen stroke, final WBrush fill) {
-    this.overlays_.add(new Circle(center,radius,stroke,fill));
-  this.scheduleRender ();
+  public void addCircle(final WLeafletMap.Coordinate center, double radius, final WPen stroke, final WBrush fill) { 
+   this.addCircle (new Circle(center,radius,stroke,fill));
 }
+  /**
+  
+  Add the given circle. 
+          
+  */
+  public void addCircle(WLeafletMap.Circle circle) { 
+   this.addItem (circle);
+}
+  /**
+  
+  Remove the given circle. 
+          
+  */
+  public WLeafletMap.Circle removeCircle(WLeafletMap.Circle  circle) {
+  return ObjectUtils.cast(  this.removeItem (circle), Circle.class);
+  }
   /**
   
   Set the current zoom level. 
@@ -1631,7 +2034,6 @@ if (  this.isRendered ()) {
   if ( flags.contains(RenderFlag.Full) ||   this.flags_.get(BIT_OPTIONS_CHANGED)) { 
      this.defineJavaScript ();
   this.renderedTileLayersSize_ = 0;
-  this.renderedOverlaysSize_ = 0;
   this.flags_.clear(BIT_PAN_CHANGED);
   this.flags_.clear(BIT_ZOOM_CHANGED);
 }
@@ -1649,11 +2051,6 @@ if (  this.isRendered ()) {
      this.addTileLayerJS (ss,   this.tileLayers_.get(i));
 }  
   this.renderedTileLayersSize_ =    this.tileLayers_.size ();
-for ( int i =  this.renderedOverlaysSize_; 
-  i <    this.overlays_.size ();++ i) { 
-       this.overlays_.get(i).addJS (ss, this);
-}  
-  this.renderedOverlaysSize_ =    this.overlays_.size ();
 for ( int i =0; 
   i <    this.mapItems_.size ();) {
     if (    this.mapItems_.get(i).flags.get(ItemEntry.BIT_REMOVED)) {
@@ -1743,8 +2140,6 @@ break;
   }
   private List<WLeafletMap.TileLayer> tileLayers_ ;
   private int renderedTileLayersSize_ ;
-  private List<WLeafletMap.Overlay> overlays_ ;
-  private int renderedOverlaysSize_ ;
   static class ItemEntry {
     private static Logger logger = LoggerFactory.getLogger(ItemEntry.class);
     
@@ -1823,7 +2218,7 @@ if ( leafletJSURL.length()!=0 && leafletCSSURL.length()!=0) {
  String optionsStr  =   this.options_.toString();
    StringBuilder ss  = new StringBuilder();
    EscapeOStream es  = new EscapeOStream(ss);
-  es.append("new Wt4_13_4.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
+  es.append("new Wt4_14_0.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
  es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 es.append(optionsStr);
  es.popEscape ();
@@ -2066,8 +2461,18 @@ options.add("fillOpacity",(new com.google.gson.JsonPrimitive( fill.getColor().ge
     options.add("fill",(new com.google.gson.JsonPrimitive(false)));
 }
   }
+  private static void addJsonJs(final StringBuilder ss, final com.google.gson.JsonObject obj) {
+  if (! obj.entrySet().isEmpty()) {
+     EscapeOStream es  = new EscapeOStream(ss);
+    es.append("JSON.parse('");
+ es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
+es.append(obj.toString());
+ es.popEscape ();
+es.append("')");
+}
+  }
    static WJavaScriptPreamble wtjs1() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "WLeafletMap", "(function(t,e,o,n,i,p,l){e.wtObj&&e.wtObj.map.remove();e.wtObj=this;const a=this;this.map=null;const m={};let d=p,c=[n,i];this.addTileLayer=function(t,e){const o=JSON.parse(e);L.tileLayer(t,o).addTo(a.map)};this.zoom=function(t){d=t;a.map.setZoom(t)};this.panTo=function(t,e){c=[t,e];a.map.panTo([t,e])};this.addPolyline=function(t,e){const o=JSON.parse(e);L.polyline(t,o).addTo(a.map)};this.addCircle=function(t,e){const o=JSON.parse(e);L.circle(t,o).addTo(a.map)};function s(o,n){n.doubleClickTimeout=null;n.on(\"click\",(function(){!function(o,n){if(n.doubleClickTimeout){clearTimeout(n.doubleClickTimeout);n.doubleClickTimeout=null;t.emit(e,\"itemDblClicked\",o)}else n.doubleClickTimeout=setTimeout((function(){n.doubleClickTimeout=null;t.emit(e,\"itemClicked\",o)}),l)}(o,n)}));n.on(\"mousedown\",(function(){t.emit(e,\"itemMousedown\",o)}));n.on(\"mouseup\",(function(){t.emit(e,\"itemMouseup\",o)}));n.on(\"mouseover\",(function(){t.emit(e,\"itemMouseover\",o)}));n.on(\"mouseout\",(function(){t.emit(e,\"itemMouseout\",o)}))}this.addPopup=function(t,e,o){o.item_type=1;a.addOverlayItem(t,e,o)};this.addTooltip=function(t,e,o){o.item_type=0;a.addOverlayItem(t,e,o)};this.addOverlayItem=function(t,o,n){s(t,n);n.contentHolder=document.createElement(\"div\");n.contentHolder.style.cssText=\"visibility: hidden;\";e.appendChild(n.contentHolder);n.item_id=t;n.parent_id=o;m[t]=n;a.toggleOverlayItem(t,!0)};this.addMapItem=function(t,e,o){s(t,o);o.addTo(a.map);m[t]=o};this.removeMapItem=function(t){const e=m[t];if(e){const o=e.parent_id;if((o||0===o)&&-1!==o){const e=m[o];e&&(e.getPopup()&&e.getPopup().item_id===t?e.unbindPopup():e.getTooltip()&&e.getTooltip().item_id===t&&e.unbindTooltip())}e.contentHolder&&e.contentHolder.remove();a.map.removeLayer(e);delete m[t]}};this.moveMapItem=function(t,e){const o=m[t];o&&o.setLatLng(e)};this.setOverlayItemContent=function(t,e,o){const n=m[t];if(n){n.contentId=o;n.contentHolder.innerHTML=e;if(n.isOpen()){const t=n.contentHolder.firstChild;n.setContent(n.contentHolder.removeChild(t))}a.delayedJS()}};this.moveOverlayItemToFront=function(t){const e=m[t];e&&e.bringToFront()};this.moveOverlayItemToBack=function(t){const e=m[t];e&&e.bringToBack()};this.toggleOverlayItem=function(t,e){const o=m[t];if(o)if(e&&!o.isOpen()){const t=o.parent_id;if(-1===t)o.openOn(this.map);else{const e=m[t];e&&(1===o.item_type?e.bindPopup(o).openPopup():0===o.item_type&&e.bindTooltip(o).openTooltip())}}else!e&&o.isOpen()&&o.close()};this.wtResize=function(){a.map.invalidateSize()};e.wtEncodeValue=function(){const t=a.map.getCenter(),e=[t.lat,t.lng],o=a.map.getZoom();return JSON.stringify({position:e,zoom:o})};this.init=function(o,n,i){const p=JSON.parse(o);p.center=n;p.zoom=i;a.map=L.map(e,p);const l=parseInt(function(){let t=e.parentNode;for(;t;){if(t.wtPopup)return t.style.zIndex;t=t.parentNode}return 0}(),10);if(l>0){a.map.getPane(\"tilePane\").style.zIndex=l+200;a.map.getPane(\"overlayPane\").style.zIndex=l+400;a.map.getPane(\"shadowPane\").style.zIndex=l+500;a.map.getPane(\"markerPane\").style.zIndex=l+600;a.map.getPane(\"tooltipPane\").style.zIndex=l+650;a.map.getPane(\"popupPane\").style.zIndex=l+700}a.map.on(\"zoomend\",(function(){const o=a.map.getZoom();if(o!==d){t.emit(e,\"zoomLevelChanged\",o);d=o}}));a.map.on(\"moveend\",(function(){const o=a.map.getCenter();if(o.lat!==c[0]||o.lng!==c[1]){t.emit(e,\"panChanged\",o.lat,o.lng);c=[o.lat,o.lng]}}));a.map.on(\"popupclose\",(function(o){const n=o.popup.getContent();n.remove();o.popup.contentHolder.appendChild(n);t.emit(e,\"overlayItemToggled\",o.popup.item_id,!1)}));a.map.on(\"popupopen\",(function(o){const n=o.popup.contentHolder.firstChild;n&&o.popup.setContent(o.popup.contentHolder.removeChild(n));t.emit(e,\"overlayItemToggled\",o.popup.item_id,!0)}));a.map.on(\"tooltipclose\",(function(o){const n=o.tooltip.getContent();n.remove();o.tooltip.contentHolder.appendChild(n);t.emit(e,\"overlayItemToggled\",o.tooltip.item_id,!1)}));a.map.on(\"tooltipopen\",(function(o){const n=o.tooltip.contentHolder.firstChild;n&&o.tooltip.setContent(o.tooltip.contentHolder.removeChild(n));t.emit(e,\"overlayItemToggled\",o.tooltip.item_id,!0)}))};this.init(o,[n,i],p)})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "WLeafletMap", "(function(t,e,o,n,i,p,l){e.wtObj&&e.wtObj.map.remove();e.wtObj=this;const m=this;this.map=null;const a={};let s=p,c=[n,i];this.addTileLayer=function(t,e){const o=JSON.parse(e);L.tileLayer(t,o).addTo(m.map)};this.zoom=function(t){s=t;m.map.setZoom(t)};this.panTo=function(t,e){c=[t,e];m.map.panTo([t,e])};function d(o,n){n.doubleClickTimeout=null;n.on(\"click\",(function(){!function(o,n){if(n.doubleClickTimeout){clearTimeout(n.doubleClickTimeout);n.doubleClickTimeout=null;t.emit(e,\"itemDblClicked\",o)}else n.doubleClickTimeout=setTimeout((function(){n.doubleClickTimeout=null;t.emit(e,\"itemClicked\",o)}),l)}(o,n)}));n.on(\"mousedown\",(function(){t.emit(e,\"itemMousedown\",o)}));n.on(\"mouseup\",(function(){t.emit(e,\"itemMouseup\",o)}));n.on(\"mouseover\",(function(){t.emit(e,\"itemMouseover\",o)}));n.on(\"mouseout\",(function(){t.emit(e,\"itemMouseout\",o)}))}this.addPopup=function(t,e,o){o.item_type=1;m.addOverlayItem(t,e,o)};this.addTooltip=function(t,e,o){o.item_type=0;m.addOverlayItem(t,e,o)};this.addOverlayItem=function(t,o,n){d(t,n);n.contentHolder=document.createElement(\"div\");n.contentHolder.style.cssText=\"visibility: hidden;\";e.appendChild(n.contentHolder);n.item_id=t;n.parent_id=o;a[t]=n;m.toggleOverlayItem(t,!0)};this.addMapItem=function(t,e,o){d(t,o);o.addTo(m.map);a[t]=o};this.removeMapItem=function(t){const e=a[t];if(e){const o=e.parent_id;if((o||0===o)&&-1!==o){const e=a[o];e&&(e.getPopup()&&e.getPopup().item_id===t?e.unbindPopup():e.getTooltip()&&e.getTooltip().item_id===t&&e.unbindTooltip())}e.contentHolder&&e.contentHolder.remove();m.map.removeLayer(e);delete a[t]}};this.moveMapItem=function(t,e){const o=a[t];o&&o.setLatLng(e)};this.movePolyline=function(t,e){const o=a[t];o&&o.setLatLngs(e)};this.setOverlayItemContent=function(t,e,o){const n=a[t];if(n){n.contentId=o;n.contentHolder.innerHTML=e;if(n.isOpen()){const t=n.contentHolder.firstChild;n.setContent(n.contentHolder.removeChild(t))}m.delayedJS()}};this.moveOverlayItemToFront=function(t){const e=a[t];e&&e.bringToFront()};this.moveOverlayItemToBack=function(t){const e=a[t];e&&e.bringToBack()};this.toggleOverlayItem=function(t,e){const o=a[t];if(o)if(e&&!o.isOpen()){const t=o.parent_id;if(-1===t)o.openOn(this.map);else{const e=a[t];e&&(1===o.item_type?e.bindPopup(o).openPopup():0===o.item_type&&e.bindTooltip(o).openTooltip())}}else!e&&o.isOpen()&&o.close()};this.setDrawnItemStyle=function(t,e){const o=a[t];o&&o.setStyle(e)};this.setCircleRadius=function(t,e){const o=a[t];o&&o.setRadius(e)};this.redrawItem=function(t){const e=a[t];e&&e.redraw()};this.wtResize=function(){m.map.invalidateSize()};e.wtEncodeValue=function(){const t=m.map.getCenter(),e=[t.lat,t.lng],o=m.map.getZoom();return JSON.stringify({position:e,zoom:o})};this.init=function(o,n,i){const p=JSON.parse(o);p.center=n;p.zoom=i;m.map=L.map(e,p);const l=parseInt(function(){let t=e.parentNode;for(;t;){if(t.wtPopup)return t.style.zIndex;t=t.parentNode}return 0}(),10);if(l>0){m.map.getPane(\"tilePane\").style.zIndex=l+200;m.map.getPane(\"overlayPane\").style.zIndex=l+400;m.map.getPane(\"shadowPane\").style.zIndex=l+500;m.map.getPane(\"markerPane\").style.zIndex=l+600;m.map.getPane(\"tooltipPane\").style.zIndex=l+650;m.map.getPane(\"popupPane\").style.zIndex=l+700}m.map.on(\"zoomend\",(function(){const o=m.map.getZoom();if(o!==s){t.emit(e,\"zoomLevelChanged\",o);s=o}}));m.map.on(\"moveend\",(function(){const o=m.map.getCenter();if(o.lat!==c[0]||o.lng!==c[1]){t.emit(e,\"panChanged\",o.lat,o.lng);c=[o.lat,o.lng]}}));m.map.on(\"popupclose\",(function(o){const n=o.popup.getContent();n.remove();o.popup.contentHolder.appendChild(n);t.emit(e,\"overlayItemToggled\",o.popup.item_id,!1)}));m.map.on(\"popupopen\",(function(o){const n=o.popup.contentHolder.firstChild;n&&o.popup.setContent(o.popup.contentHolder.removeChild(n));t.emit(e,\"overlayItemToggled\",o.popup.item_id,!0)}));m.map.on(\"tooltipclose\",(function(o){const n=o.tooltip.getContent();n.remove();o.tooltip.contentHolder.appendChild(n);t.emit(e,\"overlayItemToggled\",o.tooltip.item_id,!1)}));m.map.on(\"tooltipopen\",(function(o){const n=o.tooltip.contentHolder.firstChild;n&&o.tooltip.setContent(o.tooltip.contentHolder.removeChild(n));t.emit(e,\"overlayItemToggled\",o.tooltip.item_id,!0)}))};this.init(o,[n,i],p)})");
   }
   static class Impl extends WWebWidget {
     private static Logger logger = LoggerFactory.getLogger(Impl.class);
@@ -2083,80 +2488,5 @@ if ( parentContainer != null) parentContainer.addWidget (this);
      DomElementType getDomElementType() {
     return DomElementType.DIV;
     }
-  }
-  static abstract class Overlay {
-    private static Logger logger = LoggerFactory.getLogger(Overlay.class);
-    
-     abstract void addJS(final StringBuilder ss, WLeafletMap  map) ;
-      Overlay() {
-    }
-  }
-  static class Polyline extends WLeafletMap.Overlay {
-    private static Logger logger = LoggerFactory.getLogger(Polyline.class);
-    
-    public List<WLeafletMap.Coordinate> points ;
-    public WPen pen ;
-      Polyline(final List<WLeafletMap.Coordinate> points, final WPen pen) {
-    super ();
-    this.points = points;
-    this.pen = pen;
-    }
-     void addJS(final StringBuilder ss, WLeafletMap  map) {
-    if (   this.pen.getStyle() == PenStyle.None) {
-      return ;
-    }
-     com.google.gson.JsonObject options  = new com.google.gson.JsonObject();
-    addPathOptions (options,   this.pen, new WBrush (BrushStyle.None));
- String optionsStr  = options.toString();
-     EscapeOStream es  = new EscapeOStream(ss);
-    es.append("var o=").append( map.getJsRef()).append(";if(o && o.wtObj){o.wtObj.addPolyline(");
-es.append("[");
-for ( int i =0; 
-    i <    this.points.size ();++ i) {
-      if ( i != 0) {
-        es.append(',');
-}
-      es.append("[");
- char[] buf = new char[30];
-      es.append(MathUtils.roundJs(  this.points.get(i).getLatitude(), 16)).append(",");
-es.append(MathUtils.roundJs(  this.points.get(i).getLongitude(), 16));
-es.append("]");
-}
-    es.append("],'");
- es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
-es.append(optionsStr);
- es.popEscape ();
-es.append("');}");
-}
-  }
-  static class Circle extends WLeafletMap.Overlay {
-    private static Logger logger = LoggerFactory.getLogger(Circle.class);
-    
-    public WLeafletMap.Coordinate center ;
-    public double radius ;
-    public WPen stroke ;
-    public WBrush fill ;
-      Circle(final WLeafletMap.Coordinate center, double radius, final WPen stroke, final WBrush fill) {
-    super ();
-    this.center = center;
-    this.radius = radius;
-    this.stroke = stroke;
-    this.fill = fill;
-    }
-     void addJS(final StringBuilder ss, WLeafletMap  map) {
-     com.google.gson.JsonObject options  = new com.google.gson.JsonObject();
-    options.add("radius",(new com.google.gson.JsonPrimitive(  this.radius)));
-addPathOptions (options,   this.stroke,   this.fill);
- String optionsStr  = options.toString();
-     EscapeOStream es  = new EscapeOStream(ss);
-    es.append("var o=").append( map.getJsRef()).append(";if(o && o.wtObj){").append("o.wtObj.addCircle([");
- char[] buf = new char[30];
-    es.append(MathUtils.roundJs(  this.center.getLatitude(), 16)).append(",");
-es.append(MathUtils.roundJs(  this.center.getLongitude(), 16)).append("],'");
- es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
-es.append(optionsStr);
- es.popEscape ();
-es.append("');}");
-}
   }
 }

@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
   this.legendColumns_ = 1;
   this.legendColumnWidth_ = new WLength(100);
   this.legendFont_ = new WFont();
+  this.legendTextColor_ = new WColor(0, 0, 0);
   this.legendBorder_ = new WPen(PenStyle.None);
   this.legendBackground_ = new WBrush(BrushStyle.None); 
     this.legendFont_.setFamily (FontFamily.SansSerif, "Arial");
@@ -51,10 +52,11 @@ import org.slf4j.LoggerFactory;
   this.legendSide_ = side;
   this.legendAlignment_ = alignment;
 }
-  public void setLegendStyle(final WFont font, final WPen border, final WBrush background) { 
+  public void setLegendStyle(final WFont font, final WPen border, final WBrush background, final WColor textColor) { 
     this.legendFont_=  font;
    this.legendBorder_=  border;
    this.legendBackground_=  background;
+   this.legendTextColor_=  textColor;
 }
   public LegendLocation getLegendLocation() {
   return   this.legendLocation_;
@@ -73,6 +75,9 @@ import org.slf4j.LoggerFactory;
   }
   public WFont getLegendFont() {
   return   this.legendFont_;
+  }
+  public WColor getLegendTextColor() {
+  return   this.legendTextColor_;
   }
   public WPen getLegendBorder() {
   return   this.legendBorder_;
@@ -93,6 +98,7 @@ import org.slf4j.LoggerFactory;
   protected int legendColumns_ ;
   protected WLength legendColumnWidth_ ;
   protected WFont legendFont_ ;
+  protected WColor legendTextColor_ ;
   protected WPen legendBorder_ ;
   protected WBrush legendBackground_ ;
 }

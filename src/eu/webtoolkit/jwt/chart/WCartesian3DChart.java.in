@@ -108,6 +108,7 @@ public class WCartesian3DChart extends WGLWidget {
   this.chartPalette_ = new WStandardPalette(PaletteFlavour.Muted);
   this.title_ = new WString();
   this.titleFont_ = new WFont();
+  this.titleColor_ = new WColor(0, 0, 0);
   this.legend_ = new WLegend3D();
   this.interface_ = new WChart3DImplementation(this);
   this.axisRenderWidth_ = 1024;
@@ -289,6 +290,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.chartPalette_ = new WStandardPalette(PaletteFlavour.Muted);
   this.title_ = new WString();
   this.titleFont_ = new WFont();
+  this.titleColor_ = new WColor(0, 0, 0);
   this.legend_ = new WLegend3D();
   this.interface_ = new WChart3DImplementation(this);
   this.axisRenderWidth_ = 1024;
@@ -926,6 +928,42 @@ return result;
   }
   /**
   
+  Set the color of the title. 
+          
+  <p>
+  
+  Changes the color for the chart title.
+  
+  <p>
+  By default, the title is black.
+  
+  <p>
+  @see WCartesian3DChart#setTitle(CharSequence title)
+  @see WCartesian3DChart#setTitleFont(WFont titleFont)
+  
+  
+          
+  */
+  public void setTitleColor(final WColor titleColor) { 
+    this.titleColor_=  titleColor;
+  this.updateChart (EnumSet.of(ChartUpdates.GLTextures));
+}
+  /**
+  
+  Returns the color of the title. 
+          
+  <p>
+  
+  @see WCartesian3DChart#setTitleColor(WColor titleColor)
+  
+  
+          
+  */
+  public WColor getTitleColor() {
+  return   this.titleColor_;
+  }
+  /**
+  
   Enables the legend. 
           
   <p>
@@ -989,10 +1027,10 @@ return result;
           
   <p>
   
-  This configures the font, border and background for the legend.
+  This configures the font, border, background and color for the legend.
   
   <p>
-  The default font is a 10pt sans serif font (the same as the default axis label font), the default <code>border</code> is PenStyle::None and the default <code>background</code> is BrushStyle::None.
+  The default font is a 10pt sans serif font (the same as the default axis label font), the default <code>border</code> is PenStyle::None, the default <code>background</code> is BrushStyle::None, and the default <code>textColor</code> is black.
   
   <p>
   @see WCartesian3DChart#setLegendEnabled(boolean enabled)
@@ -1000,10 +1038,17 @@ return result;
   
           
   */
-  public void setLegendStyle(final WFont font, final WPen border, final WBrush background) { 
-    this.legend_.setLegendStyle (font, border, background);
+  public void setLegendStyle(final WFont font, final WPen border, final WBrush background, final WColor textColor) { 
+    this.legend_.setLegendStyle (font, border, background, textColor);
   this.updateChart (EnumSet.of(ChartUpdates.GLTextures));
 }
+  /** 
+  
+  Configures the legend decoration. 
+          
+  <p>Calls {@link #setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor) setLegendStyle(font, border, background, new WColor(0, 0, 0))} */public  final void setLegendStyle(final WFont font, final WPen border, final WBrush background)  {
+    setLegendStyle(font, border, background, new WColor(0, 0, 0));
+  }
   /**
   
   Returns the legend side. 
@@ -1066,7 +1111,7 @@ return result;
           
   <p>
   
-  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -1080,7 +1125,7 @@ return result;
           
   <p>
   
-  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -1094,7 +1139,7 @@ return result;
           
   <p>
   
-  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background)
+  @see WCartesian3DChart#setLegendStyle(WFont font, WPen border, WBrush background, WColor textColor)
   
   
           
@@ -2825,6 +2870,7 @@ if (   this.vertAxisTexture_.isNull ()) {
    WPaintDevice titlePaintDev  =   this.createPaintDevice ( this.getWidth(),  this.getHeight());
    WPainter painter  = new WPainter(titlePaintDev); 
   painter.setFont (  this.titleFont_);
+ painter.setPen (new WPen(  this.titleColor_));
  painter.drawText (new WRectF(0, 0,  this.getWidth().getValue(), pixelHeight), EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Middle),   this.title_);
  painter.end ();
    this.titleTexture_=    this.createTexture ();
@@ -2994,6 +3040,7 @@ break;
   private WChartPalette chartPalette_ ;
   private WString title_ ;
   private WFont titleFont_ ;
+  private WColor titleColor_ ;
   private WLegend3D legend_ ;
   private WChart3DImplementation interface_ ;
   private int axisRenderWidth_ ;

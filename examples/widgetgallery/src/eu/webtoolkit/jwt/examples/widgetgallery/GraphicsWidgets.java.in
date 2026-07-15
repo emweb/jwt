@@ -305,19 +305,42 @@ for ( int i =1;
   i <  model.getColumnCount();++ i) { 
      table.setColumnWidth (i, new WLength (120));
 }
-   WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
    chart.setModel (model);
   chart.setXSeriesColumn (0);
   chart.setLegendEnabled (true);
-  chart.setPlotAreaPadding (40, EnumSet.of (Side.Left, Side.Top, Side.Bottom));
-  chart.setPlotAreaPadding (120, EnumSet.of(Side.Right));
+  chart.setPlotAreaPadding (50, EnumSet.of (Side.Left, Side.Top, Side.Bottom));
+  chart.setPlotAreaPadding (130, EnumSet.of(Side.Right));
 for ( int column =1; 
   column <  model.getColumnCount();++ column) {
-     WDataSeries series =new WDataSeries(column,SeriesType.Bar); 
+     WDataSeries seriesPtr =new WDataSeries(column,SeriesType.Bar);
+     WDataSeries  series =seriesPtr; 
      series.setShadow (new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
-  chart.addSeries (series);
+  chart.addSeries (seriesPtr);
 } 
-   chart.resize (new WLength (600), new WLength (400));
+   chart.setBackground (new WBrush(StandardColor.Transparent));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+  }
+  }
+  );
+  chart.resize (new WLength (600), new WLength (400));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
 return container;
   }
@@ -347,27 +370,54 @@ for ( int column =1;
   column <  model.getColumnCount();++ column) { 
      table.setColumnWidth (column, new WLength (90));
 } 
-   table.resize (new WLength (783), new WLength (200));
+   table.resize (WLength.Auto, new WLength (200));
+  table.setMaximumSize (new WLength (999999), WLength.Auto);
  WItemDelegate delegate =new WItemDelegate(); 
    delegate.setTextFormat ("%.1f");
   table.setItemDelegate (delegate);
   table.setItemDelegateForColumn (0, new WItemDelegate());
- WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
-   chart.setBackground (new WBrush (new WColor(220, 220, 220)));
-  chart.setModel (model);
+ final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   chart.setModel (model);
   chart.setXSeriesColumn (0);
   chart.setLegendEnabled (true);
   chart.setType (ChartType.Scatter);
   chart.getAxis(Axis.X).setScale (AxisScale.Date);
-  chart.setPlotAreaPadding (40, EnumSet.of (Side.Left, Side.Top, Side.Bottom));
+  chart.setPlotAreaPadding (50, EnumSet.of (Side.Left, Side.Top, Side.Bottom));
   chart.setPlotAreaPadding (120, EnumSet.of(Side.Right));
 for ( int i =2; 
   i < 4;++ i) {
      WDataSeries s =new WDataSeries(i,SeriesType.Line); 
      s.setShadow (new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
   chart.addSeries (s);
-} 
-   chart.resize (new WLength (800), new WLength (400));
+}
+  if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+}
+  else  { 
+     chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+  }
+  }
+  );
+  chart.resize (new WLength (800), new WLength (400));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
 return container;
   }
@@ -382,7 +432,7 @@ for ( int i =0;
      model.setData (i, 0, x);
   model.setData (i, 1, Math.sin(x));
 }
-   WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
    chart.setModel (model);
   chart.setXSeriesColumn (0);
   chart.setLegendEnabled (true);
@@ -394,6 +444,28 @@ for ( int i =0;
  WDataSeries s =new WDataSeries(1,SeriesType.Curve); 
    s.setShadow (new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
   chart.addSeries (s);
+  chart.setBackground (new WBrush(StandardColor.Transparent));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+  }
+  }
+  );
   chart.resize (new WLength (800), new WLength (300));
   chart.setMargin (new WLength (10), EnumSet.of (Side.Top, Side.Bottom));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
@@ -411,7 +483,7 @@ return container;
      WDate date  = WDate.fromString ( s.toString (), "dd/MM/yy"); 
      model.setData (row, 0, date);
 }
-   WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
    chart.setBackground (new WBrush (new WColor(220, 220, 220)));
   chart.setModel (model);
   chart.setXSeriesColumn (0);
@@ -429,10 +501,38 @@ return container;
      WDataSeries s =new WDataSeries(3,SeriesType.Line); 
      s.setShadow (new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
   chart.addSeries (s);
-} 
-   chart.resize (new WLength (800), new WLength (400));
+}
+  if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+}
+  else  { 
+     chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+  }
+  }
+  );
+  chart.resize (new WLength (800), new WLength (400));
   chart.setPanEnabled (true);
   chart.setZoomEnabled (true);
+  chart.setPlotAreaPadding (50, EnumSet.of (Side.Left, Side.Right));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
 return container;
   }
@@ -448,9 +548,8 @@ return container;
      WDate date  = WDate.fromString ( s.toString (), "dd/MM/yy"); 
      model.setData (row, 0, date);
 }
-   WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
-   chart.setBackground (new WBrush (new WColor(220, 220, 220)));
-  chart.setModel (model);
+   final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   chart.setModel (model);
   chart.setXSeriesColumn (0);
   chart.setType (ChartType.Scatter);
   chart.getAxis(Axis.X).setScale (AxisScale.Date);
@@ -461,21 +560,60 @@ return container;
    WDataSeries  s_ =s; 
    s_.setShadow (new WShadow(3, 3, new WColor(0, 0, 0, 127), 3));
   chart.addSeries (s);
-  chart.resize (new WLength (800), new WLength (400));
+  chart.resize (new WLength (820), new WLength (400));
   chart.setPanEnabled (true);
   chart.setZoomEnabled (true);
+  chart.setPlotAreaPadding (50, EnumSet.of (Side.Left, Side.Right));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
- WAxisSliderWidget  sliderWidget =new WAxisSliderWidget(s_,(WContainerWidget) container); 
-   sliderWidget.resize (new WLength (800), new WLength (80));
-  sliderWidget.setSelectionAreaPadding (40, EnumSet.of (Side.Left, Side.Right));
+ final WAxisSliderWidget  sliderWidget =new WAxisSliderWidget(s_,(WContainerWidget) container); 
+   sliderWidget.resize (new WLength (820), new WLength (80));
+  sliderWidget.setSelectionAreaPadding (50, EnumSet.of (Side.Left, Side.Right));
   sliderWidget.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  sliderWidget.setBackground (new WBrush (new WColor(55, 55, 55)));
+  sliderWidget.setSelectedAreaBrush (new WBrush (new WColor(33, 37, 41)));
+  sliderWidget.setSeriesPen (new WPen(StandardColor.White));
+  sliderWidget.setHandleBrush (new WBrush (new WColor(255, 196, 255)));
+}
+  else  { 
+     chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+    sliderWidget.setBackground (new WBrush (new WColor(55, 55, 55)));
+    sliderWidget.setSelectedAreaBrush (new WBrush (new WColor(33, 37, 41)));
+    sliderWidget.setSeriesPen (new WPen(StandardColor.White));
+    sliderWidget.setHandleBrush (new WBrush (new WColor(255, 196, 255)));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+    sliderWidget.setBackground (new WBrush (new WColor(230, 230, 230)));
+    sliderWidget.setSelectedAreaBrush (new WBrush (StandardColor.White));
+    sliderWidget.setSeriesPen (new WPen(StandardColor.Black));
+    sliderWidget.setHandleBrush (new WBrush (new WColor(0, 0, 200)));
+  }
+  }
+  );
 return container;
   }
    WWidget AxisSliderWidgetDifferentDataSeries() {
    WContainerWidget container =new WContainerWidget();
-   WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
-   chart.setBackground (new WBrush (new WColor(220, 220, 220)));
-  chart.setType (ChartType.Scatter);
+   final WCartesianChart  chart =new WCartesianChart((WContainerWidget) container); 
+   chart.setType (ChartType.Scatter);
  SinModel roughModel =new SinModel(- 3.14159265358979323846,3.14159265358979323846,100);
    WDataSeries roughSeries =new WDataSeries(1,SeriesType.Line);
    WDataSeries  roughSeries_ =roughSeries; 
@@ -497,15 +635,55 @@ return container;
   chart.getAxis(Axis.Y).setMinimumZoomRange (0.1);
   chart.getAxis(Axis.Y).setMinimum (- 1.5);
   chart.getAxis(Axis.Y).setMaximum (1.5);
-  chart.resize (new WLength (800), new WLength (400));
+  chart.resize (new WLength (840), new WLength (400));
   chart.setPanEnabled (true);
   chart.setZoomEnabled (true);
   chart.setOnDemandLoadingEnabled (true);
+  chart.setPlotAreaPadding (60, EnumSet.of (Side.Left, Side.Right));
   chart.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
- WAxisSliderWidget  sliderWidget =new WAxisSliderWidget(roughSeries_,(WContainerWidget) container); 
-   sliderWidget.resize (new WLength (800), new WLength (80));
-  sliderWidget.setSelectionAreaPadding (40, EnumSet.of (Side.Left, Side.Right));
+ final WAxisSliderWidget  sliderWidget =new WAxisSliderWidget(roughSeries_,(WContainerWidget) container); 
+   sliderWidget.resize (new WLength (840), new WLength (80));
+  sliderWidget.setSelectionAreaPadding (60, EnumSet.of (Side.Left, Side.Right));
   sliderWidget.setMargin (WLength.Auto, EnumSet.of (Side.Left, Side.Right));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setTextPen (new WPen(StandardColor.White));
+  chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+  chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+  chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+  chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+  sliderWidget.setBackground (new WBrush (new WColor(55, 55, 55)));
+  sliderWidget.setSelectedAreaBrush (new WBrush (new WColor(33, 37, 41)));
+  sliderWidget.setSeriesPen (new WPen(StandardColor.White));
+  sliderWidget.setHandleBrush (new WBrush (new WColor(255, 196, 255)));
+}
+  else  { 
+     chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setTextPen (new WPen(StandardColor.White));
+    chart.getYAxis(0).setPen (new WPen(StandardColor.White));
+    chart.getXAxis(0).setPen (new WPen(StandardColor.White));
+    chart.setBackground (new WBrush (new WColor(63, 63, 63)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.White));
+    sliderWidget.setBackground (new WBrush (new WColor(55, 55, 55)));
+    sliderWidget.setSelectedAreaBrush (new WBrush (new WColor(33, 37, 41)));
+    sliderWidget.setSeriesPen (new WPen(StandardColor.White));
+    sliderWidget.setHandleBrush (new WBrush (new WColor(255, 196, 255)));
+  }
+    else  { 
+       chart.setTextPen (new WPen());
+    chart.getYAxis(0).setPen (new WPen());
+    chart.getXAxis(0).setPen (new WPen());
+    chart.setBackground (new WBrush (new WColor(220, 220, 220)));
+    chart.setLegendStyle (new WFont(), new WPen(StandardColor.Transparent), new WBrush(StandardColor.Transparent), new WColor(StandardColor.Black));
+    sliderWidget.setBackground (new WBrush (new WColor(230, 230, 230)));
+    sliderWidget.setSelectedAreaBrush (new WBrush (StandardColor.White));
+    sliderWidget.setSeriesPen (new WPen(StandardColor.Black));
+    sliderWidget.setHandleBrush (new WBrush (new WColor(0, 0, 200)));
+  }
+  }
+  );
 return container;
   }
    WWidget PieChart() {
@@ -552,13 +730,25 @@ if ( WApplication.getInstance().getEnvironment().hasAjax()) {
   else  { 
      table.setEditTriggers (EnumSet.of(EditTrigger.None));
 }
-   WPieChart  chart =new WPieChart((WContainerWidget) container); 
+   final WPieChart  chart =new WPieChart((WContainerWidget) container); 
    chart.setModel (model);
   chart.setLabelsColumn (0);
   chart.setDataColumn (1);
   chart.setDisplayLabels (EnumUtils.or(EnumSet.of(LabelOption.Outside, LabelOption.TextLabel), LabelOption.TextPercentage));
   chart.setPerspectiveEnabled (true, 0.2);
   chart.setShadowEnabled (true);
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setLabelTextColor (new WColor(StandardColor.White));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setLabelTextColor (new WColor(StandardColor.White));
+  }
+    else  { 
+       chart.setLabelTextColor (new WColor(StandardColor.Black));
+  }
+  }
+  );
   chart.setExplode (0, 0.3);
   chart.resize (new WLength (800), new WLength (300));
   chart.setMargin (new WLength (10), EnumSet.of (Side.Top, Side.Bottom));
@@ -579,7 +769,7 @@ return container;
   }
    WWidget NumChart3d() {
    WContainerWidget container =new WContainerWidget();
-   WCartesian3DChart  chart =new WCartesian3DChart((WContainerWidget) container); 
+   final WCartesian3DChart  chart =new WCartesian3DChart((WContainerWidget) container); 
    chart.setType (ChartType.Scatter);
   chart.setRenderOptions (EnumSet.of (GLRenderOption.ClientSide, GLRenderOption.AntiAliasing));
  final WCssDecorationStyle style  = new WCssDecorationStyle(); 
@@ -633,12 +823,54 @@ return container;
   chart.addDataSeries (dataset2);
   chart.addDataSeries (dataset3);
   chart.addDataSeries (dataset4);
-  chart.setAlternativeContent (new WImage(new WLink("pics/numericalChartScreenshot.png")));
+  chart.setBackground (new WColor(StandardColor.Transparent));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setIntersectionLinesColor (new WColor(StandardColor.White));
+  chart.setGridLinesPen (new WPen(StandardColor.White));
+  chart.setCubeLinesPen (new WPen(StandardColor.White));
+   chart.axis (Axis.X3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.White));
+  chart.setAlternativeContent (new WImage(new WLink("pics/numericalChartScreenshot-dark.png")));
+}
+  else  { 
+     chart.setAlternativeContent (new WImage(new WLink("pics/numericalChartScreenshot.png")));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setIntersectionLinesColor (new WColor(StandardColor.White));
+    chart.setGridLinesPen (new WPen(StandardColor.White));
+    chart.setCubeLinesPen (new WPen(StandardColor.White));
+     chart.axis (Axis.X3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.White));
+    chart.setAlternativeContent (new WImage(new WLink("pics/numericalChartScreenshot-dark.png")));
+  }
+    else  { 
+       chart.setIntersectionLinesColor (new WColor(StandardColor.Black));
+    chart.setGridLinesPen (new WPen(StandardColor.Black));
+    chart.setCubeLinesPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.X3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.Black));
+    chart.setAlternativeContent (new WImage(new WLink("pics/numericalChartScreenshot.png")));
+  }
+  }
+  );
 return container;
   }
    WWidget CatChart3d() {
    WContainerWidget container =new WContainerWidget();
-   WCartesian3DChart  chart =new WCartesian3DChart((WContainerWidget) container); 
+   final WCartesian3DChart  chart =new WCartesian3DChart((WContainerWidget) container); 
    chart.setType (ChartType.Category);
   chart.setRenderOptions (EnumSet.of (GLRenderOption.ClientSide, GLRenderOption.AntiAliasing));
  final WCssDecorationStyle style  = new WCssDecorationStyle(); 
@@ -665,7 +897,52 @@ return container;
    isotopes.setTitle ("made-up data");
   isotopes.setType (Series3DType.Bar);
   chart.addDataSeries (isotopes);
-  chart.setAlternativeContent (new WImage(new WLink("pics/categoricalChartScreenshot.png")));
+  chart.setBackground (new WColor(StandardColor.Transparent));
+if (  WApplication.getInstance().getTheme().getColorMode().equals("dark")) { 
+     chart.setIntersectionLinesColor (new WColor(StandardColor.White));
+  chart.setGridLinesPen (new WPen(StandardColor.White));
+  chart.setCubeLinesPen (new WPen(StandardColor.White));
+  chart.setTitleColor (new WColor(StandardColor.White));
+   chart.axis (Axis.X3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.White));
+   chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.White));
+  chart.setAlternativeContent (new WImage(new WLink("pics/categoricalChartScreenshot-dark.png")));
+}
+  else  { 
+     chart.setAlternativeContent (new WImage(new WLink("pics/categoricalChartScreenshot.png")));
+}
+    WApplication.getInstance().themeColorModeChanged ().addListener(this,  (String mode) ->  {
+    if (mode.equals("dark")) { 
+       chart.setIntersectionLinesColor (new WColor(StandardColor.White));
+    chart.setGridLinesPen (new WPen(StandardColor.White));
+    chart.setCubeLinesPen (new WPen(StandardColor.White));
+    chart.setTitleColor (new WColor(StandardColor.White));
+     chart.axis (Axis.X3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.White));
+     chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.White));
+    chart.setAlternativeContent (new WImage(new WLink("pics/categoricalChartScreenshot-dark.png")));
+  }
+    else  { 
+       chart.setIntersectionLinesColor (new WColor(StandardColor.Black));
+    chart.setGridLinesPen (new WPen(StandardColor.Black));
+    chart.setCubeLinesPen (new WPen(StandardColor.Black));
+    chart.setTitleColor (new WColor(StandardColor.Black));
+     chart.axis (Axis.X3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.X3D).setTextPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Y3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Y3D).setTextPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Z3D).setPen (new WPen(StandardColor.Black));
+     chart.axis (Axis.Z3D).setTextPen (new WPen(StandardColor.Black));
+    chart.setAlternativeContent (new WImage(new WLink("pics/categoricalChartScreenshot.png")));
+  }
+  }
+  );
 return container;
   }
 }

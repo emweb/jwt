@@ -202,6 +202,61 @@ if (  widget.isThemeStyleEnabled ()) {
   }
   /**
   
+  Sets the color mode for the theme. 
+          
+  <p>
+  
+  The color mode is a string that indicates which color mode the theme be in. The interpretation of the color mode is up to the theme, but it is typically used to indicate a dark or light mode.
+  
+  <p>
+  This is relevant only for themes that support color modes. The default implementation does nothing. You can override this method if you want to support color modes in your theme.
+  
+  <p>
+  @see WBootstrap5Theme
+  
+  
+          
+  */
+  public void setColorMode(final String mode) {
+  logger.warn(new StringWriter().append("setColorMode(): Using the default (empty) call. Override it if you make use of color modes.").toString());
+}
+  /**
+  
+  Returns the current color mode for the theme. 
+          
+  <p>
+  
+  The default implementation always returns an empty string.
+  
+  <p>
+  @see WTheme#setColorMode(String mode)
+  
+  
+          
+  */
+  public String getColorMode() {
+  logger.warn(new StringWriter().append("colorMode(): Using the default (empty) call. Override it if you make use of color modes.").toString());
+return "";
+  }
+  /**
+  
+  Returns the color of the slider ticks. 
+          
+  <p>
+  
+  Returns the color that will be used for the ticks of WSliders that do not use native controls.
+  
+  <p>
+  @see WSlider#setNativeControl(boolean nativeControl)
+  
+  
+          
+  */
+  public WColor getSliderTickColor() {
+  return new WColor(0xd7, 0xd7, 0xd7);
+  }
+  /**
+  
   Applies the functional part of the theme to a widget&apos;s child. 
           
   <p>

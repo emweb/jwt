@@ -25,10 +25,35 @@ import org.slf4j.LoggerFactory;
  class WidgetGallery extends BaseTemplate {
   private static Logger logger = LoggerFactory.getLogger(WidgetGallery.class);
   
-  public  WidgetGallery(WContainerWidget  parentContainer) {
+  public  WidgetGallery(boolean darkMode, WContainerWidget  parentContainer) {
   super ("tpl:widget-gallery", (WContainerWidget)null);
   this.openMenuButton_ = null;
-  this.menuOpen_ = false;  
+  this.colorModeToggle_ = null;
+  this.menuOpen_ = false;
+  if (darkMode) { 
+     this.setCondition ("if:darkmode", darkMode);
+ WIcon  sunIcon =(WIcon) this.bindWidget("sun-icon", new WIcon()); 
+     sunIcon.setName ("sun-o");
+  sunIcon.setFloatSide (Side.Left);
+  sunIcon.setSize (1.5);
+ WIcon  moonIcon =(WIcon) this.bindWidget("moon-icon", new WIcon()); 
+     moonIcon.setName ("moon-o");
+  moonIcon.setFloatSide (Side.Left);
+  moonIcon.setSize (1.5);
+  this.colorModeToggle_ = (WCheckBox) this.bindWidget("color-mode-toggle", new WCheckBox());
+    this.colorModeToggle_.setChecked (false);
+    this.colorModeToggle_.setInline (true);
+ WApplication  app =WApplication.getInstance();
+     String colorMode  =  app.getEnvironment().getPreferredColorScheme();
+        this.colorModeToggle_.checked ().addListener(this,  () ->  { 
+        WApplication.getInstance().getTheme().setColorMode ("dark");
+    }
+    );
+    this.colorModeToggle_.unChecked ().addListener(this,  () ->  { 
+        WApplication.getInstance().getTheme().setColorMode ("light");
+    }
+    );
+}  
   this.contentsStack_ = (WStackedWidget) this.bindWidget("contents", new WStackedWidget());
  WAnimation animation  = new WAnimation(AnimationEffect.Fade, TimingFunction.Linear, 200); 
      this.contentsStack_.setTransitionAnimation (animation, true);
@@ -59,11 +84,21 @@ if (  menu.getCurrentIndex() < 0) {
 }
   if ( parentContainer != null) parentContainer.addWidget (this);
 }
-  public  WidgetGallery()  {
-    this((WContainerWidget)null);
+  public  WidgetGallery(boolean darkMode)  {
+    this(darkMode, (WContainerWidget)null);
   }
+  protected void enableAjax() {
+  if (   this.colorModeToggle_ != null) {
+     WApplication  app =WApplication.getInstance();
+     String colorMode  =  app.getEnvironment().getPreferredColorScheme(); 
+      app.getTheme().setColorMode (colorMode);
+    this.colorModeToggle_.setChecked (colorMode.equals("dark"));
+} 
+   super.enableAjax ();
+}
   private WStackedWidget  contentsStack_ ;
   private WPushButton  openMenuButton_ ;
+  private WCheckBox  colorModeToggle_ ;
   private boolean menuOpen_ ;
   private WMenuItem  addToMenu(WMenu  menu, final CharSequence name, Topic topicPtr) {
    Topic  topic =topicPtr;

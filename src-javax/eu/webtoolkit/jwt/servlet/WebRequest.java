@@ -44,19 +44,19 @@ import eu.webtoolkit.jwt.Utils;
  */
 public class WebRequest extends HttpServletRequestWrapper {
 	private static final Logger logger = LoggerFactory.getLogger(WebRequest.class);
-	
+
 	private HttpServletRequest httpRequest;
-	
+
 	/**
 	 * The type of response that this request will need.
-	 * 
+	 *
 	 * This is an internal JWt enumeration.
 	 */
 	public enum ResponseType {
 		/**
 		 * Renders as an HTML page.
 		 */
-		Page, 
+		Page,
 		/**
 		 * Renders as a JavaScript script resource.
 		 */
@@ -82,7 +82,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		 */
 		public void update(WebRequest request, long pBytesRead, long pContentLength);
 	}
-	
+
 	private Map<String, String[]> parameters_;
 	private Map<String, List<UploadedFile>> files_;
 	private String scriptName;
@@ -90,7 +90,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 	public static String computeScriptName(HttpServletRequest request, Configuration configuration) {
 		String scriptName = request.getServletPath();
-	
+
 		if (request.getContextPath() != null)
 			scriptName = request.getContextPath() + scriptName;
 
@@ -100,10 +100,10 @@ public class WebRequest extends HttpServletRequestWrapper {
 		// Jetty will auto-redirect in this case to .../
 		// I am not sure if this is according to the servlet spec ?
 		if (request.getServletPath().length() == 0 && !scriptName.endsWith("/"))
-			scriptName += "/"; 
-		
+			scriptName += "/";
+
 		if (configuration.internalDeploymentSize() != 0) {
-			String pathInfo = getPathInfo(request, scriptName); 
+			String pathInfo = getPathInfo(request, scriptName);
 			// Move part of the internal path to the script name
 			if (pathInfo != null) {
 				for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
@@ -121,18 +121,18 @@ public class WebRequest extends HttpServletRequestWrapper {
 			if (!scriptName.endsWith("/"))
 				scriptName += "/";
 		}
-		
+
 		return scriptName;
 	}
-	
+
 	public static String computePathInfo(HttpServletRequest request, Configuration configuration) {
 		String scriptName = computeScriptName(request, configuration);
 		return computePathInfo(request, scriptName, configuration);
 	}
-	
+
 	public static String computePathInfo(HttpServletRequest request, String scriptName, Configuration configuration) {
 		String pathInfo = getPathInfo(request, scriptName);
-		
+
 		if (configuration.internalDeploymentSize() != 0) {
 			// Move part of the internal path to the script name
 			for (int i = 0; i < configuration.internalDeploymentSize(); ++i) {
@@ -148,13 +148,13 @@ public class WebRequest extends HttpServletRequestWrapper {
 			if (scriptName.endsWith("/") && pathInfo.startsWith("/"))
 				pathInfo = pathInfo.substring(1);
 		}
-		
+
 		return pathInfo;
 	}
 
 	private static String getPathInfo(HttpServletRequest request, String scriptName) {
 		String pathInfo = request.getPathInfo();
-		
+
 		// Jetty will report "/" as an internal path. Which totally makes no sense but is according
 		// to the spec
 		if (request.getServletPath().length() == 0)
@@ -177,7 +177,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			pathInfo = "";
 		return pathInfo;
 	}
-	
+
 	private void computePaths(Configuration configuration) {
 		/*
 		 * We compute this here since sometimes when reposted through async (servlet 3), the context and everything
@@ -186,17 +186,17 @@ public class WebRequest extends HttpServletRequestWrapper {
 		this.scriptName = computeScriptName(httpRequest, configuration);
 		this.pathInfo = computePathInfo(httpRequest, this.scriptName, configuration);
 	}
-	
+
 	/**
 	 * Creates a WebRequest by wrapping an HttpServletRequest
 	 * @param request The request to be wrapped.
 	 * @param progressListener a progress listener implementation
-	 * @param configuration 
+	 * @param configuration
 	 */
 	public WebRequest(HttpServletRequest request, ProgressListener progressListener, Configuration configuration) {
 		super(request);
 		this.httpRequest  = request;
-		
+
 		computePaths(configuration);
 
 		try {
@@ -208,7 +208,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 	/**
 	 * Creates a mock WebRequest given list of parameters and a list of POST'ed files.
-	 * 
+	 *
 	 * @param parameters a list of request parameters
 	 * @param files a list of POST'ed files
 	 */
@@ -217,7 +217,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 		parameters_ = parameters;
 		files_ = files;
 	}
-	
+
 	/**
 	 * Returns the request method.
 	 */
@@ -230,7 +230,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * <p>
 	 * This returns in principle {@link #getContextPath()} + {@link #getServletPath()}, but
 	 * with workaround code for corner cases and container workarounds.
-	 * 
+	 *
 	 * @return the url at which the application is deployed
 	 */
 	public String getScriptName() {
@@ -240,9 +240,9 @@ public class WebRequest extends HttpServletRequestWrapper {
 	/**
 	 * Returns a header value.
 	 * <p>
-	 * Returns the corresponding header value, using {@link #getHeader(String)} or 
+	 * Returns the corresponding header value, using {@link #getHeader(String)} or
 	 * <code>null</code> if the header value is not present
-	 * 
+	 *
 	 * @param header the header name
 	 * @return the header value, or <code>null</code>.
 	 */
@@ -252,7 +252,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		return getHeader(header);
 	}
-	  
+
 	/**
 	  * Accesses to specific header fields (calls getHeaderValue()).
 	  */
@@ -267,7 +267,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * Returns the {@link HttpServletRequestWrapper#getPathInfo()} or the empty string
 	 * if there is no internal path in the request. This method also uses workarounds
 	 * for corner cases for some servlet containers.
-	 * 
+	 *
 	 * @return the internal path information, or an empty string if there is no internal path.
 	 */
 	public String getPathInfo() {
@@ -345,8 +345,8 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		parameters_ = new HashMap<String, String []>(parameterMap);
 		files_ = new HashMap<String, List<UploadedFile>>();
-		
-		String[] paramContentType = parameters_.get("contentType"); 
+
+		String[] paramContentType = parameters_.get("contentType");
 
 		if (paramContentType != null && paramContentType[0].equals("x-www-form-urlencoded") && this.getContentType() == null) {
 			byte[] buf = new byte[this.getContentLength()];
@@ -354,7 +354,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 			readParameters(buf);
 		}
 	}
-	
+
 	/**
 	 * Read and store query parameters
 	 * @param buf UTF-8 encoded byte array with the URI query part
@@ -380,10 +380,10 @@ public class WebRequest extends HttpServletRequestWrapper {
 			Utils.parseFormUrlEncoded(wtParams, parameters_);
 		}
 	}
-	
+
 	/**
 	 * Returns the list of uploaded files.
-	 * 
+	 *
 	 * @return the list of uploaded files.
 	 */
 	public Map<String, List<UploadedFile>> getUploadedFiles() {
@@ -405,7 +405,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 	 * <p>
 	 * Returns an array of parameters values given for a particular parameter. When
 	 * no parameter value was assigned to the parameter, an empty array is returned.
-	 * 
+	 *
 	 * @see #getParameterMap()
 	 */
 	@Override
@@ -418,7 +418,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 	/**
 	 * Returns the parameter value for a parameter's name.
-	 * 
+	 *
 	 * @see javax.servlet.ServletRequestWrapper#getParameter(java.lang.String)
 	 */
 	@Override
@@ -432,16 +432,16 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 		if (parameters_.containsKey(name)) {
 			String[] paramList = parameters_.get(name);
-			if (paramList.length > 0 && paramList[0] != null) 
+			if (paramList.length > 0 && paramList[0] != null)
 				return paramList[0];
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Returns whether this request is a WebSocket request.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketRequest() {
@@ -453,7 +453,7 @@ public class WebRequest extends HttpServletRequestWrapper {
 
 	/**
 	 * Returns whether this request is a WebSocket message.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketMessage() {

@@ -1,0 +1,131 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.servlet;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+An HTTP Cookie with the &quot;__Host-&quot; prefix. 
+    
+<p>
+
+This is a helper class used to create a cookie with the &quot;__Host-&quot; prefix.
+
+<p>
+A Cookie with the &quot;__Host-&quot; prefix can only be set over a HTTPS connection, and can only be overwritten by the domain that set it. It also enforces the Domain attribute of the cookie to be empty, the secure flag be set, and the Path attribute to be set to &quot;/&quot;.
+
+<p>
+This protects the cookie from being altered by a compromised subdomain, stopping a potential attack vector.
+
+<p>
+@see WEnvironment#getHostCookie(String cookieName)
+@see WApplication#setCookie(Cookie cookie)
+@see WApplication#removeCookie(Cookie cookie)
+@see WEnvironment#supportsCookies()
+@see SecureCookie
+
+
+    
+*/
+public class HostCookie extends Cookie {
+  private static Logger logger = LoggerFactory.getLogger(HostCookie.class);
+  
+  /**
+  
+  Constructor for a host cookie without value. 
+          
+  <p>
+  
+  Allows you to only specify the name of the cookie. This can be useful if the intention is to pass it to {@link WApplication#removeCookie(Cookie cookie) WApplication#removeCookie()}, in which case no value is needed.
+  
+  <p>
+  @see WApplication#removeCookie(Cookie cookie)
+  
+  
+  <p><i><b>Note: </b>The prefix is added automatically to the name. 
+  </i></p>
+  
+  
+          
+  */
+  public  HostCookie(final String name) {
+  super ( "__Host-" + name, "");
+  this.logicName_ = ""; 
+   this.init (name);
+}
+  public  HostCookie(final String name, final String value) {
+  super ( "__Host-" + name, value);
+  this.logicName_ = ""; 
+   this.init (name);
+}
+  /**
+  
+  Returns name of the cookie without the prefix. 
+          
+  */
+  public String getLogicName() {
+  return   this.logicName_;
+  }
+  /**
+  
+  Logs a warning. 
+          
+  <p>
+  
+  This function logs a warning instead of enabling/disabling the secure flag, since the secure flag must always be set on a cookie with the &quot;__Host-&quot; prefix. 
+          
+  */
+  public void setSecure(boolean secure) {
+  logger.warn(new StringWriter().append("Trying to add/remove the secure flag of a HostCookie. This flag is always set on a HostCookie. This change will be ignored.").toString());
+}
+  /**
+  
+  Logs a warning. 
+          
+  <p>
+  
+  This function logs a warning instead of changing the path, since the path of a cookie with the &quot;__Host-&quot; prefix must always be set to &quot;/&quot;. 
+          
+  */
+  public void setPath(final String path) {
+  logger.warn(new StringWriter().append("Trying to change the path of a HostCookie. The path of a HostCookie must always be '/'. This change will be ignored.").toString());
+}
+  /**
+  
+  Logs a warning. 
+          
+  <p>
+  
+  This function logs a warning instead of changing the domain, since the domain of a cookie with the &quot;__Host-&quot; prefix must always be empty. 
+          
+  */
+  public void setDomain(final String domain) {
+  logger.warn(new StringWriter().append("Trying to change the domain of a HostCookie. A HostCookie cannot have any domain set. This change will be ignored.").toString());
+}
+  private String logicName_ ;
+  private void init(String name) { 
+    this.logicName_=  name;
+  super.setSecure (true);
+  super.setPath ("/");
+  super.setDomain ("");
+}
+}

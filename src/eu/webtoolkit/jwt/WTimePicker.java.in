@@ -237,7 +237,10 @@ if (   this.sbsecond_ != null) {
   else  { 
       this.toggleAmPm_.setJavaScript ("function(){}");
 }
-  }
+   boolean rtl =  WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft; 
+   container.setCondition ("if:rtl", rtl);
+  container.setCondition ("if:ltr", ! rtl);
+}
   private void init(final WTime time) {
    WTemplate  container =new WTemplate(); 
    this.setImplementation (container);

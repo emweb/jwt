@@ -131,6 +131,12 @@ public class WMouseEvent implements WAbstractEvent {
   public Coordinates getDragDelta() {
   return new Coordinates(   this.jsEvent_.dragDX,    this.jsEvent_.dragDY);
   }
+  public int getViewportWidth() {
+  return    this.jsEvent_.viewportWidth;
+  }
+  public int getViewportHeight() {
+  return    this.jsEvent_.viewportHeight;
+  }
   /**
   
   Returns the scroll wheel delta. 

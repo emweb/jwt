@@ -147,7 +147,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
           
   */
   public String getJsFlashRef() {
-  return   "Wt4_13_4.getElement('" +  this.getId() + "_flash')";
+  return   "Wt4_14_0.getElement('" +  this.getId() + "_flash')";
   }
   /**
   
@@ -176,8 +176,8 @@ if ( parentContainer != null) parentContainer.addWidget (this);
      DomElement  obj =DomElement.createNew (DomElementType.OBJECT);
     if (  this.isInLayout ()) { 
        obj.setProperty (Property.StylePosition, "absolute");
-  obj.setProperty (Property.StyleLeft, "0");
-  obj.setProperty (Property.StyleRight, "0");
+  obj.setProperty (Property.StyleInsetInlineStart, "0");
+  obj.setProperty (Property.StyleInsetInlineEnd, "0");
  element.setProperty (Property.StylePosition, "relative");
  StringWriter ss  = new StringWriter();
       ss.append(  "function(self, w, h) {v=" +  this.getJsFlashRef() + ";if (v) {if (w >= 0) v.setAttribute('width', w);if (h >= 0) v.setAttribute('height', h);}");

@@ -1,3 +1,5 @@
+
+
 /*
  * Copyright (C) 2009 Emweb bv, Herent, Belgium.
  *
@@ -25,13 +27,13 @@ import eu.webtoolkit.jwt.Signal.Listener;
  */
 public abstract class AbstractEventSignal extends AbstractSignal {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractEventSignal.class);
-	
+
 	/**
 	 * An abstract base class for a listener with (learned) JavaScript behavior.
 	 * <p>
 	 * A learning listener may learn or be explicitly set its JavaScript behavior to avoid
 	 * server round-trips.
-	 * 
+	 *
 	 * @see Listener
 	 */
 	public static abstract class LearningListener {
@@ -99,7 +101,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * visual effect of the event listener happens after a round-trip the first time it is
 	 * triggered, but for next invocations its behavior is cached in the browser as client-side
 	 * JavaScript.
-	 * 
+	 *
 	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class AutoLearnListener extends LearningListener implements Signal.Listener {
@@ -121,7 +123,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * <p>
 	 * The {@link #undoTrigger()} method is called after learning and should undo the effect of
 	 * {@link #trigger()}.
-	 * 
+	 *
 	 * @see AbstractEventSignal#addListener(WObject, LearningListener)
 	 */
 	public static abstract class PreLearnListener extends LearningListener implements Signal.Listener {
@@ -144,7 +146,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * A listener whose behavior is entirely and solely defined using client-side JavaScript,
 	 * and which will not generate a request to the server.
 	 * <p>
-	 * 
+	 *
 	 * @see AbstractEventSignal#addListener(String)
 	 */
 	public static class JavaScriptListener extends LearningListener {
@@ -186,7 +188,8 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	static final int BIT_CAN_AUTOLEARN = 0x8;
 	static final int BIT_PREVENT_DEFAULT = 0x10;
 	static final int BIT_PREVENT_PROPAGATION = 0x20;
-	static final int BIT_SIGNAL_SERVER_ANYWAY = 0x40;
+	static final int BIT_IGNORE_BUBBLING = 0x40;
+	static final int BIT_SIGNAL_SERVER_ANYWAY = 0x80;
 
 	private ArrayList<LearningListener> learningListeners;
 	private byte flags_;
@@ -201,10 +204,10 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		learningListeners = null;
 		flags_ = 0;
 		id_ = nextId_.incrementAndGet();
-		
+
 		if (name_ == null)
 			flags_ |= BIT_SIGNAL_SERVER_ANYWAY;
-		
+
 		if (autoLearn)
 			flags_ |= BIT_CAN_AUTOLEARN; // requires sender is a WWidget !
 	}
@@ -223,9 +226,9 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * referenced from anywhere. When the owner object is not <code>null</code>,
 	 * the listener is stored using a strong reference in the owner object, and
 	 * using a weak reference in the signal.
-	 * 
+	 *
 	 * Note: The receiver is currently not yet used.
-	 * 
+	 *
 	 * @param listenerOwner
 	 *            if not <code>null</code>, the enclosing object for an
 	 *            anonymous listener
@@ -274,7 +277,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Remove a learning listener from this signal.
-	 * 
+	 *
 	 * @param listener a learning listener that was previously added
 	 */
 	public void removeListener(LearningListener listener) {
@@ -286,7 +289,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Remove a JavaScript listener from this signal.
-	 * 
+	 *
 	 * @param listener a learning listener that was previously added
 	 */
 	public void removeListener(JSlot listener) {
@@ -298,7 +301,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 			return;
 
 		WApplication app = WApplication.getInstance();
-		
+
 		app.addExposedSignal(this);
 
 		flags_ |= BIT_EXPOSED;
@@ -348,7 +351,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	boolean isExposedSignal() {
 		return (flags_ & BIT_SERVER_EVENT) != 0;
 	}
-	
+
 	public boolean isCanAutoLearn() {
 		return (flags_ & BIT_CAN_AUTOLEARN) != 0;
 	}
@@ -364,6 +367,11 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	String getJavaScript() {
 		String result = "";
+
+		if (isBubblingIgnored()) {
+			WWidget target = (WWidget) getOwner();
+			result += "if(e.target !== e.currentTarget && !"+WtVar.getWtClass()+".hasTag(e.target, 'BODY') && (typeof wtCurrentTargetSave === 'undefined' || e.target !== wtCurrentTargetSave)){return;}";
+		}
 
 		if (learningListeners != null)
 			for (LearningListener l : learningListeners) {
@@ -397,7 +405,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Returns whether the default action is prevented.
-	 * 
+	 *
 	 * @return whether the default action is prevented.
 	 *
 	 * @see #preventPropagation(boolean)
@@ -408,13 +416,24 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Returns whether propagation of the event is prevented.
-	 * 
+	 *
 	 * @return whether the default action is prevented.
-	 * 
+	 *
 	 * @see #preventDefaultAction(boolean)
 	 */
 	public boolean isDefaultActionPrevented() {
 		return (flags_ & BIT_PREVENT_DEFAULT) != 0;
+	}
+
+	/**
+	 * Returns whether bubbling events are ignored.
+	 *
+	 * @return whether bubbling events are ignored.
+	 *
+	 * @see #ignoreBubbling(boolean)
+	 */
+	public boolean isBubblingIgnored() {
+		return (flags_ & BIT_IGNORE_BUBBLING) != 0;
 	}
 
 	void trigger() {
@@ -489,7 +508,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Adds a JavaScript event listener.
-	 * 
+	 *
 	 * @param slot the JavaScript event listener
 	 */
 	public void addListener(JSlot slot) {
@@ -498,7 +517,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 
 	/**
 	 * Adds a JavaScript event listener.
-	 * 
+	 *
 	 * This adds a listener that is implemented solely as a client-side JavaScript function.
 	 * The argument is a JavaScript function which optionally accepts a DOM element and the
 	 * event:
@@ -508,17 +527,17 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 *      ...
 	 *   }
 	 * </pre>
-	 * 
+	 *
 	 * @param javascript the JavaScript function.
 	 */
 	public void addListener(String javascript) {
 		int argc = getArgumentCount();
-		
+
 		String js = "(" + javascript + ")(o,e";
 		for (int i = 0; i < argc; ++i)
 		    js += ",a" + (i+1);
 		js += ");";
-		
+
 		addListener(null, new JavaScriptListener(null, null, js));
 	}
 
@@ -526,7 +545,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * Prevents the default action associated with this event.
 	 * <p>
 	 * This prevents the default browser action associated with this event.
-	 * 
+	 *
 	 * @param prevent whether the default action should be prevented.
 	 */
 	public void preventDefaultAction(boolean prevent) {
@@ -553,7 +572,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 	 * Prevents the default action associated with this event.
 	 * <p>
 	 * This prevents the event propagation to ancestors.
-	 * 
+	 *
 	 * @param prevent whether the default action should be prevented.
 	 */
 	public void preventPropagation(boolean prevent) {
@@ -577,6 +596,37 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 		preventPropagation(true);
 	}
 
+	/**
+	 * Ignores bubbling events.
+	 * <p>
+	 * An event bubbles when it is propagated to the ancestors of the
+	 * event target. This prevents the signal from being emited if the
+	 * target of the event is not the owner of the signal.
+	 *
+	 * @param ignore whether the bubbling events should be ignored.
+	 */
+	public void ignoreBubbling(boolean ignore) {
+		if (isBubblingIgnored() != ignore) {
+			if (ignore) {
+				flags_ |= BIT_IGNORE_BUBBLING;
+			} else {
+				flags_ &= ~BIT_IGNORE_BUBBLING;
+			}
+			ownerRepaint();
+		}
+	}
+
+	/**
+	 * Ignores bubbling events.
+	 * <p>
+	 * An event bubbles when it is propagated to the ancestors of the
+	 * event target. This prevents the signal from being emited if the
+	 * target of the event is not the owner of the signal.
+	 */
+	public final void ignoreBubbling() {
+		ignoreBubbling(true);
+	}
+
 	void setNotExposed() {
 		flags_ &= ~BIT_SERVER_EVENT;
 	}
@@ -589,7 +639,7 @@ public abstract class AbstractEventSignal extends AbstractSignal {
 				WApplication.getInstance().removeExposedSignal(this);
 				flags_ &= ~BIT_SERVER_EVENT;
 			}
-		
+
 		ownerRepaint();
 	}
 

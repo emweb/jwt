@@ -842,7 +842,7 @@ result = p;
   else  {
     if (   this.login_.getState() != LoginState.Disabled) {
       if (    this.model_.getBaseAuth().isAuthTokensEnabled()) { 
-         WApplication.getInstance().removeCookie (    this.model_.getBaseAuth().getAuthTokenCookieName());
+         WApplication.getInstance().removeCookie (    this.model_.createAuthCookie ("", 0));
 } 
          this.model_.reset ();
   this.createLoginView ();

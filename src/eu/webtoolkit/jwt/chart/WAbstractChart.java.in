@@ -411,6 +411,44 @@ return 0;
   public WFont getTitleFont() {
   return   this.titleFont_;
   }
+  /**
+  
+  Set the color of the title. 
+          
+  <p>
+  
+  Changes the color for the chart title.
+  
+  <p>
+  By default, the title is black.
+  
+  <p>
+  @see WAbstractChart#setTitle(CharSequence title)
+  @see WAbstractChart#setTitleFont(WFont titleFont)
+  
+  
+          
+  */
+  public void setTitleColor(final WColor color) {
+  if(!ChartUtils.equals(  this.titleColor_,color)){
+    this.titleColor_=color;
+  update();
+  };
+}
+  /**
+  
+  Returns the color of the title. 
+          
+  <p>
+  
+  @see WAbstractChart#setTitleColor(WColor color)
+  
+  
+          
+  */
+  public WColor getTitleColor() {
+  return   this.titleColor_;
+  }
    void setAxisTitleFont(final WFont titleFont) {
   if(!ChartUtils.equals(  this.axisTitleFont_,titleFont)){
     this.axisTitleFont_=titleFont;
@@ -445,6 +483,7 @@ return 0;
   this.autoPadding_ = false;
   this.title_ = new WString();
   this.titleFont_ = new WFont();
+  this.titleColor_ = new WColor(0, 0, 0);
   this.axisTitleFont_ = new WFont();
   this.modelConnections_ = new ArrayList<AbstractSignal.Connection>(); 
     this.titleFont_.setFamily (FontFamily.SansSerif);
@@ -463,6 +502,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   private int[] padding_ = new int[4];
   private WString title_ ;
   private WFont titleFont_ ;
+  private WColor titleColor_ ;
   private WFont axisTitleFont_ ;
   private List<AbstractSignal.Connection> modelConnections_ ;
   protected void modelChanged() {

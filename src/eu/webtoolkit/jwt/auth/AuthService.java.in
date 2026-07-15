@@ -47,7 +47,7 @@ The class provides the following services (and relevant configuration):
 
 </li>
 <li>authentication tokens, used by e.g. remember-me functionality:<ul>
-<li>{@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain) setAuthTokensEnabled()}
+<li>{@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) setAuthTokensEnabled()}
 </li>
 <li>{@link AuthService#processAuthToken(String token, AbstractUserDatabase users) processAuthToken()}
 </li>
@@ -105,6 +105,7 @@ public class AuthService {
   this.authTokenValidity_ =   14 * 24 * 60;
   this.authTokenCookieName_ = "";
   this.authTokenCookieDomain_ = "";
+  this.authTokenCookiePrefix_ = AuthCookiePrefix.Auto;
   this.mfaProvider_ = "";
   this.mfaRequired_ = false;
   this.mfaCodeLength_ = 6;
@@ -113,6 +114,7 @@ public class AuthService {
   this.mfaTokenValidity_ =   90 * 24 * 60;
   this.mfaTokenCookieName_ = "";
   this.mfaTokenCookieDomain_ = "";
+  this.mfaTokenCookiePrefix_ =   this.authTokenCookiePrefix_;
   this.mfaThrottleEnabled_ = false; 
     this.redirectInternalPath_=  "/auth/mail/";
 }
@@ -243,26 +245,35 @@ if ( t != null) {
   
           
   */
-  public void setAuthTokensEnabled(boolean enabled, final String cookieName, final String cookieDomain) {  
+  public void setAuthTokensEnabled(boolean enabled, final String cookieName, final String cookieDomain, AuthCookiePrefix cookiePrefix) {  
   this.authTokens_ = enabled;
    this.authTokenCookieName_=  cookieName;
    this.authTokenCookieDomain_=  cookieDomain;
+  this.authTokenCookiePrefix_ = cookiePrefix;
   this.setMfaTokenCookieName ( cookieName + "-mfa");
   this.setMfaTokenCookieDomain (cookieDomain);
+  this.setMfaTokenCookiePrefix (cookiePrefix);
 }
   /** 
   
   Configures authentication token support. 
           
-  <p>Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain) setAuthTokensEnabled(enabled, "wtauth", "")} */public  final void setAuthTokensEnabled(boolean enabled)  {
-    setAuthTokensEnabled(enabled, "wtauth", "");
+  <p>Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) setAuthTokensEnabled(enabled, "wtauth", "", AuthCookiePrefix.Auto)} */public  final void setAuthTokensEnabled(boolean enabled)  {
+    setAuthTokensEnabled(enabled, "wtauth", "", AuthCookiePrefix.Auto);
   }
   /** 
   
   Configures authentication token support. 
           
-  <p>Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain) setAuthTokensEnabled(enabled, cookieName, "")} */public  final void setAuthTokensEnabled(boolean enabled, final String cookieName)  {
-    setAuthTokensEnabled(enabled, cookieName, "");
+  <p>Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) setAuthTokensEnabled(enabled, cookieName, "", AuthCookiePrefix.Auto)} */public  final void setAuthTokensEnabled(boolean enabled, final String cookieName)  {
+    setAuthTokensEnabled(enabled, cookieName, "", AuthCookiePrefix.Auto);
+  }
+  /** 
+  
+  Configures authentication token support. 
+          
+  <p>Calls {@link #setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) setAuthTokensEnabled(enabled, cookieName, cookieDomain, AuthCookiePrefix.Auto)} */public  final void setAuthTokensEnabled(boolean enabled, final String cookieName, final String cookieDomain)  {
+    setAuthTokensEnabled(enabled, cookieName, cookieDomain, AuthCookiePrefix.Auto);
   }
   /**
   
@@ -270,7 +281,7 @@ if ( t != null) {
           
   <p>
   
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   
           
@@ -330,7 +341,7 @@ if ( t != null) {
   This is the default cookie name used for storing the authentication token in the user&apos;s browser.
   
   <p>
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   
           
@@ -350,13 +361,30 @@ if ( t != null) {
   You may want to set a more general domain if you are sharing the authentication with multiple applications.
   
   <p>
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   
           
   */
   public String getAuthTokenCookieDomain() {
   return   this.authTokenCookieDomain_;
+  }
+  /**
+  
+  Returns the authentication token cookie prefix. 
+          
+  <p>
+  
+  By default, this is set to {@link AuthCookiePrefix#Auto}
+  
+  <p>
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
+  
+  
+          
+  */
+  public AuthCookiePrefix getAuthTokenCookiePrefix() {
+  return   this.authTokenCookiePrefix_;
   }
   /**
   
@@ -480,7 +508,7 @@ break;
   If it matches and auth token update is enabled ({@link AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token that expires after {@link AuthService#getAuthTokenValidity() getAuthTokenValidity()} minutes will be stored for the user.
   
   <p>
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   @see AuthService#getAuthTokenValidity()
   
@@ -504,7 +532,7 @@ break;
   If it matches and auth token update is enabled ({@link AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token is stored that will expire after the token validity time configured for the tokens of type <code>authTokenType</code>. If <code>authTokenValidity</code> is negative, then the new token will expire after {@link AuthService#getAuthTokenValidity() getAuthTokenValidity()} minutes.
   
   <p>
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   @see AuthService#getAuthTokenValidity()
   
@@ -566,7 +594,7 @@ validity =  authTokenValidity * 60;
   If it matches and auth token update is enabled ({@link AuthService#setAuthTokenUpdateEnabled(boolean enabled) setAuthTokenUpdateEnabled()}), the token is updated with a new hash. In case {@link AbstractUserDatabase#updateAuthToken(User user, String hash, String newHash) AbstractUserDatabase#updateAuthToken()} returns -1, a new token is stored that will expire after the token validity time configured for the tokens of type <code>authTokenType</code>.
   
   <p>
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   @see AuthService#getAuthTokenValidity()
   
@@ -1163,7 +1191,7 @@ MailUtils.sendMail (m);
   </i></p>
   
   @see AuthService#setMfaTokenValidity(int validity)
-  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain)
+  @see AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix)
   
   
           
@@ -1211,6 +1239,32 @@ MailUtils.sendMail (m);
   */
   public String getMfaTokenCookieDomain() {
   return   this.mfaTokenCookieDomain_;
+  }
+  /**
+  
+  Sets the prefix of the MFA &quot;remember-me&quot; cookie. 
+          
+  <p>
+  
+  This can be configured by the developer, or otherwise uses the same name as {@link AuthService#getAuthTokenCookiePrefix() getAuthTokenCookiePrefix()}. If nothing is changed, the default is {@link AuthCookiePrefix#Empty}. 
+          
+  */
+  public void setMfaTokenCookiePrefix(AuthCookiePrefix cookiePrefix) {  
+  this.mfaTokenCookiePrefix_ = cookiePrefix;
+}
+  /**
+  
+  Returns the MFA token cookie prefix. 
+          
+  <p>
+  
+  @see AuthService#setMfaTokenCookiePrefix(AuthCookiePrefix cookiePrefix)
+  
+  
+          
+  */
+  public AuthCookiePrefix getMfaTokenCookiePrefix() {
+  return   this.mfaTokenCookiePrefix_;
   }
   /**
   
@@ -1365,6 +1419,7 @@ MailUtils.addHtmlBody(message,     WString.tr ("Wt.Auth.lostpasswordmail.htmlbod
   private int authTokenValidity_ ;
   private String authTokenCookieName_ ;
   private String authTokenCookieDomain_ ;
+  private AuthCookiePrefix authTokenCookiePrefix_ ;
   private String mfaProvider_ ;
   private boolean mfaRequired_ ;
   private int mfaCodeLength_ ;
@@ -1374,6 +1429,7 @@ MailUtils.addHtmlBody(message,     WString.tr ("Wt.Auth.lostpasswordmail.htmlbod
   private int mfaTokenValidity_ ;
   private String mfaTokenCookieName_ ;
   private String mfaTokenCookieDomain_ ;
+  private AuthCookiePrefix mfaTokenCookiePrefix_ ;
   private boolean mfaThrottleEnabled_ ;
   private WString getEmailTokenValidityStr() {
    int hours =   this.emailTokenValidity_ / 60;

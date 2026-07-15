@@ -51,7 +51,7 @@ public class WAxisSliderWidget extends WPaintedWidget {
   super ();
   this.series_ = null;
   this.seriesPen_ = new WPen();
-  this.selectedSeriesPen_ =   this.seriesPen_;
+  this.selectedSeriesPen_ = null;
   this.handleBrush_ = new WBrush(new WColor(0, 0, 200));
   this.background_ = new WBrush(new WColor(230, 230, 230));
   this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
@@ -82,7 +82,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   super ();
   this.series_ = series;
   this.seriesPen_ = new WPen();
-  this.selectedSeriesPen_ =   this.seriesPen_;
+  this.selectedSeriesPen_ = null;
   this.handleBrush_ = new WBrush(new WColor(0, 0, 200));
   this.background_ = new WBrush(new WColor(230, 230, 230));
   this.selectedAreaBrush_ = new WBrush(new WColor(255, 255, 255));
@@ -109,7 +109,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   if (  this.getChart() != null) { 
       this.getChart().removeAxisSliderWidget (this);
 }
-  if (   this.selectedSeriesPen_ !=   this.seriesPen_) {
+  if (   this.selectedSeriesPen_ != null) {
 
   }
   super.remove();
@@ -155,7 +155,7 @@ if (   this.series_ != null) {
           
   */
   public void setSelectedSeriesPen(final WPen pen) {
-  if (   this.selectedSeriesPen_ !=   this.seriesPen_) {
+  if (   this.selectedSeriesPen_ != null) {
 
   }  
   this.selectedSeriesPen_ = pen.clone();
@@ -167,7 +167,7 @@ if (   this.series_ != null) {
           
   */
   public WPen getSelectedSeriesPen() {
-  return    this.selectedSeriesPen_;
+  return     this.selectedSeriesPen_ != null?    this.selectedSeriesPen_:  this.getSeriesPen();
   }
   /**
   
@@ -579,7 +579,7 @@ if ( xAxis.getLabelAngle() < - ANGLE2) {
      WTransform t  = new WTransform(1, 0, 0, 1, left, - top).multiply( new WTransform().translate (   this.transform_.getValue().map (selectionRect.getTopRight()))); 
     painter.fillRect (   this.hv (t).map (rightHandle),   this.handleBrush_);
 }
-  if (    this.selectedSeriesPen_ !=   this.seriesPen_ && !    this.selectedSeriesPen_.equals(  this.seriesPen_)) {
+  if (    this.selectedSeriesPen_ != null && !    this.selectedSeriesPen_.equals(  this.seriesPen_)) {
      WPainterPath clipPath  = new WPainterPath(); 
     clipPath.addRect (  this.hv (selectionRect));
  painter.setClipPath ( selectionTransform.map (clipPath));
@@ -609,7 +609,7 @@ if ( xAxis.getLabelAngle() < - ANGLE2) {
   if (   this.getMethod () == RenderMethod.HtmlCanvas) {
      WApplication  app =WApplication.getInstance();
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_13_4.WAxisSliderWidget(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",").append("{chart:").append(  this.getChart().getCObjJsRef()).append(",transform:").append(  this.transform_.getJsRef()).append(",rect:function(){return ").append(rect.getJsRef()).append("},drawArea:").append(drawArea.getJsRef()).append(",series:").append(  this.getChart().getSeriesIndexOf(   this.series_)).append(",updateYAxis:").append(StringUtils.asString(  this.yAxisZoomEnabled_).toString()).append("});");
+    ss.append("new Wt4_14_0.WAxisSliderWidget(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",").append( this.getObjJsRef()).append(",").append("{chart:").append(  this.getChart().getCObjJsRef()).append(",transform:").append(  this.transform_.getJsRef()).append(",rect:function(){return ").append(rect.getJsRef()).append("},drawArea:").append(drawArea.getJsRef()).append(",series:").append(  this.getChart().getSeriesIndexOf(   this.series_)).append(",updateYAxis:").append(StringUtils.asString(  this.yAxisZoomEnabled_).toString()).append("});");
   this.doJavaScript (ss.toString());
 } 
    xAxis.segments_.clear ();

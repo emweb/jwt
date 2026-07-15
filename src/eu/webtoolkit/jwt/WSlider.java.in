@@ -113,6 +113,7 @@ public class WSlider extends WFormWidget {
   this.paintedSlider_ = null;
   this.tickList_ = null; 
    this.resize (new WLength (150), new WLength (50));
+  this.setNativeControl (WWebWidget.isDefaultNativeControl());
 if ( parentContainer != null) parentContainer.addWidget (this);
 }
   /** 
@@ -158,8 +159,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
 }
   else  { 
      this.resize (new WLength (50), new WLength (150));
-}
-  if ( parentContainer != null) parentContainer.addWidget (this);
+} 
+   this.setNativeControl (WWebWidget.isDefaultNativeControl());
+if ( parentContainer != null) parentContainer.addWidget (this);
 }
   /** 
   
@@ -201,9 +203,14 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   When <code>native</code>, the new &quot;range&quot; input element, specified by HTML5 and when implemented by the browser, is used rather than the built-in element. A native control is styled by the browser (usually in sync with the OS) rather than through the theme chosen. Settings like tick interval and tick position are ignored.
   
   <p>
+  By default, this option is set to {@link WWebWidget#isDefaultNativeControl()}, which is <code>false</code> by default.
   
-  <p><i><b>Note: </b>Vertically oriented sliders are in theory supported by the HTML5 input element, but in practice are usually not rendered correctly by the browser. 
+  <p>
+  
+  <p><i><b>Note: </b>Vertically oriented sliders are in theory supported by the HTML5 input element, but in practice are usually not rendered correctly by the browser.
   </i></p>
+  
+  @see WWebWidget#setDefaultNativeControl(boolean enabled)
   
   
           
@@ -686,6 +693,7 @@ if (   this.paintedSlider_ != null) {
   */
   protected void paintTick(final WPainter painter, int value, int x, int y) {
   if (!   this.tickPosition_.isEmpty()) {
+     WApplication  app =WApplication.getInstance();
      int h =0;
     if (   this.orientation_ == Orientation.Horizontal) {
       h =  (int)   painter.getDevice().getHeight().toPixels ();
@@ -694,7 +702,7 @@ if (   this.paintedSlider_ != null) {
       h =  (int)   painter.getDevice().getWidth().toPixels ();
 }
      WPen pen  = new WPen(); 
-    pen.setColor (new WColor(0xd7, 0xd7, 0xd7));
+    pen.setColor (  app.getTheme().getSliderTickColor());
  pen.setCapStyle (PenCapStyle.Flat);
  pen.setWidth (new WLength (1));
  painter.setPen (pen);
@@ -762,6 +770,10 @@ if (   this.paintedSlider_ != null) {
 
         } 
            this.paintedSlider_.sliderResized ( this.getWidth(),  this.getHeight());
+ WApplication  app =WApplication.getInstance();
+          app.themeColorModeChanged ().addListener(  this.paintedSlider_, (String e1) -> {
+        	WSlider.this.paintedSlider_.updateState();
+        });
 }
     }
     else  {

@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.13.4</title>
+<title>JWt 4.14.0</title>
 </head>
 <body>
 
@@ -24,6 +24,205 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.14.0 (July 15, 2026)</h2>
+
+<p>JWt 4.14.0 is a major release that introduces the following new features:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13788" target="_blank">Issue #13788</a>:
+    added color mode support to
+    <a href="eu/webtoolkit/jwt/WTheme.html" target="_blank">WTheme</a>. This is mainly relevant for
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a>, which introduced this concept to support
+    dark and light mode.
+
+    The color mode can be changed using
+    <a href="eu/webtoolkit/jwt/WTheme.html#setColorMode(java.lang.String)" target="_blank">WTheme.setColorMode()</a>. Note that you will have
+    to override this function if you want other themes than
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a> to support color modes. Some changes to
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a> custom css for wt have also be made to support
+    dark mode.
+
+    It is also possible to react to color mode changes by connecting to the
+    <a href="eu/webtoolkit/jwt/WApplication.html#themeColorModeChanged()" target="_blank">WApplication.themeColorModeChanged()</a> signal and
+    to check the preferred color scheme of the client using
+    <a href="eu/webtoolkit/jwt/WEnvironment.html#getPreferredColorScheme()" target="_blank">WEnvironment.getPreferredColorScheme()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14047" target="_blank">Issue #14047</a>:
+    added the possibility to define an endpoint to which Content Security Policy (CSP) violation reports are sent by the browser.
+    This can be configured using the <code>debug-csp</code> and <code>csp-debug-endpoint</code> configuration options in the
+    <code>jwt_config.xml</code> file. Note that this does not requires <code>use-script-nonce</code> to be set to <code>true</code>,
+    allowing you to debug CSP issues without breaking your application by enforcing it.
+
+    Additionally,
+    <a href="eu/webtoolkit/jwt/WCspErrorLogger.html" target="_blank">WCspErrorLogger</a> was added to facilitate logging of CSP
+    violation reports. This new
+    <a href="eu/webtoolkit/jwt/WResource.html" target="_blank">WResource</a> can be used to log CSP violations
+    reported by the browser. You can also create your own
+    <a href="eu/webtoolkit/jwt/WResource.html" target="_blank">WResource</a> to handle the reports.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14494" target="_blank">Issue #14494</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WWidget.html#anchorAt(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.Orientation)" target="_blank">WWidget.anchorAt()</a>
+    which anchor the widget to another one using CSS position-area, and in addition, makes the widget disappear when its position-anchor
+    is scrolled out of view. This is now used by default for
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>s inside
+    <a href="eu/webtoolkit/jwt/WPushButton.html" target="_blank">WPushButton</a>.
+
+    Additionally, changed
+    <a href="eu/webtoolkit/jwt/WWidget.html#positionAt(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.Orientation,java.util.EnumSet)" target="_blank">WWidget.positionAt()</a>
+    to use CSS position-anchor, when available, to avoid the need reparent the popup widgets while still allowing
+    them to keep the correct position when the anchor widget is moved due to scrolling.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13499" target="_blank">Issue #13499</a>:
+    adds support for cookies prefix in Wt::Auth. It is now possible to select the prefix of
+    the remember-me cookies via the
+    <a href="eu/webtoolkit/jwt/auth/AuthService.html#setAuthTokensEnabled(boolean)" target="_blank">AuthService.setAuthTokensEnabled()</a>,
+    and
+    <a href="eu/webtoolkit/jwt/auth/AuthService.html#setMfaTokenCookiePrefix(eu.webtoolkit.jwt.auth.AuthCookiePrefix)" target="_blank">AuthService.setMfaTokenCookiePrefix()</a>
+    functions. By default the <code>__Secure-</code> is now used when the connection is done over https.
+    This might break existing applications that rely on
+    <a href="eu/webtoolkit/jwt/auth/AuthService.html#getAuthTokenCookieName()" target="_blank">AuthService.getAuthTokenCookieName()</a>
+    or
+    <a href="eu/webtoolkit/jwt/auth/AuthService.html#getMfaTokenCookieName()" target="_blank">AuthService.getMfaTokenCookieName()</a>
+    to return the full name of the cookie, or applications that rely on the remember-me cookie having a specific name.
+    If that is your case, consider setting the cookie prefix to
+    <a href="eu/webtoolkit/jwt/auth/AuthCookiePrefix.html#Empty" target="_blank">AuthCookiePrefix.Empty</a>.
+
+    This also adds some helper classes and functions that can be used to create and retrieve the
+    value of cookies with prefixes.
+    The <a href="eu/webtoolkit/jwt/servlet/SecureCookie.html" target="_blank">servlet.SecureCookie</a>
+    and <a href="eu/webtoolkit/jwt/servlet/HostCookie.html" target="_blank">servlet.HostCookie</a> classes
+    can be used to easily create cookies with prefix, and the
+    <a href="eu/webtoolkit/jwt/WEnvironment.html#getSecureCookie(java.lang.String)" target="_blank">WEnvironment.getSecureCookie()</a> and
+    <a href="eu/webtoolkit/jwt/WEnvironment.html#getHostCookie(java.lang.String)" target="_blank">WEnvironment.getHostCookie()</a> can
+    be used to retrieve the value of cookies with the corresponding prefix from the user's browser.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14571" target="_blank">Issue #14571</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WTableView.html#incomingIndex(java.util.EnumSet)" target="_blank">WTableView.incomingIndex()</a>
+    which allows to retrieve the index of the next cell that is not yet fully visible in the viewport
+    in the direction of the given corner.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13787" target="_blank">Issue #13787</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WTableView.html#getVisibleRowCount()" target="_blank">WTableView.getVisibleRowCount()</a>
+    and
+    <a href="eu/webtoolkit/jwt/WTableView.html#getVisibleColumnCount()" target="_blank">WTableView.getVisibleColumnCount()</a>
+    which allow to retrieve the number of fully visible rows and columns.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14493" target="_blank">Issue #14493</a>:
+    allowed to ignore bubbling
+    <a href="eu/webtoolkit/jwt/EventSignal.html" target="_blank">EventSignal</a> using
+    <a href="eu/webtoolkit/jwt/AbstractEventSignal.html#ignoreBubbling(boolean)" target="_blank">EventSignal.ignoreBubbling()</a>.
+  </li>
+</ul>
+
+<p>JWt 4.14.0 also fixes the following bugs:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14601" target="_blank">Issue #14601</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/chart/WAxisSliderWidget.html#getSelectedSeriesPen()" target="_blank">WAxisSliderWidget.getSelectedSeriesPen()</a>
+    not defaulting to
+    <a href="eu/webtoolkit/jwt/chart/WAxisSliderWidget.html#getSeriesPen()" target="_blank">WAxisSliderWidget.getSeriesPen()</a>
+    when no selected series pen was set.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14476" target="_blank">Issue #14476</a>:
+    fixed non-modal
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> not being able to receive focus
+    if none of their descendants could. This would make it impossible for the
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> to receive any event.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14603" target="_blank">Issue #14603</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> internal path matching considering
+    prefix matches as valid even when they did not end on a path segment boundary.
+  </li>
+</ul>
+
+<p>JWt 4.14.0 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14078" target="_blank">Issue #14078</a>:
+    Wt now uses uses the <code>inline-start</code>, <code>inline-end</code>, <code>block-start</code>, and <code>block-end</code>
+    variants of CSS margin, padding, and border properties. This is mainly an internal change, but it should help decrease
+    bug related to right-to-left support.
+
+    Additionally,
+    <a href="eu/webtoolkit/jwt/WBootstrap5Theme.html" target="_blank">WBootstrap5Theme</a> will now use the RTL version of Bootstrap 5 CSS when
+    <a href="eu/webtoolkit/jwt/WApplication.html#setLayoutDirection(eu.webtoolkit.jwt.LayoutDirection)" target="_blank">WApplication.setLayoutDirection()</a> is used to set the
+    layout direction to <code>LayoutDirection::RightToLeft</code>.
+
+    With those changes also comes several bug fixes and improvements related to RTL support.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14468" target="_blank">Issue #14468</a>:
+    added the possibility to know the visibility state of the application using the new
+    <a href="eu/webtoolkit/jwt/WApplication.html#getVisibilityState()" target="_blank">WApplication.getVisibilityState()</a>, and
+    to be notified when it changes using the new
+    <a href="eu/webtoolkit/jwt/WApplication.html#visibilityChanged()" target="_blank">WApplication.visibilityChanged()</a> signal.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14584" target="_blank">Issue #14584</a>:
+    added the possibility to change the charts legend and title text color using
+    <a href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html#setTitleColor(eu.webtoolkit.jwt.WColor)" target="_blank">WCartesian3DChart.setTitleColor()</a>,
+    <a href="eu/webtoolkit/jwt/chart/WAbstractChart.html#setTitleColor(eu.webtoolkit.jwt.WColor)" target="_blank">WAbstractChart.setTitleColor()</a>,
+    <a href="eu/webtoolkit/jwt/chart/WCartesian3DChart.html#setLegendStyle(eu.webtoolkit.jwt.WFont,eu.webtoolkit.jwt.WPen,eu.webtoolkit.jwt.WBrush,eu.webtoolkit.jwt.WColor)" target="_blank">WCartesian3DChart.setLegendStyle()</a>,
+    <a href="eu/webtoolkit/jwt/chart/WCartesianChart.html#setLegendStyle(eu.webtoolkit.jwt.WFont,eu.webtoolkit.jwt.WPen,eu.webtoolkit.jwt.WBrush,eu.webtoolkit.jwt.WColor)" target="_blank">WCartesianChart.setLegendStyle()</a>, and
+    <a href="eu/webtoolkit/jwt/chart/WPieChart.html#setLabelTextColor(eu.webtoolkit.jwt.WColor)" target="_blank">WPieChart.setLabelTextColor()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14550" target="_blank">Issue #14550</a>:
+    reduced the amount of duplicated JavaScript code generated for signals.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14462" target="_blank">Issue #14462</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WKeyEvent.html#getKeyValue()" target="_blank">WKeyEvent.getKeyValue()</a>, which
+    allows to access the <code>key</code> property of the JavaScript key event that is
+    sent to the server.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13825" target="_blank">Issue #13825</a>:
+    it is now possible to remove or update polylines and circles on a
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html" target="_blank">WLeafletMap</a>.
+    To make this possible, those elements are now represented by the classes
+    <a href="eu/webtoolkit/jwt/WLeafletMap.Polyline.html" target="_blank">WLeafletMap.Polyline</a>
+    and
+    <a href="eu/webtoolkit/jwt/WLeafletMap.Circle.html" target="_blank">WLeafletMap.Circle</a>
+    respectively, which are map items, like
+    <a href="eu/webtoolkit/jwt/WLeafletMap.Marker.html" target="_blank">WLeafletMap.Marker</a>
+    for instance.
+    These new classes can be added or removed from the map using
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html#addPolyline(eu.webtoolkit.jwt.WLeafletMap.Polyline)" target="_blank">WLeafletMap.addPolyline()</a>,
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html#removePolyline(eu.webtoolkit.jwt.WLeafletMap.Polyline)" target="_blank">WLeafletMap.removePolyline()</a>,
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html#addCircle(eu.webtoolkit.jwt.WLeafletMap.Circle)" target="_blank">WLeafletMap.addCircle()</a> and,
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html#removeCircle(eu.webtoolkit.jwt.WLeafletMap.Circle)" target="_blank">WLeafletMap.removeCircle()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13856" target="_blank">Issue #13856</a>:
+    added the possibility to change whether widgets are rendered using native controls
+    by default. This can be done using the new function
+    <a href="eu/webtoolkit/jwt/WWebWidget.html#setDefaultNativeControl(boolean)" target="_blank">WWebWidget.setDefaultNativeControl()</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14557" target="_blank">Issue #14557</a>:
+    stopped required scripts loading failure from stopping the application from the client side, making it impossible to
+    recover from such failure. Instead, more detail will be logged about the failure so that developers can decide how to handle it.
+  </li>
+</ul>
 
 <h2>Release 4.13.4 (July 2, 2026)</h2>
 

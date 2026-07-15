@@ -62,6 +62,7 @@ public class WTimeEdit extends WLineEdit {
   	WTimeEdit.this.setFromLineEdit();
   });
   this.init ();
+  this.setNativeControl (WWebWidget.isDefaultNativeControl());
 if ( parentContainer != null) parentContainer.addWidget (this);
 }
   /** 
@@ -178,7 +179,7 @@ if (   this.popup_ != null) {
           
   <p>
   
-  When enabled the browser&apos;s native time input (<code>&lt;input type=&quot;time&quot;&gt;</code>) will be used if available. This should provide a better experience on mobile browsers. This option is set to false by default.
+  When enabled the browser&apos;s native time input (<code>&lt;input type=&quot;time&quot;&gt;</code>) will be used if available. This should provide a better experience on mobile browsers.
   
   <p>
   Calling native control after the widget is rendered is not supported.
@@ -193,7 +194,12 @@ if (   this.popup_ != null) {
   When setting native control to true the setters for the steps will no longer do anything.
   
   <p>
+  By default, this option is set to {@link WWebWidget#isDefaultNativeControl()}, which is <code>false</code> by default.
+  
+  <p>
   @see WTimeEdit#isNativeControl()
+  
+  @see WWebWidget#setDefaultNativeControl(boolean enabled)
   
   @see WTimeEdit#setFormat(String format)
   
@@ -211,6 +217,9 @@ if (   this.popup_ != null) {
           
   */
   public void setNativeControl(boolean nativeControl) {
+  if ( nativeControl ==   this.nativeControl_) {
+    return ;
+  }
    WTimeValidator tv = this.getTimeValidator();
   if ( nativeControl && (  this.getFormat().equals(HM_FORMAT) ||  this.getFormat().equals(HMS_FORMAT))) {
     if ( tv != null) { 
@@ -529,6 +538,11 @@ if (  this.isHidden ()) {
     else  { 
       element.removeAttribute ("max");
 }
+  }
+  else  {
+    if (all) { 
+      element.setProperty (Property.StyleTextAlign, "left");
+}
   } 
    super.updateDom (element, all);
 }
@@ -589,7 +603,7 @@ if (! (currentValue!=null && currentValue.isValid())) {
   private void defineJavaScript() {
    WApplication  app =WApplication.getInstance(); 
    app.loadJavaScript ("js/WTimeEdit.js", wtjs1 ());
- String jsObj  =       "new Wt4_13_4.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
+ String jsObj  =       "new Wt4_14_0.WTimeEdit(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," + jsStringLiteral (   this.popup_.getId()) + ");"; 
    this.setJavaScriptMember (" WTimeEdit", jsObj);
  final AbstractEventSignal b =  this.mouseMoved ();
    final AbstractEventSignal c =  this.keyWentDown (); 

@@ -52,6 +52,7 @@ public class WBootstrap5Theme extends WTheme {
   */
   public  WBootstrap5Theme() {
   super ();
+  this.colorMode_ = "";
   }
   public void init(WApplication  app) { 
    app.getBuiltinLocalizedStrings().useBuiltin (WtServlet.BootstrapTheme_xml);
@@ -61,6 +62,9 @@ public class WBootstrap5Theme extends WTheme {
  WString v  =   app.metaHeader (MetaHeaderType.Meta, "viewport");
   if ((v.length()==0)) { 
      app.addMetaHeader ("viewport", "width=device-width, initial-scale=1");
+}
+  if ( this.getColorMode().length()!=0) { 
+     app.setHtmlAttribute ("data-bs-theme",  this.getColorMode());
 }
   }
   public String getName() {
@@ -72,7 +76,8 @@ public class WBootstrap5Theme extends WTheme {
   public List<WLinkedCssStyleSheet> getStyleSheets() {
    List<WLinkedCssStyleSheet> result  = new ArrayList<WLinkedCssStyleSheet>();
    final String themeDir  =  this.getResourcesUrl();
-  result.add(new WLinkedCssStyleSheet(new WLink( themeDir + "main.css")));
+   final String cssName  =    WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft? "main-rtl.css": "main.css";
+  result.add(new WLinkedCssStyleSheet(new WLink( themeDir + cssName)));
 return result;
   }
   public void apply(WWidget  widget, final DomElement element, int elementRole) {
@@ -129,13 +134,16 @@ if (  btn.isDefault ()) {
     {
        WPushButton  button =ObjectUtils.cast(widget, WPushButton.class);
       if ( button != null) {
-        if ( creating &&   button.isDefault ()) { 
-          element.addPropertyWord (Property.Class, "btn");
+        if (creating) {
+          if (  button.isDefault ()) { 
+            element.addPropertyWord (Property.Class, "btn");
  element.addPropertyWord (Property.Class, "btn-primary");
 }
-        else  {
-          if (creating) { 
+          else  { 
             element.addPropertyWord (Property.Class, classBtn (widget));
+}
+          if (! ( button.getText().length()==0)) { 
+            element.addPropertyWord (Property.Class, "with-label");
 }
         }
         if (!   button.getLink().isNull ()) {
@@ -392,7 +400,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_13_4.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_14_0.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {
@@ -407,6 +415,27 @@ if ( app.getEnvironment().hasAjax()) {
   }
   public Side getPanelCollapseIconSide() {
   return Side.Right;
+  }
+  public void setColorMode(final String mode) {
+  if (! mode.equals(  this.colorMode_)) { 
+      this.colorMode_=  mode;
+ WApplication  app =WApplication.getInstance();
+    if (  app.getTheme() == this) { 
+       app.setHtmlAttribute ("data-bs-theme", mode);
+  app.themeColorModeChanged ().trigger(mode);
+}
+  }
+  }
+  public String getColorMode() {
+  return   this.colorMode_;
+  }
+  public WColor getSliderTickColor() {
+  if ( this.getColorMode().equals("dark")) {
+    return new WColor(73, 77, 81);
+  }
+  else  {
+    return  super.getSliderTickColor();
+  }
   }
   protected void applyFunctionalStyling(WWidget  widget, WWidget  child, int widgetRole) {
   switch (widgetRole) {
@@ -512,6 +541,7 @@ break;
     break;
   }
   }
+  private String colorMode_ ;
   private static String classBtn(WWidget  widget) {
    WPushButton  button =ObjectUtils.cast(widget, WPushButton.class);
   return   hasButtonStyleClass (widget) ||   button != null &&   button.isDefault ()? "btn": "btn btn-secondary";

@@ -2281,7 +2281,7 @@ CssUtils.add( WApplication.getInstance().getStyleSheet(), r);
    int getColumnCount() {
   return    this.columns_.size ();
   }
-   int getVisibleColumnCount() {
+  public int getVisibleColumnCount() {
    int result =0;
   for ( int i =0; 
   i <    this.columns_.size ();++ i) {

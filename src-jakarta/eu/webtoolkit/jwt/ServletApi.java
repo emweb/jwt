@@ -199,13 +199,16 @@ public abstract class ServletApi {
 	}
 
 	public void doHandleRequest(final WtServlet servlet, final WebRequest request, final WebResponse response) {
-		if (servlet.getConfiguration().isUseScriptNonce()) {
+		if (servlet.getConfiguration().mustAddScriptNonce()) {
 			try {
 				// Use reflection to bypass accessibility constraint because WebResponse
 				// is in another package and addNonce should not be public.
-				java.lang.reflect.Method addNonce = response.getClass().getDeclaredMethod("addNonce");
+				java.lang.reflect.Method addNonce = response.getClass().
+						getDeclaredMethod("addNonce",
+															servlet.getConfiguration().getClass(),
+															request.getClass());
 				addNonce.setAccessible(true);
-				addNonce.invoke(response);
+				addNonce.invoke(response, servlet.getConfiguration(), request);
 			} catch (NoSuchMethodException e) {
 				// should never happen
 				getLogger().error("NoSuchMethodException occurred when adding nonce header: {}", e.getMessage(), e);

@@ -295,6 +295,22 @@ _$_$endif_$_();
       otherInfo += "&notif=" + Notification.permission;
     }
 
+    // determine preferred color scheme
+    if (window.matchMedia) {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        otherInfo += "&pcs=dark";
+      } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+        otherInfo += "&pcs=light";
+      }
+    }
+
+    // determine if position anchor are supported
+    const supportAnchor = CSS.supports("position-area", "right");
+    otherInfo += "&anchor=" + (supportAnchor ? "true" : "false");
+
+    // determine visibility state
+    otherInfo += "&viS=" + document.visibilityState;
+
     let needSessionInUrl = !no_replace || !ajax;
 
     if (needSessionInUrl) {

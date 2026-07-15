@@ -79,6 +79,7 @@ public class WPieChart extends WAbstractChart {
   this.labelOptions_ = EnumSet.noneOf(LabelOption.class);
   this.shadow_ = false;
   this.labelFormat_ = new WString("%.3g%%");
+  this.labelColor_ = new WColor();
   this.pie_ = new ArrayList<WPieChart.PieData>(); 
    this.setPalette (new WStandardPalette(PaletteFlavour.Neutral));
   this.setPlotAreaPadding (5);
@@ -439,6 +440,39 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   }
   /**
   
+  Sets the label text color. 
+          
+  <p>
+  
+  Sets the color of the text of the labels.
+  
+  <p>
+  @see WPieChart#setDisplayLabels(EnumSet options)
+  @see WPieChart#setLabelFormat(CharSequence format)
+  
+  
+          
+  */
+  public void setLabelTextColor(final WColor color) { 
+    this.labelColor_=  color;
+  this.update ();
+}
+  /**
+  
+  Returns the label text color. 
+          
+  <p>
+  
+  @see WPieChart#setLabelTextColor(WColor color)
+  
+  
+          
+  */
+  public WColor getLabelTextColor() {
+  return   this.labelColor_;
+  }
+  /**
+  
   Creates a widget which renders the a legend item. 
           
   <p>
@@ -675,19 +709,24 @@ top =  py -  height / 2;
 alignment = EnumSet.copyOf(EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Middle));
  c=    this.getPalette().getFontColor(i);
 }
-        if (   v / total * 100 >=   this.avoidLabelRendering_) { 
-          painter.setPen (new WPen(c));
+        if (   v / total * 100 >=   this.avoidLabelRendering_) {
+           WPen oldPen  = painter.getPen(); 
+          painter.setPen (new WPen( this.getLabelTextColor()));
   this.drawLabel (painter, new WRectF(left, top, width, height), alignment,   this.labelText (i, v, total,   this.labelOptions_), i);
+ painter.setPen (oldPen);
 }
         currentAngle = endAngle;
 }
     }
   }
   if (! ( this.getTitle().length()==0)) {
-     WFont oldFont  = painter.getFont(); 
+     WFont oldFont  = painter.getFont();
+     WPen oldPen  = painter.getPen(); 
     painter.setFont ( this.getTitleFont());
+ painter.setPen (new WPen( this.getTitleColor()));
  painter.drawText ( cx - 50,  cy - r, 100, 50, EnumUtils.or(EnumSet.of(AlignmentFlag.Center), AlignmentFlag.Top),  this.getTitle());
  painter.setFont (oldFont);
+ painter.setPen (oldPen);
 } 
   painter.restore ();
 }
@@ -722,6 +761,7 @@ alignment = EnumSet.copyOf(EnumUtils.or(EnumSet.of(AlignmentFlag.Center), Alignm
   private EnumSet<LabelOption> labelOptions_ ;
   private boolean shadow_ ;
   private WString labelFormat_ ;
+  private WColor labelColor_ ;
   static class PieData {
     private static Logger logger = LoggerFactory.getLogger(PieData.class);
     

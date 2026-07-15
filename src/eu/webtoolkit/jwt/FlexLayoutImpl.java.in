@@ -164,7 +164,7 @@ if (  this.canAdjustLayout_) {
     this.resizedItems_.clear ();
 for ( int i =0; 
   i <    this.removedItems_.size ();++ i) { 
-     div.callJavaScript (  "Wt4_13_4.remove('" +   this.removedItems_.get(i) + "');", true);
+     div.callJavaScript (  "Wt4_14_0.remove('" +   this.removedItems_.get(i) + "');", true);
 } 
     this.removedItems_.clear ();
 if (  this.canAdjustLayout_) { 
@@ -220,9 +220,12 @@ if ( this.getObjectName().length()!=0) {
 }
   }
   if (      margin[0] != 0 ||    margin[1] != 0 ||    margin[2] != 0 ||    margin[3] != 0) {
-     StringBuilder paddingProperty  = new StringBuilder();
-    paddingProperty.append(  margin[0]).append("px ").append(  margin[1]).append("px ").append(  margin[2]).append("px ").append(  margin[3]).append("px");
-  result.setProperty (Property.StylePadding, paddingProperty.toString());
+     StringBuilder paddingInline  = new StringBuilder();
+     StringBuilder paddingBlock  = new StringBuilder();
+    paddingInline.append(  margin[3]).append("px ").append(  margin[1]).append("px");
+paddingBlock.append(  margin[0]).append("px ").append(  margin[2]).append("px");
+  result.setProperty (Property.StylePaddingInline, paddingInline.toString());
+  result.setProperty (Property.StylePaddingBlock, paddingBlock.toString());
 } 
    result.setProperty (Property.StyleFlexFlow,  this.getStyleFlex());
  Orientation orientation =  this.getOrientation ();
@@ -234,7 +237,7 @@ if ( this.getObjectName().length()!=0) {
      result.addChild (el);
 }
    StringBuilder js  = new StringBuilder();
-  js.append("layout=new Wt4_13_4.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
+  js.append("layout=new Wt4_14_0.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
   result.callMethod (js.toString());
 return result;
   }
@@ -504,9 +507,12 @@ if ( stretch == 0) {
     break;
   }
   if (      m[0] != 0 ||    m[1] != 0 ||    m[2] != 0 ||    m[3] != 0) {
-     StringBuilder marginProperty  = new StringBuilder();
-    marginProperty.append(  m[0]).append("px ").append(  m[1]).append("px ").append(  m[2]).append("px ").append(  m[3]).append("px");
-  el.setProperty (Property.StyleMargin, marginProperty.toString());
+     StringBuilder marginBlock  = new StringBuilder();
+     StringBuilder marginInline  = new StringBuilder();
+    marginInline.append(  m[3]).append("px ").append(  m[1]).append("px");
+marginBlock.append(  m[0]).append("px ").append(  m[2]).append("px");
+  el.setProperty (Property.StyleMarginInline, marginInline.toString());
+  el.setProperty (Property.StyleMarginBlock, marginBlock.toString());
 }
   return el;
   }

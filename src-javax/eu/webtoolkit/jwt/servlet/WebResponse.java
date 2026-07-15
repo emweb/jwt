@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
+import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.Utils;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;
@@ -53,7 +54,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * <p>
 	 * It also saves the corresponding request. This is for convenience, when wanting
 	 * to change the rendering based on request information.
-	 * 
+	 *
 	 * @param response The HttpSerlvetResponse
 	 * @param request The HttpServletRequest
 	 */
@@ -74,7 +75,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * <p>
 	 * This constructor is useful for testing purposes, for simulating a browser
 	 * request and sending the output to e.g. a file.
-	 * 
+	 *
 	 * @param out The custom output stream.
 	 */
 	public WebResponse(final OutputStream out) {
@@ -102,7 +103,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 			logger.info("IOException in webresponse", e);
 		}
 	}
-	
+
 	/**
 	 * Create a response with no real ServletOutputStream. Used to set up a web socket response
 	 */
@@ -136,7 +137,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * <p>
 	 * This returns a writer set on the output stream, which encodes text in UTF-8
 	 * format.
-	 * 
+	 *
 	 * @return a writer for streaming text.
 	 */
 	public Writer out() {
@@ -145,7 +146,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Sets an ID to the WebResponse (used by JWt).
-	 * 
+	 *
 	 * @param i
 	 */
 	public void setId(int i) {
@@ -156,7 +157,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * Returns the ID.
 	 * <p>
 	 * Returns the ID previously set using {@link #setId(int)}
-	 * 
+	 *
 	 * @return the Id.
 	 */
 	public int getId() {
@@ -187,7 +188,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 	 * Returns the request path information.
 	 * <p>
 	 * This returns the path information that was passed in the request.
-	 * 
+	 *
 	 * @return the request path information.
 	 */
 	public String getPathInfo() {
@@ -214,7 +215,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Returns the request method.
-	 * 
+	 *
 	 * @return the request method.
 	 */
 	public String getRequestMethod() {
@@ -223,7 +224,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Returns the request's parameter map.
-	 * 
+	 *
 	 * @return the request's parameter map
 	 */
 	public Map<String, String[]> getParameterMap() {
@@ -232,7 +233,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Returns whether this request is a WebSocket request.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketRequest() {
@@ -241,7 +242,7 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Returns whether this request is a WebSocket message.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketMessage() {
@@ -250,25 +251,25 @@ public class WebResponse extends HttpServletResponseWrapper {
 
 	/**
 	 * Returns whether another WebSocket message is pending.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public boolean isWebSocketMessagePending() {
 		return false;
 	}
-	
+
 	/**
 	 * Sets the response type.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public void setResponseType(ResponseType responseType) {
 		this.responseType = responseType;
 	}
-	
+
 	/**
 	 * Returns the response type.
-	 * 
+	 *
 	 * This is an internal JWt method.
 	 */
 	public ResponseType getResponseType() {
@@ -284,9 +285,27 @@ public class WebResponse extends HttpServletResponseWrapper {
 		return this.nonce;
 	}
 
-	void addNonce() {
+	void addNonce(Configuration conf, WebRequest request) {
 		this.nonce = generateNonce();
-		addHeader("Content-Security-Policy", "script-src 'nonce-"+this.nonce+"' 'strict-dynamic' 'unsafe-eval'");
+
+		String header = "Content-Security-Policy";
+		if (!conf.isUseScriptNonce()) {
+			header += "-Report-Only";
+		}
+
+		String policies = "script-src 'nonce-"+this.nonce+"' 'strict-dynamic' 'unsafe-eval'";
+		if (conf.isDebugCsp()) {
+			policies += "; report-to csp-error-logger; report-uri " + conf.getCspDebugEndpoint();
+
+			String deployPath = request.getScriptName();
+			int slashpos = deployPath.lastIndexOf('/');
+			String basePath = slashpos != -1 ? deployPath.substring(0, 0 + slashpos + 1) : "/";
+
+			addHeader("Reporting-Endpoints",
+              "csp-error-logger=\"" + request.getUrlScheme(conf) + "://" + request.getHostName(conf) + basePath + conf.getCspDebugEndpoint() + "\"");
+		}
+
+		addHeader(header, policies);
 	}
 
 	private static String generateNonce() {

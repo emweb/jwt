@@ -56,6 +56,9 @@
     display: inline;
   }
 }
+.dropdown-menu.Wt-popup {
+  top: unset;
+}
 
 /*
  * Make label in any menu item inline
@@ -387,14 +390,18 @@
   background-image: url('spin-buttons.png');
   background-repeat: no-repeat;
   background-position: right top;
-  padding-right: 16px;
+  padding-inline-end: 16px;
+
+  &:dir(rtl) {
+    background-position-x: left;
+  }
 
   &.up {
-    background-position: right -30px;
+    background-position-y: -30px;
   }
 
   &.dn {
-    background-position: right -60px;
+    background-position-y: -60px;
   }
 }
 
@@ -842,6 +849,14 @@ body.Wt-rtl {
     width: 19px;
     height: 19px;
 
+    &.Wt-expand {
+      background: url(nav-minus.gif) no-repeat 0 center;
+
+      &.Wt-collapsed {
+        background: url(nav-plus.gif) no-repeat 0 center;
+      }
+    }
+
     &.Wt-noexpand {
       background-image: url(../../../line-middle.gif);
       background-repeat: no-repeat;
@@ -849,6 +864,8 @@ body.Wt-rtl {
 
     img {
       vertical-align: top;
+      width: 19px;
+      height: 19px;
     }
   }
 
@@ -885,6 +902,14 @@ body.Wt-rtl {
 
     .Wt-ctrl {
       float: right;
+
+      &.Wt-expand {
+        background: url(nav-minus-rtl.gif) no-repeat 0 center;
+
+        &.Wt-collapsed {
+          background: url(nav-plus-rtl.gif) no-repeat 0 center;
+        }
+      }
 
       &.Wt-noexpand {
         background-image: url(../../../line-middle-rtl.gif);

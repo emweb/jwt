@@ -47,6 +47,7 @@ public abstract class WWebWidget extends WWidget {
   public  WWebWidget(WContainerWidget  parentContainer) {
   super ();
   this.elementTagName_ = "";
+  this.positionAnchorName_ = "";
   this.flags_ = new BitSet();
   this.width_ = null;
   this.height_ = null;
@@ -210,6 +211,29 @@ return new WLength();
   }
   public WLength getMaximumHeight() {
   return     this.layoutImpl_ != null?     this.layoutImpl_.maximumHeight_: WLength.Auto;
+  }
+  public void anchorAt(WWidget  widget, Orientation orientation) {
+  if ( ! ( widget != null) && ! (   this.layoutImpl_ != null)) {
+    return ;
+  }
+   WApplication  app =WApplication.getInstance();
+  if ( app.getEnvironment().isPositionAnchorSupported()) {
+    if (! (   this.layoutImpl_ != null)) {
+        this.layoutImpl_ = new WWebWidget.LayoutImpl();
+} 
+     this.setPositionAnchor (widget);
+if (!     this.layoutImpl_.anchorOrientations_.contains(orientation)) {
+      EnumUtils.setOnly(    this.layoutImpl_.anchorOrientations_, orientation);
+   this.flags_.set (BIT_POSITION_ANCHOR_CHANGED);
+}
+    if (   this.isHidden () &&  widget != null) { 
+       this.show ();
+} 
+     this.repaint ();
+}
+  else  { 
+     this.positionAt (widget, orientation, Orientation.AllOrientations);
+}
   }
   public void setLineHeight(final WLength height) {
   if (! (   this.layoutImpl_ != null)) {
@@ -384,6 +408,44 @@ if ( popup &&   this.getParent() != null) {
 }
   public boolean isPopup() {
   return     this.layoutImpl_ != null?      this.layoutImpl_.zIndex_ != 0: false;
+  }
+  public String getPositionAnchorName() {
+  return   this.positionAnchorName_;
+  }
+  public void becomePositionAnchor() {
+  if (  this.positionAnchorName_.length()==0) { 
+      this.positionAnchorName_=   "--Wt-anchor-" +  this.getId();
+   this.flags_.set (BIT_POSITION_ANCHOR_NAME_CHANGED);
+  this.repaint ();
+}
+  }
+  public void setPositionAnchor(final String anchorName) {
+  if ( this.getPositionAnchor().equals(anchorName)) {
+    return ;
+  }
+  if (! (   this.layoutImpl_ != null)) {
+      this.layoutImpl_ = new WWebWidget.LayoutImpl();
+} 
+      this.layoutImpl_.positionAnchor_=  anchorName;
+if (  anchorName.length()!=0 &&   this.getPositionScheme() != PositionScheme.Fixed &&   this.getPositionScheme() != PositionScheme.Absolute) { 
+     this.setPositionScheme (PositionScheme.Absolute);
+} 
+    this.flags_.set (BIT_POSITION_ANCHOR_CHANGED);
+  this.repaint ();
+}
+  public void setPositionAnchor(WWidget  anchor) {
+  if ( anchor != null) {
+    if (!   anchor.isPositionAnchor ()) { 
+       anchor.becomePositionAnchor ();
+} 
+     this.setPositionAnchor ( anchor.getPositionAnchorName());
+}
+  else  { 
+     this.setPositionAnchor ("");
+}
+  }
+  public String getPositionAnchor() {
+  return     this.layoutImpl_ != null?     this.layoutImpl_.positionAnchor_: "";
   }
   public void setInline(boolean inl) { 
     this.flags_.set (BIT_INLINE, inl);
@@ -831,8 +893,8 @@ result.add(e);
 }
   else  { 
      stub.setProperty (Property.StylePosition, "absolute");
-  stub.setProperty (Property.StyleLeft, "-10000px");
-  stub.setProperty (Property.StyleTop, "-10000px");
+  stub.setProperty (Property.StyleInsetInlineStart, "-10000px");
+  stub.setProperty (Property.StyleInsetBlockStart, "-10000px");
   stub.setProperty (Property.StyleVisibility, "hidden");
 }
   if ( app.getEnvironment().hasJavaScript()) { 
@@ -1174,6 +1236,38 @@ if ( this.isScrollVisibilityEnabled()) {
 }  
     this.layoutImpl_.baseZIndex_ = zIndex;
 }
+  /**
+  
+  Sets the default native control setting. 
+          
+  <p>
+  
+  This sets whether new widgets use native controls by default.
+  
+  <p>
+  This does not affect existing widgets.
+  
+  <p>
+  By default, this is set to false. 
+          
+  */
+  public static void setDefaultNativeControl(boolean enabled) {
+  defaultNativeControl_ = enabled;
+}
+  /**
+  
+  Returns whether new widgets use native controls by default. 
+          
+  <p>
+  
+  @see WWebWidget#setDefaultNativeControl(boolean enabled)
+  
+  
+          
+  */
+  public static boolean isDefaultNativeControl() {
+  return defaultNativeControl_;
+  }
    void repaint(EnumSet<RepaintFlag> flags) {
   if (  this.isStubbed ()) {
      final WebRenderer renderer =  WApplication.getInstance().getSession().getRenderer();
@@ -1300,7 +1394,7 @@ if (! ( app != null)) {
   i.setAttribute ("title", "Popup Shim");
   i.setAttribute ("tabindex", "-1");
   i.setAttribute ("frameborder", "0");
-  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_13_4.isHidden(w)) {var i = Wt4_13_4.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
+  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_14_0.isHidden(w)) {var i = Wt4_14_0.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
  element.addChild (i);
 }
       }
@@ -1359,16 +1453,6 @@ break;
             if (! ( app != null)) {
               app = WApplication.getInstance();
 }
-            if (  app.getLayoutDirection() == LayoutDirection.RightToLeft) {
-              if ( i == 1) {
-                property =   properties[3];
-}
-              else  {
-                if ( i == 3) {
-                  property =   properties[1];
-}
-              }
-            }
             if (   app.getEnvironment().hasAjax() && !   app.getEnvironment().agentIsIElt (9) || !        this.layoutImpl_.offsets_[i].isAuto ()) { 
               element.setProperty (property,       this.layoutImpl_.offsets_[i].getCssText());
 }
@@ -1450,16 +1534,16 @@ break;
      boolean changed =  this.flags_.get(BIT_MARGINS_CHANGED);
     if ( changed || all) {
       if ( changed ||        this.layoutImpl_.margin_[0].getValue() != 0) { 
-        element.setProperty (Property.StyleMarginTop,       this.layoutImpl_.margin_[0].getCssText());
+        element.setProperty (Property.StyleMarginBlockStart,       this.layoutImpl_.margin_[0].getCssText());
 }
       if ( changed ||        this.layoutImpl_.margin_[1].getValue() != 0) { 
-        element.setProperty (Property.StyleMarginRight,       this.layoutImpl_.margin_[1].getCssText());
+        element.setProperty (Property.StyleMarginInlineEnd,       this.layoutImpl_.margin_[1].getCssText());
 }
       if ( changed ||        this.layoutImpl_.margin_[2].getValue() != 0) { 
-        element.setProperty (Property.StyleMarginBottom,       this.layoutImpl_.margin_[2].getCssText());
+        element.setProperty (Property.StyleMarginBlockEnd,       this.layoutImpl_.margin_[2].getCssText());
 }
       if ( changed ||        this.layoutImpl_.margin_[3].getValue() != 0) { 
-        element.setProperty (Property.StyleMarginLeft,       this.layoutImpl_.margin_[3].getCssText());
+        element.setProperty (Property.StyleMarginInlineStart,       this.layoutImpl_.margin_[3].getCssText());
 }
         this.flags_.clear(BIT_MARGINS_CHANGED);
 }
@@ -1488,7 +1572,7 @@ break;
            String deferred  =    this.flags_.get(BIT_TOOLTIP_DEFERRED)? "true": "false";
            String showOnHover  =  jsShowOnHover? "true": "false";
            String forceShow  =    this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)? "true": "false"; 
-          element.callJavaScript (                "Wt4_13_4.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
+          element.callJavaScript (                "Wt4_14_0.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
 if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTip_.isConnected ()) {
                 this.lookImpl_.loadToolTip_.addListener(this, () -> {
             	WWebWidget.this.loadToolTip();
@@ -1526,11 +1610,11 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
   if ( ! all &&    this.transientImpl_ != null) {
     for ( int i =0; 
     i <      this.transientImpl_.addedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_13_4.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_14_0.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
 }
     for ( int i =0; 
     i <      this.transientImpl_.removedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_13_4.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_14_0.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
 }
     if (!     this.transientImpl_.childRemoveChanges_.isEmpty()) {
       if (   (int)   this.getChildren().size () !=     this.transientImpl_.addedChildren_ ||     this.transientImpl_.specialChildRemove_) {
@@ -1538,7 +1622,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         i <      this.transientImpl_.childRemoveChanges_.size ();++ i) {
            final String js =    this.transientImpl_.childRemoveChanges_.get(i);
           if ( js.charAt(0) == '_') { 
-            element.callJavaScript (  "Wt4_13_4.remove('" + js.substring(1) + "');", true);
+            element.callJavaScript (  "Wt4_14_0.remove('" + js.substring(1) + "');", true);
 }
           else  { 
             element.callJavaScript (js, true);
@@ -1563,7 +1647,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
       element.addPropertyWord (Property.Class, "unselectable");
  element.setAttribute ("unselectable", "on");
  StringBuilder selectJS  = new StringBuilder();
-      selectJS.append("Wt4_13_4").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
+      selectJS.append("Wt4_14_0").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     else  {
@@ -1571,7 +1655,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         element.addPropertyWord (Property.Class, "selectable");
  element.setAttribute ("unselectable", "off");
  StringBuilder selectJS  = new StringBuilder();
-        selectJS.append("Wt4_13_4").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
+        selectJS.append("Wt4_14_0").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     }
@@ -1649,12 +1733,12 @@ break;
   if (  this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
     if (   this.flags_.get(BIT_HIDDEN_CHANGED) ||  all &&   this.flags_.get(BIT_HIDDEN)) {
       if (  this.flags_.get(BIT_HIDDEN)) { 
-        element.callJavaScript (  "Wt4_13_4.$('" +  this.getId() + "').classList.add('Wt-hidden');");
+        element.callJavaScript (  "Wt4_14_0.$('" +  this.getId() + "').classList.add('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "hidden");
 if (  this.flags_.get(BIT_HIDE_WITH_OFFSETS)) { 
           element.setProperty (Property.StylePosition, "absolute");
- element.setProperty (Property.StyleTop, "-10000px");
- element.setProperty (Property.StyleLeft, "-10000px");
+ element.setProperty (Property.StyleInsetBlockStart, "-10000px");
+ element.setProperty (Property.StyleInsetInlineStart, "-10000px");
 }
       }
       else  {
@@ -1675,25 +1759,25 @@ break;
 break;
             }
             if (!        this.layoutImpl_.offsets_[0].isAuto ()) { 
-              element.setProperty (Property.StyleTop,       this.layoutImpl_.offsets_[0].getCssText());
+              element.setProperty (Property.StyleInsetBlockStart,       this.layoutImpl_.offsets_[0].getCssText());
 }
             else  { 
-              element.setProperty (Property.StyleTop, "");
+              element.setProperty (Property.StyleInsetBlockStart, "");
 }
             if (!        this.layoutImpl_.offsets_[3].isAuto ()) { 
-              element.setProperty (Property.StyleLeft,       this.layoutImpl_.offsets_[3].getCssText());
+              element.setProperty (Property.StyleInsetInlineStart,       this.layoutImpl_.offsets_[3].getCssText());
 }
             else  { 
-              element.setProperty (Property.StyleTop, "");
+              element.setProperty (Property.StyleInsetBlockStart, "");
 }
           }
           else  { 
             element.setProperty (Property.StylePosition, "static");
- element.setProperty (Property.StyleTop, "");
- element.setProperty (Property.StyleLeft, "");
+ element.setProperty (Property.StyleInsetBlockStart, "");
+ element.setProperty (Property.StyleInsetInlineStart, "");
 }
         } 
-        element.callJavaScript (  "Wt4_13_4.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
+        element.callJavaScript (  "Wt4_14_0.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "visible");
 }
     }
@@ -1708,7 +1792,7 @@ break;
   app.loadJavaScript (THIS_JS, wtjs2 ());
 if (!   this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_13_4").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
+        ss.append("Wt4_14_0").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleDisplay, "none");
@@ -1719,19 +1803,19 @@ if (all) {
       }
       else  {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_13_4").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleTop)).append("','").append( element.getProperty (Property.StyleLeft)).append("');");
+        ss.append("Wt4_14_0").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleInsetBlockStart)).append("','").append( element.getProperty (Property.StyleInsetInlineStart)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleVisibility, "hidden");
  element.setProperty (Property.StylePosition, "absolute");
- element.setProperty (Property.StyleTop, "-10000px");
- element.setProperty (Property.StyleLeft, "-10000px");
+ element.setProperty (Property.StyleInsetBlockStart, "-10000px");
+ element.setProperty (Property.StyleInsetInlineStart, "-10000px");
 }
         else  { 
           element.removeProperty (Property.StyleVisibility);
  element.removeProperty (Property.StylePosition);
- element.removeProperty (Property.StyleTop);
- element.removeProperty (Property.StyleLeft);
+ element.removeProperty (Property.StyleInsetBlockStart);
+ element.removeProperty (Property.StyleInsetInlineStart);
 }
       }
     }
@@ -1764,13 +1848,13 @@ if (  this.flags_.get(BIT_GOT_FOCUS)) {
     if ( !  app.isJavaScriptLoaded(SCROLL_JS) &&  this.isScrollVisibilityEnabled()) { 
        app.loadJavaScript (SCROLL_JS, wtjs3 ());
  StringBuilder ss  = new StringBuilder();
-      ss.append("if (!Wt4_13_4.scrollVisibility) {Wt4_13_4.scrollVisibility = new ");
-ss.append("Wt4_13_4.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
+      ss.append("if (!Wt4_14_0.scrollVisibility) {Wt4_14_0.scrollVisibility = new ");
+ss.append("Wt4_14_0.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
  element.callJavaScript (ss.toString());
 }
     if ( this.isScrollVisibilityEnabled()) {
        StringBuilder ss  = new StringBuilder();
-      ss.append("Wt4_13_4.scrollVisibility.add({");
+      ss.append("Wt4_14_0.scrollVisibility.add({");
 ss.append("el:").append( this.getJsRef()).append(',');
 ss.append("margin:").append( this.getScrollVisibilityMargin()).append(',');
 ss.append("visible:").append(  this.isScrollVisible ());
@@ -1780,7 +1864,7 @@ ss.append("});");
 }
     else  {
       if (  this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) { 
-        element.callJavaScript (  "Wt4_13_4.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
+        element.callJavaScript (  "Wt4_14_0.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
     }
@@ -1796,6 +1880,47 @@ ss.append("});");
 }
     }
       this.flags_.clear(BIT_OBJECT_NAME_CHANGED);
+}
+  if ( all ||   this.flags_.get(BIT_POSITION_ANCHOR_CHANGED)) {
+    if ( this.getPositionAnchor().length()!=0) {
+      if (    this.layoutImpl_.anchorOrientations_.isEmpty()) { 
+        element.removeProperty (Property.StylePositionArea);
+ element.removeProperty (Property.StylePositionTryFallbacks);
+}
+      else  {
+         StringBuilder anchorArea  = new StringBuilder();
+        if (    this.layoutImpl_.anchorOrientations_.contains(Orientation.Vertical)) {
+          anchorArea.append("bottom");
+}
+        else  {
+          anchorArea.append("span-bottom");
+}
+        if (    this.layoutImpl_.anchorOrientations_.contains(Orientation.Horizontal)) {
+          anchorArea.append(" right");
+}
+        else  {
+          anchorArea.append(" span-right");
+} 
+        element.setProperty (Property.StylePositionArea, anchorArea.toString());
+ element.setProperty (Property.StylePositionTryFallbacks, "flip-block, flip-inline, flip-block flip-inline");
+} 
+      element.setProperty (Property.StylePositionAnchor,  this.getPositionAnchor());
+}
+    else  { 
+      element.removeProperty (Property.StylePositionAnchor);
+ element.removeProperty (Property.StylePositionArea);
+ element.removeProperty (Property.StylePositionTryFallbacks);
+}
+      this.flags_.clear(BIT_POSITION_ANCHOR_CHANGED);
+}
+  if ( all ||   this.flags_.get(BIT_POSITION_ANCHOR_NAME_CHANGED)) {
+    if (  this.isPositionAnchor ()) { 
+      element.setProperty (Property.StyleAnchorName,  this.getPositionAnchorName());
+}
+    else  { 
+      element.removeProperty (Property.StyleAnchorName);
+}
+      this.flags_.clear(BIT_POSITION_ANCHOR_NAME_CHANGED);
 } 
    this.renderOk ();
   this.transientImpl_ = null;
@@ -1826,6 +1951,8 @@ return   canBeSaved[0];
   this.flags_.clear(BIT_SCROLL_VISIBILITY_CHANGED);
   this.flags_.clear(BIT_OBJECT_NAME_CHANGED);
   this.flags_.clear(BIT_PARENT_CHANGED);
+  this.flags_.clear(BIT_POSITION_ANCHOR_NAME_CHANGED);
+  this.flags_.clear(BIT_POSITION_ANCHOR_CHANGED);
   this.renderOk ();
 if (deep) {
      this.iterateChildren( (WWidget c) ->  { 
@@ -1841,7 +1968,7 @@ if (deep) {
    String renderRemoveJs(boolean recursive) {
    final StringBuilder result  = new StringBuilder();
   if (   this.isRendered () &&  this.isScrollVisibilityEnabled()) {
-    result.append("Wt4_13_4.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
+    result.append("Wt4_14_0.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
    this.flags_.set (BIT_SCROLL_VISIBILITY_CHANGED);
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
@@ -1854,7 +1981,7 @@ if (! recursive) {
       result.append("_").append( this.getId());
 }
     else  {
-      result.append("Wt4_13_4.remove('").append( this.getId()).append("');");
+      result.append("Wt4_14_0.remove('").append( this.getId()).append("');");
 }
   }
   return result.toString();
@@ -2042,11 +2169,14 @@ if ( managed != null) {
   private static final int BIT_TOOLTIP_SHOW_ON_HOVER =41;
   private static final int BIT_RESEND_FORM_DATA =42;
   private static final int BIT_FOCUS_CONNECTED =43;
+  private static final int BIT_POSITION_ANCHOR_NAME_CHANGED =44;
+  private static final int BIT_POSITION_ANCHOR_CHANGED =45;
   private static String  FOCUS_SIGNAL ="focus";
   private static String  BLUR_SIGNAL ="blur";
   private static final int DEFAULT_BASE_Z_INDEX =1100;
   private static final int Z_INDEX_INCREMENT =1100;
   private String elementTagName_ ;
+  private String positionAnchorName_ ;
   private void loadToolTip() {
   if (! (     this.lookImpl_.toolTip_ != null)) {
         this.lookImpl_.toolTip_ = new WString();
@@ -2097,6 +2227,8 @@ if ( managed != null) {
     public WLength verticalAlignmentLength_ ;
     public WLength[] margin_ = new WLength[4];
     public WLength lineHeight_ ;
+    public EnumSet<Orientation> anchorOrientations_ ;
+    public String positionAnchor_ ;
     public  LayoutImpl() {
     this.positionScheme_ = PositionScheme.Static;
     this.floatSide_ = null;
@@ -2110,6 +2242,8 @@ if ( managed != null) {
     this.verticalAlignment_ = AlignmentFlag.Baseline;
     this.verticalAlignmentLength_ = new WLength();
     this.lineHeight_ = new WLength();
+    this.anchorOrientations_ = EnumSet.noneOf(Orientation.class);
+    this.positionAnchor_ = "";
     for ( int i =0; 
     i < 4;++ i) { 
           this.offsets_[i]=  WLength.Auto;
@@ -2207,6 +2341,7 @@ if ( managed != null) {
     }
   }
    WWebWidget.OtherImpl otherImpl_ ;
+  private static boolean defaultNativeControl_ =false;
    void renderOk() { 
    super.renderOk ();
   this.flags_.clear(BIT_REPAINT_TO_AJAX);
@@ -2588,10 +2723,10 @@ return result;
    this.flags_.set (BIT_FLEX_BOX_CHANGED);
 }
    static Property[] properties = {
-    Property.StyleTop,
-    Property.StyleRight,
-    Property.StyleBottom,
-    Property.StyleLeft
+    Property.StyleInsetBlockStart,
+    Property.StyleInsetInlineEnd,
+    Property.StyleInsetBlockEnd,
+    Property.StyleInsetInlineStart
   };
    static WJavaScriptPreamble wtjs1() {
   return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateDisplay", "(function(t,n,i,e,o,s){const a=t.WT;!function n(i,e,o,s,r){const d={None:0,SlideInFromLeft:1,SlideInFromRight:2,SlideInFromBottom:3,SlideInFromTop:4,Pop:5,Fade:256},l=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],c=[0,1,3,2,4,5],p=document.getElementById(i),m=1===p.childElementCount?p.firstElementChild:null;function f(t,n,i){for(const e of Object.keys(n)){i&&void 0===i[e]&&(i[e]=t.style[e]);t.style[e]=n[e]}}const h=f;if((()=>{const t={},n=a.css(p,\"display\");f(p,{display:r},t);const i=a.css(p,\"display\");h(p,t);return n!==i})()){const F=p.parentNode;if(F.wtAnimateChild){F.wtAnimateChild(t,a,p,e,o,s,{display:r});return}if(p.classList.contains(\"animating\")){Promise.all(p.getAnimations().map((t=>t.finished))).then((()=>{n(i,e,o,s,r)}));return}p.classList.add(\"animating\");const b=255&e,x=\"none\"===r,S={},I={},T={duration:s,iterations:1,easing:l[x?c[o]:o]};function u(){p.wtAnimatedHidden&&p.wtAnimatedHidden(x);0===p.getAnimations().length&&p.classList.remove(\"animating\");t.layouts2&&t.layouts2.setElementDirty(p)}function y(){p.style.display=r;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function g(t,n,i,o){x||y();const s=a.px(p,t),l={transform:`translate${o}(${(a.px(p,n)+s)*(i?-1:1)}px)`},c={transform:`translate${o}(0px)`};if(e&d.Fade){l.opacity=0;c.opacity=1}const m=x?[c,l]:[l,c];p.animate(m,T).finished.then((()=>{x&&(p.style.display=r);u()}))}function w(){x||y();const t={},n={};switch(b){case d.Pop:f(p,{transformOrigin:\"50% 50%\"},S);t.transform=\"scale(.2)\";n.transform=\"scale(1)\";break;case d.SlideInFromRight:t.transform=\"translateX(100%)\";n.transform=\"translateX(0)\";break;case d.SlideInFromLeft:t.transform=\"translateX(-100%)\";n.transform=\"translateX(0)\"}if(e&d.Fade){t.opacity=0;n.opacity=a.css(p,\"opacity\")}const i=x?[n,t]:[t,n];p.animate(i,T).finished.then((()=>{x&&(p.style.display=r);h(p,S);u()}))}const E=[\"absolute\",\"fixed\"].includes(a.css(p,\"position\"));switch(b){case d.SlideInFromTop:case d.SlideInFromBottom:E?g(\"height\",b===d.SlideInFromTop?\"top\":\"bottom\",b===d.SlideInFromTop,\"Y\"):function(){x||y();f(p,{overflow:\"hidden\"},S);const t=[],n=(()=>{if(!m)return null;const t=p.getBoundingClientRect(),n=m.getBoundingClientRect();return{left:n.x-t.x-a.pxComputedStyle(p,\"border-left-width\"),top:n.y-t.y-a.pxComputedStyle(p,\"border-top-width\")}})();if(m&&b===d.SlideInFromTop){const n={transform:\"translateY(0px)\"},i={transform:`translateY(-${p.clientHeight}px)`},e=x?[n,i]:[i,n];t.push(m.animate(e,T))}{const n={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},i={height:a.css(p,\"height\"),paddingTop:a.css(p,\"padding-top\"),paddingBottom:a.css(p,\"padding-bottom\"),borderTopWidth:a.css(p,\"border-top-width\"),borderBottomWidth:a.css(p,\"border-bottom-width\")};if(e&d.Fade){n.opacity=0;i.opacity=1}const o=x?[i,n]:[n,i];t.push(p.animate(o,T))}if(m){f(p,{position:\"relative\"},S);const t={position:\"absolute\",left:`${n.left}px`,top:`${n.top}px`,width:`${m.clientWidth}px`};f(m,t,I)}Promise.all(t.map((t=>t.finished))).then((()=>{x&&(p.style.display=r);h(p,S);h(m,I);u()}))}();break;case d.SlideInFromLeft:case d.SlideInFromRight:E?g(\"width\",b===d.SlideInFromLeft?\"left\":\"right\",b===d.SlideInFromLeft,\"X\"):w();break;case d.None:case d.Pop:w()}}}(n,i,e,o,s)})");

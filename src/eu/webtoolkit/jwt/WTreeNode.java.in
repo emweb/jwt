@@ -732,6 +732,7 @@ return   this.getChildCount() > 0;
   protected void doExpand() {  
   this.wasCollapsed_ = !   this.isExpanded ();
   this.collapsed_ = false;
+    this.expandIcon_.removeStyleClass ("Wt-collapsed", true);
     this.expandIcon_.setState (1);
    this.getChildContainer().show ();
 if (   this.labelIcon_ != null) { 
@@ -764,6 +765,7 @@ if (   this.labelIcon_ != null) {
   protected void doCollapse() {  
   this.wasCollapsed_ = !   this.isExpanded ();
   this.collapsed_ = true;
+    this.expandIcon_.addStyleClass ("Wt-collapsed", true);
     this.expandIcon_.setState (0);
    this.getChildContainer().hide ();
 if (   this.labelIcon_ != null) { 
@@ -783,7 +785,8 @@ if (   this.labelIcon_ != null) {
   */
   protected void undoDoExpand() {
   if (  this.wasCollapsed_) { 
-       this.expandIcon_.setState (0);
+       this.expandIcon_.addStyleClass ("Wt-collapsed", true);
+    this.expandIcon_.setState (0);
    this.getChildContainer().hide ();
 if (   this.labelIcon_ != null) { 
          this.labelIcon_.setState (0);
@@ -808,7 +811,8 @@ if (   this.labelIcon_ != null) {
   */
   protected void undoDoCollapse() {
   if (!   this.wasCollapsed_) { 
-       this.expandIcon_.setState (1);
+       this.expandIcon_.removeStyleClass ("Wt-collapsed", true);
+    this.expandIcon_.setState (1);
    this.getChildContainer().show ();
 if (   this.labelIcon_ != null) { 
          this.labelIcon_.setState (1);
@@ -858,15 +862,9 @@ if (   this.labelIcon_ != null) {
      this.layout_.bindWidget ("children", children);
   children.setList (true);
   children.hide ();
-if (  WApplication.getInstance().getLayoutDirection() == LayoutDirection.RightToLeft) {  
-    this.expandIcon_ = new WIconPair(   app.getTheme().getResourcesUrl() + imagePlusRtl_,   app.getTheme().getResourcesUrl() + imageMinRtl_);
+  this.expandIcon_ = new WIconPair( app.getOnePixelGifUrl(), app.getOnePixelGifUrl());
     this.layout_.bindWidget ("expand",   this.expandIcon_);
-}
-  else  {  
-    this.expandIcon_ = new WIconPair(   app.getTheme().getResourcesUrl() + imagePlus_,   app.getTheme().getResourcesUrl() + imageMin_);
-    this.layout_.bindWidget ("expand",   this.expandIcon_);
-} 
-     this.expandIcon_.setStyleClass ("Wt-ctrl Wt-expand");
+    this.expandIcon_.setStyleClass ("Wt-ctrl Wt-expand");
     this.expandIcon_.hide ();
   this.noExpandIcon_ = new WText();
     this.layout_.bindWidget ("no-expand",   this.noExpandIcon_);
@@ -1016,7 +1014,11 @@ return true;
   }
   private static String  imagePlus_ ="nav-plus.gif";
   private static String  imageMin_ ="nav-minus.gif";
+  private static String  imagePlusDark_ ="nav-plus-dark.gif";
+  private static String  imageMinDark_ ="nav-minus-dark.gif";
   private static String  imagePlusRtl_ ="nav-plus-rtl.gif";
   private static String  imageMinRtl_ ="nav-minus-rtl.gif";
+  private static String  imagePlusDarkRtl_ ="nav-plus-dark-rtl.gif";
+  private static String  imageMinDarkRtl_ ="nav-minus-dark-rtl.gif";
    AbstractSignal.Connection clickedConnection_ ;
 }

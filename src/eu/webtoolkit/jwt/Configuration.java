@@ -216,6 +216,8 @@ public class Configuration {
 	private boolean useXFrameSameOrigin = true;
 	private List<HttpHeader> httpHeaders = new ArrayList<HttpHeader>();
 	private boolean useScriptNonce = false;
+	private boolean debugCsp = false;
+	private String cspDebugEndpoint = "csp-report";
 	private Collection<String> allowedOrigins = Collections.<String>emptySet();
 
 	private int internalDeploymentSize = 0;
@@ -342,6 +344,10 @@ public class Configuration {
 					setUseXFrameSameOrigin(parseBoolean(errorMessage, node));
 				} else if (node.getNodeName().equalsIgnoreCase("use-script-nonce")) {
 					setUseScriptNonce(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("debug-csp")) {
+						setDebugCsp(parseBoolean(errorMessage, node));
+				} else if (node.getNodeName().equalsIgnoreCase("csp-debug-endpoint")) {
+					setCspDebugEndpoint(node.getTextContent().trim());
 				} else if (node.getNodeName().equalsIgnoreCase("cache-form-data")) {
 					setCacheFormData(parseBoolean(errorMessage, node));
 				} else if (node.getNodeName().equalsIgnoreCase("form-data-resend-ratio-limit")) {
@@ -1305,6 +1311,10 @@ public class Configuration {
 		return true;
 	}
 
+	boolean isInvalidWtdSuspicious() {
+		return true;
+	}
+
 	/** Returns the maximum request size.
 	 */
 	public long getMaxRequestSize() {
@@ -1496,6 +1506,7 @@ public class Configuration {
 	 * to be executed. This nonce is randomly generated for each reply,
 	 * helping to protect against XSS attacks.
 	 *
+	 * @see #setDebugCsp(boolean)
 	 * @see servlet.WebResponse#getNonce()
 	 */
 	public void setUseScriptNonce(boolean enable) {
@@ -1507,6 +1518,64 @@ public class Configuration {
 	 */
 	public boolean isUseScriptNonce() {
 		return this.useScriptNonce;
+	}
+
+	/**
+	 * Configures whether CSP debugging is enabled.
+	 *
+	 * Setting this to true, will make Wt asks the browsers to send CSP
+	 * violation reports to the endpoint given by
+	 * {@link #getCspDebugEndpoint(String)}.
+	 *
+	 * If {@link #isUseScriptNonce()} is true, Wt will only add the
+	 * 'report-to' directive to the CSP header. Otherwise, Wt will
+	 * send the Content-Security-Policy-Report-Only header with the
+	 * same directive as it would if {@link #isUseScriptNonce()} was
+	 * true. This allows you to test and debug your application without
+	 * breaking it before enabling CSP.
+	 *
+	 * @note for chromium based browsers, the reporting is only
+	 * 			 sent over secure connections (HTTPS).
+	 */
+	public void setDebugCsp(boolean enable) {
+		this.debugCsp = enable;
+	}
+
+	/**
+	 * Returns whether CSP debugging is enabled.
+	 *
+	 * @see #setDebugCsp(boolean)
+	 */
+	public boolean isDebugCsp() {
+		return this.debugCsp;
+	}
+
+	public boolean mustAddScriptNonce() {
+		return isUseScriptNonce() || isDebugCsp();
+	}
+
+	/**
+	 * Sets the endpoint for Content Security Policy violation reports
+	 *
+	 * When {@link #isDebugCsp()} is true, Wt will ask the browser to
+	 * send CSP violation reports to this endpoint. You can use a
+	 * {@link WCspErrorLogger} to log these reports server-side, or create
+	 * your own {@link WResource} to handle them however you want.
+	 *
+	 * @note: you can obtain the CSP reports using
+	 *        {@link WebRequest.cspErrors()}.
+	 */
+	public void setCspDebugEndpoint(String endpoint) {
+		this.cspDebugEndpoint = endpoint;
+	}
+
+	/**
+	 * Returns the CSP debug endpoint.
+	 *
+	 * @see #setCspDebugEndpoint(String)
+	 */
+	public String getCspDebugEndpoint() {
+		return this.cspDebugEndpoint;
 	}
 
 	/**

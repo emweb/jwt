@@ -432,12 +432,13 @@ if (   this.menu_ != null) {
   
           
   */
-  public void setMenu(WMenu menu) {  
+  public void setMenu(WMenu menu) {
+   WApplication  app =WApplication.getInstance();  
   this.subMenu_ = menu;
     this.subMenu_.parentItem_ = this;
  WPopupMenu  popup =ObjectUtils.cast(  this.subMenu_, WPopupMenu.class);
   if ( popup != null) { 
-     WApplication.getInstance().removeGlobalWidget (menu);
+     app.removeGlobalWidget (menu);
 } 
    this.addWidget (menu);
   this.updateMenuZIndex ();
@@ -445,7 +446,10 @@ if ( popup != null) {
      this.setSelectable (false);
   popup.setButton ( this.getAnchor());
   this.updateInternalPath ();
-if ( ObjectUtils.cast(  this.menu_, WPopupMenu.class) != null) { 
+if ( ObjectUtils.cast(  this.menu_, WPopupMenu.class) != null) {
+      if ( app.getEnvironment().isPositionAnchorSupported()) { 
+         popup.anchorAt ( this.getAnchor(), Orientation.Horizontal);
+} 
        popup.show ();
 }
   }

@@ -73,9 +73,9 @@ public class WidgetGalleryServlet extends WtServlet {
 					return true;
 			}
 		});
-		
+
 	}
-	
+
 	@Override
 	public WApplication createApplication(WEnvironment env) {
 		WApplication app = new WApplication(env);
@@ -84,6 +84,8 @@ public class WidgetGalleryServlet extends WtServlet {
 		if (themeStr == null) {
 			themeStr = "jwt";
 		}
+
+		boolean darkMode = false;
 
 		if (Objects.equals(themeStr, "wt") ||
 			Objects.equals(themeStr, "jwt")) {
@@ -94,8 +96,10 @@ public class WidgetGalleryServlet extends WtServlet {
 					return List.of(new WLinkedCssStyleSheet(new WLink("style/" + theme + ".css")));
 				}
 			});
+			darkMode = true;
 		} else if (Objects.equals(themeStr, "bootstrap5")) {
 			app.setTheme(new WBootstrap5Theme());
+			darkMode = true;
 		} else if (Objects.equals(themeStr, "bootstrap3")) {
 			WBootstrap3Theme theme = new WBootstrap3Theme();
 			theme.setResponsive(true);
@@ -121,10 +125,10 @@ public class WidgetGalleryServlet extends WtServlet {
 		resourceBundle.use("/eu/webtoolkit/jwt/examples/widgetgallery/src");
 		app.setLocalizedStrings(resourceBundle);
 
-		app.getRoot().addWidget(new WidgetGallery());
-		
+		app.getRoot().addWidget(new WidgetGallery(darkMode));
+
 		app.setTitle("JWt Widget Gallery");
-		
+
 		app.useStyleSheet(new WLink("style/widgetgallery.css"));
 		app.useStyleSheet(new WLink("style/everywidget.css"));
 		app.useStyleSheet(new WLink("style/pygments.css"));

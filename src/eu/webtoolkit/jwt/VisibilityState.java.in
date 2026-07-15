@@ -1,0 +1,73 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+
+Enumeration for the visibility state of a page. 
+        
+<p>
+
+The visibility state of a page indicates whether the page content is visible to the user or not.
+
+<p>
+@see WApplication#getVisibilityState()
+
+
+        
+*/
+public enum VisibilityState {
+  /** 
+  
+  The page content may be visible to the user. 
+            
+  <p>
+  
+  This state means that the page may be completely or partially visible to the user. In practice, it means that the page is the active tab of a window that is not minimized. 
+            
+  */
+  Visible,
+  /** 
+  
+  The page content is not visible to the user. 
+            
+  <p>
+  
+  This state means that the page content is hidden from the user. This could be because the page is in a background tab, the window is minimized, or the OS screen lock is active. 
+            
+  */
+  Hidden,
+  /** 
+  
+  The visibility state of the page is not known. 
+            
+  */
+  Unknown;
+  
+  /**
+  Returns the numerical representation of this enum.
+  */
+  public int getValue() {
+    return ordinal();
+  }
+}

@@ -470,33 +470,68 @@ for (String word :valueWords) {
   This sets an event handler by a combination of client-side JavaScript code and a server-side signal to emit. 
           
   */
-  public void setEvent(String  eventName, final String jsCode, final String signalName, boolean isExposed) {
+  public void setEvent(String  eventName, final String jsCode, final String signalName, boolean isExposed, final String disabledClass) {
    WApplication  app =WApplication.getInstance();
    boolean anchorClick =   this.getType() == DomElementType.A &&  eventName == WInteractWidget.CLICK_SIGNAL;
    StringBuilder js  = new StringBuilder();
   if (  isExposed || anchorClick || jsCode.length()!=0) {
-    js.append("var e=event||window.event,");
-js.append("o=this;");
-if (anchorClick) {
-      js.append("if(e.ctrlKey||e.metaKey||e.shiftKey||(Wt4_13_4.button(e) > 1))return true;else{");
-}
-    js.append(jsCode);
-if (isExposed) {
-      js.append( app.getJavaScriptClass()).append("._p_.update(o,'").append(signalName).append("',e,true);");
-}
+    js.append("Wt4_14_0").append(".mks");
+ StringBuilder param  = new StringBuilder();
+     boolean firstParam =true;
     if (anchorClick) {
-      js.append("}");
+      js.append("a");
 }
-  }
+    if (disabledClass.length()!=0) {
+      if (firstParam) {
+        firstParam = false;
+}
+      else  {
+        param.append(",");
+}
+      param.append("'").append(disabledClass).append("'");
+js.append("c");
+}
+    if (isExposed) {
+      if (firstParam) {
+        firstParam = false;
+}
+      else  {
+        param.append(",");
+}
+      param.append( app.getJavaScriptClass()).append(",").append("'").append(signalName).append("'");
+js.append("u");
+}
+    if (jsCode.length()!=0) {
+      if (firstParam) {
+        firstParam = false;
+}
+      else  {
+        param.append(",");
+}
+      param.append("function(o,e){").append(jsCode);
+if (isExposed) {
+        param.append(";e.wtu();");
+}
+      param.append("}");
+}
+    js.append("(").append(param.toString()).append(")");
+}
   ++   this.numManipulations_;
-  this.eventHandlers_.put(eventName,new DomElement.EventHandler(js.toString(), signalName));
+  this.eventHandlers_.put(eventName,new DomElement.EventHandler(js.toString(), signalName, ! (js.length() == 0)));
 }
   /** 
   
   Sets an event handler. 
           
-  <p>Calls {@link #setEvent(String  eventName, String jsCode, String signalName, boolean isExposed) setEvent(eventName, jsCode, signalName, false)} */public  final void setEvent(String  eventName, final String jsCode, final String signalName)  {
-    setEvent(eventName, jsCode, signalName, false);
+  <p>Calls {@link #setEvent(String  eventName, String jsCode, String signalName, boolean isExposed, String disabledClass) setEvent(eventName, jsCode, signalName, false, "")} */public  final void setEvent(String  eventName, final String jsCode, final String signalName)  {
+    setEvent(eventName, jsCode, signalName, false, "");
+  }
+  /** 
+  
+  Sets an event handler. 
+          
+  <p>Calls {@link #setEvent(String  eventName, String jsCode, String signalName, boolean isExposed, String disabledClass) setEvent(eventName, jsCode, signalName, isExposed, "")} */public  final void setEvent(String  eventName, final String jsCode, final String signalName, boolean isExposed)  {
+    setEvent(eventName, jsCode, signalName, isExposed, "");
   }
   /**
   
@@ -606,7 +641,7 @@ if ( actions.get(i).exposed) {
   public void callMethod(final String method) {
   ++   this.numManipulations_;
 if (  this.var_.length()==0) {
-      this.javaScript_.append("Wt4_13_4").append(".$('").append(  this.id_).append("').");
+      this.javaScript_.append("Wt4_14_0").append(".$('").append(  this.id_).append("').");
 }
   else  {
       this.javaScript_.append(  this.var_).append('.');
@@ -676,7 +711,7 @@ if (  this.var_.length()==0) {
           
   */
   public void removeFromParent() { 
-   this.callJavaScript (  "Wt4_13_4.remove('" +  this.getId() + "');", true);
+   this.callJavaScript (  "Wt4_14_0.remove('" +  this.getId() + "');", true);
 }
   /**
   
@@ -792,7 +827,7 @@ eout.append(  this.var_).append(".setAttribute('id', '").append(  this.id_).appe
 if (   this.removeAllChildren_ >= 0) { 
          this.declare (out);
 if (   this.removeAllChildren_ == 0) {
-          out.append("Wt4_13_4").append(".setHtml(").append(  this.var_).append(", '');\n");
+          out.append("Wt4_14_0").append(".setHtml(").append(  this.var_).append(", '');\n");
 }
         else  {
           out.append("(Array.from(").append(  this.var_).append(".querySelectorAll(':scope > *')).slice(").append(  this.removeAllChildren_).append(")).forEach( elem => elem.remove());");
@@ -823,21 +858,21 @@ if (   this.removeAllChildren_ == 0) {
 if (   this.properties_.get(Property.StyleDisplay) != null) {
            String style  =   this.properties_.get(Property.StyleDisplay);
           if (style.equals("none")) {
-            out.append("Wt4_13_4.hide('").append(  this.id_).append("');\n");
+            out.append("Wt4_14_0.hide('").append(  this.id_).append("');\n");
 return   this.var_;
           }
           else  {
             if (style.equals("inline")) {
-              out.append(  "Wt4_13_4.inline('" +   this.id_ + "');\n");
+              out.append(  "Wt4_14_0.inline('" +   this.id_ + "');\n");
 return   this.var_;
             }
             else  {
               if (style.equals("block")) {
-                out.append(  "Wt4_13_4.block('" +   this.id_ + "');\n");
+                out.append(  "Wt4_14_0.block('" +   this.id_ + "');\n");
 return   this.var_;
               }
               else  {
-                out.append("Wt4_13_4.show('").append(  this.id_).append("', '").append(style).append("');\n");
+                out.append("Wt4_14_0.show('").append(  this.id_).append("', '").append(style).append("');\n");
 return   this.var_;
               }
             }
@@ -851,7 +886,7 @@ return   this.var_;
         }
       }
       if (  this.unwrapped_) {
-        out.append("Wt4_13_4.unwrap('").append(  this.id_).append("');\n");
+        out.append("Wt4_14_0.unwrap('").append(  this.id_).append("');\n");
 } 
        this.processEvents (app);
   this.processProperties (app);
@@ -862,7 +897,7 @@ if (   this.replaced_ != null) {
         insertJs.append(  this.var_).append(".parentNode.replaceChild(").append(varr).append(',').append(  this.var_).append(");\n");
     this.replaced_.createElement (out, app, insertJs.toString());
 if (  this.unstubbed_) {
-          out.append("Wt4_13_4.unstub(").append(  this.var_).append(',').append(varr).append(',').append(   this.hideWithDisplay_? 1: 0).append(");\n");
+          out.append("Wt4_14_0.unstub(").append(  this.var_).append(',').append(varr).append(',').append(   this.hideWithDisplay_? 1: 0).append(");\n");
 }
         return   this.var_;
       }
@@ -878,11 +913,11 @@ return   this.var_;
       }
       if (!   this.childrenToSave_.isEmpty()) { 
          this.declare (out);
-out.append("Wt4_13_4").append(".saveReparented(").append(  this.var_).append(");");
+out.append("Wt4_14_0").append(".saveReparented(").append(  this.var_).append(");");
 }
       for ( int i =0; 
       i <    this.childrenToSave_.size ();++ i) {
-        out.append("var c").append(  this.var_).append( (int) i).append('=').append("Wt4_13_4.$('").append(  this.childrenToSave_.get(i)).append("')");
+        out.append("var c").append(  this.var_).append( (int) i).append('=').append("Wt4_14_0.$('").append(  this.childrenToSave_.get(i)).append("')");
 if (  app.getEnvironment().agentIsIE ()) {
           out.append(".detach()");
 }
@@ -902,7 +937,7 @@ if (  app.getEnvironment().agentIsIE ()) {
        this.renderInnerHtmlJS (out, app);
 for ( int i =0; 
       i <    this.childrenToSave_.size ();++ i) {
-        out.append("Wt4_13_4.replaceWith('").append(  this.childrenToSave_.get(i)).append("',c").append(  this.var_).append( (int) i).append(");");
+        out.append("Wt4_14_0.replaceWith('").append(  this.childrenToSave_.get(i)).append("',c").append(  this.var_).append( (int) i).append(");");
 } 
        this.renderDeferredJavaScript (out);
 if (! childrenUpdated) {
@@ -1266,7 +1301,7 @@ if (   this.timeOut_ != - 1) {
   */
   public void declare(final EscapeOStream out) {
   if (  this.var_.length()==0) {
-    out.append("var ").append( this.getCreateVar()).append("=Wt4_13_4.$('").append(  this.id_).append("');\n");
+    out.append("var ").append( this.getCreateVar()).append("=Wt4_14_0.$('").append(  this.id_).append("');\n");
 }
   }
   /**
@@ -1523,13 +1558,18 @@ return   this.var_;
     
     public String jsCode ;
     public String signalName ;
+    public boolean useJsFunctionGenerator ;
     public  EventHandler() {
     this.jsCode = "";
     this.signalName = "";
     }
-    public  EventHandler(final String j, final String sn) {
+    public  EventHandler(final String j, final String sn, boolean uf) {
     this.jsCode = j;
     this.signalName = sn;
+    this.useJsFunctionGenerator = uf;
+    }
+    public  EventHandler(final String j, final String sn)  {
+      this(j, sn, false);
     }
   }
   private boolean willRenderInnerHtmlJS(WApplication  app) {
@@ -1546,8 +1586,15 @@ return   this.var_;
    DomElement  self = this;
    String  S_keypress =WInteractWidget.KEYPRESS_SIGNAL;
    DomElement.EventHandler  keypress =  this.eventHandlers_.get(S_keypress);
-  if (  keypress != null &&  keypress.jsCode.length()!=0) { 
-     MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode=    "if (Wt4_13_4.isKeyPress(event)){" +  MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode + '}';
+  if (  keypress != null &&  keypress.jsCode.length()!=0) {
+     StringBuilder js  = new StringBuilder();
+    js.append("if (").append("Wt4_14_0").append(".isKeyPress(event)){").append( MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode);
+if ( keypress.useJsFunctionGenerator) {
+      js.append(".call(this, event);");
+ MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).useJsFunctionGenerator = false;
+}
+    js.append("}");
+  MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode=  js.toString();
 }
   }
   private void processProperties(WApplication  app) {
@@ -1559,7 +1606,7 @@ return   this.var_;
     if (  minw != null ||  maxw != null) {
       if ( w == null) {
          StringBuilder expr  = new StringBuilder();
-        expr.append("Wt4_13_4.IEwidth(this,");
+        expr.append("Wt4_14_0.IEwidth(this,");
 if ( minw != null) {
           expr.append('\'').append(minw).append('\'');
   self.properties_.remove(Property.StyleMinWidth);
@@ -1599,7 +1646,7 @@ switch ( i.getKey()) {
       if (  this.willRenderInnerHtmlJS (app)) {
         break;
       }
-      out.append("Wt4_13_4.setHtml(").append(  this.var_).append(',');
+      out.append("Wt4_14_0.setHtml(").append(  this.var_).append(',');
 if (! pushed) { 
         escaped.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 pushed = true;
@@ -1754,12 +1801,19 @@ out.append(  this.var_).append(".removeAttribute('").append(i).append("');\n");
 }
   }
   private void setJavaScriptEvent(final EscapeOStream out, String  eventName, final DomElement.EventHandler handler, WApplication  app) {
-   int fid =nextId_.getAndIncrement();
-  out.append("function f").append(fid).append("(event) { ");
+   String functionName  = "";
+  if ( handler.useJsFunctionGenerator) { 
+    functionName=   handler.jsCode;
+}
+  else  {
+     int fid =nextId_.getAndIncrement(); 
+    functionName=   "f" + String.valueOf(fid);
+out.append("function ").append(functionName).append("(event) { ");
 out.append( handler.jsCode);
 out.append("}\n");
-if (  this.globalUnfocused_) {
-    out.append( app.getJavaScriptClass()).append("._p_.bindGlobal('").append(eventName).append("', '").append(  this.id_).append("', f").append(fid).append(")\n");
+}
+  if (  this.globalUnfocused_) {
+    out.append( app.getJavaScriptClass()).append("._p_.bindGlobal('").append(eventName).append("', '").append(  this.id_).append("', ").append(functionName).append(")\n");
 return ;
   }
   else  { 
@@ -1767,10 +1821,10 @@ return ;
 out.append(  this.var_);
 }
   if (   eventName == WInteractWidget.WHEEL_SIGNAL &&   app.getEnvironment().agentIsIE () &&   (int)    app.getEnvironment().getAgent().getValue () >=  (int)   UserAgent.IE9.getValue ()) {
-    out.append(".addEventListener('wheel', f").append(fid).append(", false);\n");
+    out.append(".addEventListener('wheel', ").append(functionName).append(", false);\n");
 }
   else  {
-    out.append(".on").append( eventName).append("=f").append(fid).append(";\n");
+    out.append(".on").append( eventName).append("=").append(functionName).append(";\n");
 }
   }
   private void createElement(final EscapeOStream out, WApplication  app, final String domInsertJS) {
@@ -1833,7 +1887,7 @@ if (   this.type_ == DomElementType.TD) {
   else  {
      StringBuilder insertJS  = new StringBuilder();
     if ( pos != - 1) {
-      insertJS.append("Wt4_13_4.insertAt(").append(parentVar).append(",").append(  this.var_).append(",").append(pos).append(");");
+      insertJS.append("Wt4_14_0.insertAt(").append(parentVar).append(",").append(  this.var_).append(",").append(pos).append(");");
 }
     else  {
       insertJS.append(parentVar).append(".appendChild(").append(  this.var_).append(");\n");
@@ -1858,7 +1912,7 @@ if ( i != null) {
     }
     if (       this.type_ == DomElementType.DIV &&   app.getEnvironment().getAgent() == UserAgent.IE6 || !   this.childrenToAdd_.isEmpty() || !   this.childrenHtml_.isEmpty() || innerHTML.length()!=0) { 
        this.declare (out);
-out.append("Wt4_13_4.setHtml(").append(  this.var_).append(",'");
+out.append("Wt4_14_0.setHtml(").append(  this.var_).append(",'");
  out.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
  List<DomElement.TimeoutEvent> timeouts  = new ArrayList<DomElement.TimeoutEvent>();
        EscapeOStream js  = new EscapeOStream();
@@ -2138,6 +2192,12 @@ cssNames.put(Property.StyleLeft, "left");
 cssNames.put(Property.StyleRight, "right");
 cssNames.put(Property.StyleTop, "top");
 cssNames.put(Property.StyleBottom, "bottom");
+cssNames.put(Property.StyleInsetInline, "inset-inline");
+cssNames.put(Property.StyleInsetInlineStart, "inset-inline-start");
+cssNames.put(Property.StyleInsetInlineEnd, "inset-inline-end");
+cssNames.put(Property.StyleInsetBlock, "inset-block");
+cssNames.put(Property.StyleInsetBlockStart, "inset-block-start");
+cssNames.put(Property.StyleInsetBlockEnd, "inset-block-end");
 cssNames.put(Property.StyleVerticalAlign, "vertical-align");
 cssNames.put(Property.StyleTextAlign, "text-align");
 cssNames.put(Property.StylePadding, "padding");
@@ -2145,24 +2205,54 @@ cssNames.put(Property.StylePaddingTop, "padding-top");
 cssNames.put(Property.StylePaddingRight, "padding-right");
 cssNames.put(Property.StylePaddingBottom, "padding-bottom");
 cssNames.put(Property.StylePaddingLeft, "padding-left");
+cssNames.put(Property.StylePaddingInline, "padding-inline");
+cssNames.put(Property.StylePaddingInlineStart, "padding-inline-start");
+cssNames.put(Property.StylePaddingInlineEnd, "padding-inline-end");
+cssNames.put(Property.StylePaddingBlock, "padding-block");
+cssNames.put(Property.StylePaddingBlockStart, "padding-block-start");
+cssNames.put(Property.StylePaddingBlockEnd, "padding-block-end");
 cssNames.put(Property.StyleMargin, "margin");
 cssNames.put(Property.StyleMarginTop, "margin-top");
 cssNames.put(Property.StyleMarginRight, "margin-right");
 cssNames.put(Property.StyleMarginBottom, "margin-bottom");
 cssNames.put(Property.StyleMarginLeft, "margin-left");
+cssNames.put(Property.StyleMarginInline, "margin-inline");
+cssNames.put(Property.StyleMarginInlineStart, "margin-inline-start");
+cssNames.put(Property.StyleMarginInlineEnd, "margin-inline-end");
+cssNames.put(Property.StyleMarginBlock, "margin-block");
+cssNames.put(Property.StyleMarginBlockStart, "margin-block-start");
+cssNames.put(Property.StyleMarginBlockEnd, "margin-block-end");
 cssNames.put(Property.StyleCursor, "cursor");
 cssNames.put(Property.StyleBorderTop, "border-top");
 cssNames.put(Property.StyleBorderRight, "border-right");
 cssNames.put(Property.StyleBorderBottom, "border-bottom");
 cssNames.put(Property.StyleBorderLeft, "border-left");
+cssNames.put(Property.StyleBorderInline, "border-inline");
+cssNames.put(Property.StyleBorderInlineStart, "border-inline-start");
+cssNames.put(Property.StyleBorderInlineEnd, "border-inline-end");
+cssNames.put(Property.StyleBorderBlock, "border-block");
+cssNames.put(Property.StyleBorderBlockStart, "border-block-start");
+cssNames.put(Property.StyleBorderBlockEnd, "border-block-end");
 cssNames.put(Property.StyleBorderColorTop, "border-color-top");
 cssNames.put(Property.StyleBorderColorRight, "border-color-right");
 cssNames.put(Property.StyleBorderColorBottom, "border-color-bottom");
 cssNames.put(Property.StyleBorderColorLeft, "border-color-left");
+cssNames.put(Property.StyleBorderInlineColor, "border-inline-color");
+cssNames.put(Property.StyleBorderInlineStartColor, "border-inline-start-color");
+cssNames.put(Property.StyleBorderInlineEndColor, "border-inline-end-color");
+cssNames.put(Property.StyleBorderBlockColor, "border-block-color");
+cssNames.put(Property.StyleBorderBlockStartColor, "border-block-start-color");
+cssNames.put(Property.StyleBorderBlockEndColor, "border-block-end-color");
 cssNames.put(Property.StyleBorderWidthTop, "border-width-top");
 cssNames.put(Property.StyleBorderWidthRight, "border-width-right");
 cssNames.put(Property.StyleBorderWidthBottom, "border-width-bottom");
 cssNames.put(Property.StyleBorderWidthLeft, "border-width-left");
+cssNames.put(Property.StyleBorderInlineWidth, "border-inline-width");
+cssNames.put(Property.StyleBorderInlineStartWidth, "border-inline-start-width");
+cssNames.put(Property.StyleBorderInlineEndWidth, "border-inline-end-width");
+cssNames.put(Property.StyleBorderBlockWidth, "border-block-width");
+cssNames.put(Property.StyleBorderBlockStartWidth, "border-block-start-width");
+cssNames.put(Property.StyleBorderBlockEndWidth, "border-block-end-width");
 cssNames.put(Property.StyleColor, "color");
 cssNames.put(Property.StyleOverflowX, "overflow-x");
 cssNames.put(Property.StyleOverflowY, "overflow-y");
@@ -2193,6 +2283,10 @@ cssNames.put(Property.StyleFlex, "flex");
 cssNames.put(Property.StyleFlexDirection, "flex-direction");
 cssNames.put(Property.StyleFlexFlow, "flex-flow");
 cssNames.put(Property.StyleAlignSelf, "align-self");
+cssNames.put(Property.StyleAnchorName, "anchor-name");
+cssNames.put(Property.StylePositionAnchor, "position-anchor");
+cssNames.put(Property.StylePositionArea, "position-area");
+cssNames.put(Property.StylePositionTryFallbacks, "position-try-fallbacks");
 cssNames.put(Property.StyleJustifyContent, "justify-content");
 return cssNames;
   }
@@ -2215,6 +2309,12 @@ cssCamelNames.put(Property.StyleLeft, "left");
 cssCamelNames.put(Property.StyleRight, "right");
 cssCamelNames.put(Property.StyleTop, "top");
 cssCamelNames.put(Property.StyleBottom, "bottom");
+cssCamelNames.put(Property.StyleInsetInline, "insetInline");
+cssCamelNames.put(Property.StyleInsetInlineStart, "insetInlineStart");
+cssCamelNames.put(Property.StyleInsetInlineEnd, "insetInlineEnd");
+cssCamelNames.put(Property.StyleInsetBlock, "insetBlock");
+cssCamelNames.put(Property.StyleInsetBlockStart, "insetBlockStart");
+cssCamelNames.put(Property.StyleInsetBlockEnd, "insetBlockEnd");
 cssCamelNames.put(Property.StyleVerticalAlign, "verticalAlign");
 cssCamelNames.put(Property.StyleTextAlign, "textAlign");
 cssCamelNames.put(Property.StylePadding, "padding");
@@ -2222,24 +2322,54 @@ cssCamelNames.put(Property.StylePaddingTop, "paddingTop");
 cssCamelNames.put(Property.StylePaddingRight, "paddingRight");
 cssCamelNames.put(Property.StylePaddingBottom, "paddingBottom");
 cssCamelNames.put(Property.StylePaddingLeft, "paddingLeft");
+cssCamelNames.put(Property.StylePaddingInline, "paddingInline");
+cssCamelNames.put(Property.StylePaddingInlineStart, "paddingInlineStart");
+cssCamelNames.put(Property.StylePaddingInlineEnd, "paddingInlineEnd");
+cssCamelNames.put(Property.StylePaddingBlock, "paddingBlock");
+cssCamelNames.put(Property.StylePaddingBlockStart, "paddingBlockStart");
+cssCamelNames.put(Property.StylePaddingBlockEnd, "paddingBlockEnd");
 cssCamelNames.put(Property.StyleMargin, "margin");
 cssCamelNames.put(Property.StyleMarginTop, "marginTop");
 cssCamelNames.put(Property.StyleMarginRight, "marginRight");
 cssCamelNames.put(Property.StyleMarginBottom, "marginBottom");
 cssCamelNames.put(Property.StyleMarginLeft, "marginLeft");
+cssCamelNames.put(Property.StyleMarginInline, "marginInline");
+cssCamelNames.put(Property.StyleMarginInlineStart, "marginInlineStart");
+cssCamelNames.put(Property.StyleMarginInlineEnd, "marginInlineEnd");
+cssCamelNames.put(Property.StyleMarginBlock, "marginBlock");
+cssCamelNames.put(Property.StyleMarginBlockStart, "marginBlockStart");
+cssCamelNames.put(Property.StyleMarginBlockEnd, "marginBlockEnd");
 cssCamelNames.put(Property.StyleCursor, "cursor");
 cssCamelNames.put(Property.StyleBorderTop, "borderTop");
 cssCamelNames.put(Property.StyleBorderRight, "borderRight");
 cssCamelNames.put(Property.StyleBorderBottom, "borderBottom");
 cssCamelNames.put(Property.StyleBorderLeft, "borderLeft");
+cssCamelNames.put(Property.StyleBorderInline, "borderInline");
+cssCamelNames.put(Property.StyleBorderInlineStart, "borderInlineStart");
+cssCamelNames.put(Property.StyleBorderInlineEnd, "borderInlineEnd");
+cssCamelNames.put(Property.StyleBorderBlock, "borderBlock");
+cssCamelNames.put(Property.StyleBorderBlockStart, "borderBlockStart");
+cssCamelNames.put(Property.StyleBorderBlockEnd, "borderBlockEnd");
 cssCamelNames.put(Property.StyleBorderColorTop, "borderColorTop");
 cssCamelNames.put(Property.StyleBorderColorRight, "borderColorRight");
 cssCamelNames.put(Property.StyleBorderColorBottom, "borderColorBottom");
 cssCamelNames.put(Property.StyleBorderColorLeft, "borderColorLeft");
+cssCamelNames.put(Property.StyleBorderInlineColor, "borderInlineColor");
+cssCamelNames.put(Property.StyleBorderInlineStartColor, "borderInlineStartColor");
+cssCamelNames.put(Property.StyleBorderInlineEndColor, "borderInlineEndColor");
+cssCamelNames.put(Property.StyleBorderBlockColor, "borderBlockColor");
+cssCamelNames.put(Property.StyleBorderBlockStartColor, "borderBlockStartColor");
+cssCamelNames.put(Property.StyleBorderBlockEndColor, "borderBlockEndColor");
 cssCamelNames.put(Property.StyleBorderWidthTop, "borderWidthTop");
 cssCamelNames.put(Property.StyleBorderWidthRight, "borderWidthRight");
 cssCamelNames.put(Property.StyleBorderWidthBottom, "borderWidthBottom");
 cssCamelNames.put(Property.StyleBorderWidthLeft, "borderWidthLeft");
+cssCamelNames.put(Property.StyleBorderInlineWidth, "borderInlineWidth");
+cssCamelNames.put(Property.StyleBorderInlineStartWidth, "borderInlineStartWidth");
+cssCamelNames.put(Property.StyleBorderInlineEndWidth, "borderInlineEndWidth");
+cssCamelNames.put(Property.StyleBorderBlockWidth, "borderBlockWidth");
+cssCamelNames.put(Property.StyleBorderBlockStartWidth, "borderBlockStartWidth");
+cssCamelNames.put(Property.StyleBorderBlockEndWidth, "borderBlockEndWidth");
 cssCamelNames.put(Property.StyleColor, "color");
 cssCamelNames.put(Property.StyleOverflowX, "overflowX");
 cssCamelNames.put(Property.StyleOverflowY, "overflowY");
@@ -2270,6 +2400,10 @@ cssCamelNames.put(Property.StyleFlex, "flex");
 cssCamelNames.put(Property.StyleFlexDirection, "flexDirection");
 cssCamelNames.put(Property.StyleFlexFlow, "flexFlow");
 cssCamelNames.put(Property.StyleAlignSelf, "alignSelf");
+cssCamelNames.put(Property.StyleAnchorName, "anchorName");
+cssCamelNames.put(Property.StylePositionAnchor, "positionAnchor");
+cssCamelNames.put(Property.StylePositionArea, "positionArea");
+cssCamelNames.put(Property.StylePositionTryFallbacks, "positionTryFallbacks");
 cssCamelNames.put(Property.StyleJustifyContent, "justifyContent");
 return cssCamelNames;
   }

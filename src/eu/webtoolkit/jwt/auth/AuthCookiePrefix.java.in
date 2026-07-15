@@ -1,0 +1,92 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.auth;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+
+Enumeration that describes the possible auth cookie prefix. 
+        
+<p>
+
+Cookie prefixes are prefix that are added to the cookies name to enforce some rules on it. This allows to prevent some attacks where the attacker would try to update the cookies attribute.
+
+<p>
+@see AuthService#getAuthTokenCookiePrefix()
+@see AuthService#getMfaTokenCookiePrefix()
+
+
+        
+*/
+public enum AuthCookiePrefix {
+  /** 
+  
+  No prefix. 
+            
+  */
+  Empty,
+  /** 
+  
+  __Secure- prefix 
+            
+  <p>
+  
+  This prefix ensure that the cookies has the Secure attribute set and ensure that the cookie is set by an HTTPS page.
+  
+  <p>
+  This requires that the request was made over HTTPS.
+  
+  <p>
+  
+  
+            
+  */
+  Secure,
+  /** 
+  
+  __Host- prefix 
+            
+  <p>
+  
+  This prefix adds the same restriction as the __Secure- prefix with the addition that the cookie can only be sent to the host subdomain or domain that set it. It also enforces that the Domain atrribute is not set, and that the Path attribute is set to &quot;/&quot;.
+  
+  <p>
+  @see AuthCookiePrefix#Secure
+  
+  
+            
+  */
+  Host,
+  /** 
+  
+  Automatically choose the prefix. 
+            
+  */
+  Auto;
+  
+  /**
+  Returns the numerical representation of this enum.
+  */
+  public int getValue() {
+    return ordinal();
+  }
+}

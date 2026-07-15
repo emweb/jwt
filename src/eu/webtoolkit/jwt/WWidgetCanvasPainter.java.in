@@ -54,21 +54,21 @@ import org.slf4j.LoggerFactory;
   text.setId ( 't' +    this.widget_.getId());
   text.setProperty (Property.StylePosition, "absolute");
   text.setProperty (Property.StyleZIndex, "1");
-  text.setProperty (Property.StyleTop, "0px");
-  text.setProperty (Property.StyleLeft, "0px");
+  text.setProperty (Property.StyleInsetBlockStart, "0px");
+  text.setProperty (Property.StyleInsetInlineStart, "0px");
 }
    DomElement  el =  text != null? text: result;
    boolean hasJsObjects =      this.widget_.jsObjects_.size () > 0;
    WApplication  app =WApplication.getInstance(); 
   {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_13_4.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_14_0.WPaintedWidget(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
   el.callJavaScript (ss.toString());
 }
    String updateAreasJs  = "";
   if (hasJsObjects) {
      StringBuilder ss  = new StringBuilder();
-    ss.append("new Wt4_13_4.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
+    ss.append("new Wt4_14_0.WJavaScriptObjectStorage(").append( app.getJavaScriptClass()).append(",").append(   this.widget_.getJsRef()).append(");");
      this.widget_.jsObjects_.updateJs (ss, true);
   el.callJavaScript (ss.toString());
 if (     this.widget_.areaImage_ != null) { 

@@ -30,6 +30,10 @@ import org.slf4j.LoggerFactory;
    this.setInternalPathEncoding (true);
   this.addFunction ("tr", Functions.tr);
   this.addFunction ("block", Functions.block);
+  WApplication.getInstance().themeColorModeChanged ().addListener(this,  () ->  { 
+     BaseTemplate.this.reset ();
+  }
+  );
   this.setCondition ("if:cpp", false);
   this.setCondition ("if:java", true);
 if ( parentContainer != null) parentContainer.addWidget (this);
@@ -59,6 +63,9 @@ if ( parentContainer != null) parentContainer.addWidget (this);
       }
     }
      WApplication  app =WApplication.getInstance();
+    if (   app.getTheme().getColorMode().equals("dark") && src.startsWith("pics/")) {
+      src = StringUtils.replaceAll(src,".png","-dark.png");
+}
     result.append("<img src=\"").append(Utils.htmlAttributeValue (  app.resolveRelativeUrl (src))).append("\" ");
 if (alt.length()!=0) {
       result.append("alt=\"").append(Utils.htmlAttributeValue (alt)).append("\" ");

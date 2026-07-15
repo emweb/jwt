@@ -65,6 +65,10 @@
   display: inline;
 }
 
+.dropdown-menu.Wt-popup {
+  top: unset;
+}
+
 /*
  * Make label in any menu item inline
  */
@@ -402,18 +406,23 @@
  */
 
 .Wt-spinbox {
-  padding-right: 16px;
+  padding-inline-end: 16px;
   background-image: url('spin-buttons.png');
-  background-position: right top;
+  background-position-y: top;
+  background-position-x: right;
   background-repeat: no-repeat;
 }
 
+.Wt-spinbox:dir(rtl) {
+  background-position-x: left;
+}
+
 .Wt-spinbox.up {
-  background-position: right -34px;
+  background-position-y: -34px;
 }
 
 .Wt-spinbox.dn {
-  background-position: right -68px;
+  background-position-y: -68px;
 }
 
 .Wt-spinbox::-ms-clear {
@@ -930,12 +939,22 @@ body.Wt-rtl .Wt-tableview .Wt-plaintable tbody .Wt-tv-c {
   height: 19px;
 }
 
+.Wt-tree .Wt-ctrl.Wt-expand {
+  background: url(nav-minus.gif) no-repeat 0 center;
+}
+
+.Wt-tree .Wt-ctrl.Wt-expand.Wt-collapsed {
+  background: url(nav-plus.gif) no-repeat 0 center;
+}
+
 .Wt-tree .Wt-ctrl.Wt-noexpand {
   background: url(../../../line-middle.gif) no-repeat 0 0;
 }
 
 .Wt-tree .Wt-ctrl img {
   vertical-align: top;
+  width: 19px;
+  height: 19px;
 }
 
 .Wt-tree .cols-row {
@@ -969,6 +988,14 @@ body.Wt-rtl .Wt-tree .Wt-item.Wt-end {
 
 body.Wt-rtl .Wt-tree .Wt-ctrl {
   float: right;
+}
+
+body.Wt-rtl .Wt-tree .Wt-ctrl.Wt-expand {
+  background: url(nav-minus-rtl.gif) no-repeat 0 center;
+}
+
+body.Wt-rtl .Wt-tree .Wt-ctrl.Wt-expand.Wt-collapsed {
+  background: url(nav-plus-rtl.gif) no-repeat 0 center;
 }
 
 body.Wt-rtl .Wt-tree .Wt-ctrl.Wt-noexpand {

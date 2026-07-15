@@ -503,10 +503,10 @@ break;
     this.font_.updateDomElement (element,   this.fontChanged_, all);
   this.fontChanged_ = false;
  Property[] properties = {
-    Property.StyleBorderTop,
-    Property.StyleBorderRight,
-    Property.StyleBorderBottom,
-    Property.StyleBorderLeft
+    Property.StyleBorderBlockStart,
+    Property.StyleBorderInlineEnd,
+    Property.StyleBorderBlockEnd,
+    Property.StyleBorderInlineStart
   };
   if (   this.borderChanged_ || all) {
     for ( int i =0; 

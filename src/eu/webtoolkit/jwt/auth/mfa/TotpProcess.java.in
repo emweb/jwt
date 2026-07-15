@@ -64,7 +64,7 @@ public class TotpProcess extends AbstractMfaProcess {
   For the provided authentication service <code>authService</code> this will either request a TOTP code from the user as a second factor, or initiate the process to add the TOTP secret to their record, allowing for future TOTP code requests.
   
   <p>
-  Optionally, if authentication tokens are enabled (see {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain) AuthService#setAuthTokensEnabled()}), this step can be temporarily bypassed, for as long as the token is valid (see {@link AuthService#getMfaTokenValidity()}). 
+  Optionally, if authentication tokens are enabled (see {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) AuthService#setAuthTokensEnabled()}), this step can be temporarily bypassed, for as long as the token is valid (see {@link AuthService#getMfaTokenValidity()}). 
           
   */
   public  TotpProcess(final AuthService authService, final AbstractUserDatabase users, final Login login) {
@@ -222,7 +222,7 @@ return baseView;
           
   <p>
   
-  This creates and binds the checkbox which enables &quot;remember-me&quot; functionality, if this is enabled (see {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain) AuthService#setAuthTokensEnabled()}).
+  This creates and binds the checkbox which enables &quot;remember-me&quot; functionality, if this is enabled (see {@link AuthService#setAuthTokensEnabled(boolean enabled, String cookieName, String cookieDomain, AuthCookiePrefix cookiePrefix) AuthService#setAuthTokensEnabled()}).
   
   <p>
   @see TotpProcess#createBaseView()

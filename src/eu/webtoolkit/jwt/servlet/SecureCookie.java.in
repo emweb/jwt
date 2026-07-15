@@ -1,0 +1,105 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt.servlet;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/** 
+
+An HTTP Cookie with the &quot;__Secure-&quot; prefix. 
+    
+<p>
+
+This is a helper class used to create a cookie with the &quot;__Secure-&quot; prefix.
+
+<p>
+A Cookie with the &quot;__Secure-&quot; prefix must be set by a connection over HTTPS. It also enforces the secure flag to be set.
+
+<p>
+This protects the cookie from being altered by an unsafe connection, or to have its secure flag removed by a compromised subdomain.
+
+<p>
+@see WEnvironment#getSecureCookie(String cookieName)
+@see WApplication#setCookie(Cookie cookie)
+@see WApplication#removeCookie(Cookie cookie)
+@see WEnvironment#supportsCookies()
+@see HostCookie
+
+
+    
+*/
+public class SecureCookie extends Cookie {
+  private static Logger logger = LoggerFactory.getLogger(SecureCookie.class);
+  
+  /**
+  
+  Constructor for a secure cookie without value. 
+          
+  <p>
+  
+  Allows you to only specify the name of the cookie. This can be useful if the intention is to pass it to {@link WApplication#removeCookie(Cookie cookie) WApplication#removeCookie()}, in which case no value is needed.
+  
+  <p>
+  @see WApplication#removeCookie(Cookie cookie)
+  
+  
+  <p><i><b>Note: </b>The prefix is added automatically to the name. 
+  </i></p>
+  
+  
+          
+  */
+  public  SecureCookie(final String name) {
+  super ( "__Secure-" + name, "");
+  this.logicName_ = ""; 
+   this.init (name);
+}
+  public  SecureCookie(final String name, final String value) {
+  super ( "__Secure-" + name, value);
+  this.logicName_ = ""; 
+   this.init (name);
+}
+  /**
+  
+  Returns name of the cookie without the prefix. 
+          
+  */
+  public String getLogicName() {
+  return   this.logicName_;
+  }
+  /**
+  
+  Logs a warning. 
+          
+  <p>
+  
+  This function logs a warning instead of enabling/disabling the secure flag, since the secure flag must always be set on a cookie with the &quot;__Secure-&quot; prefix. 
+          
+  */
+  public void setSecure(boolean secure) {
+  logger.warn(new StringWriter().append("Trying to add/remove the secure flag of a SecureCookie. This flag is always set on a SecureCookie. This change will be ignored.").toString());
+}
+  private String logicName_ ;
+  private void init(String name) { 
+    this.logicName_=  name;
+  super.setSecure (true);
+}
+}

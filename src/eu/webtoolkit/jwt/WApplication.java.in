@@ -102,6 +102,7 @@ public class WApplication extends WObject {
   super ();
   this.requestTooLarge_ = new Signal1<Long>();
   this.unsuspended_ = new Signal();
+  this.visibilityChanged_ = new Signal1<VisibilityState>();
   this.session_ =  env.session_;
   this.title_ = new WString();
   this.closeMessage_ = new WString();
@@ -142,11 +143,13 @@ public class WApplication extends WObject {
   this.bodyAttributes_ = new HashMap<String, String>();
   this.htmlAttributeChanged_ = true;
   this.bodyAttributeChanged_ = true;
+  this.visibilityState_ = env.getVisibilityState();
   this.scriptLibraries_ = new ArrayList<WApplication.ScriptLibrary>();
   this.scriptLibrariesAdded_ = 0;
   this.theme_ = (WTheme)null;
   this.styleSheets_ = new ArrayList<WLinkedCssStyleSheet>();
   this.styleSheetsToRemove_ = new ArrayList<WLinkedCssStyleSheet>();
+  this.colorModeChanged_ = new Signal1<String>();
   this.styleSheetsAdded_ = 0;
   this.metaHeaders_ = new ArrayList<MetaHeader>();
   this.metaLinks_ = new ArrayList<WApplication.MetaLink>();
@@ -166,6 +169,7 @@ public class WApplication extends WObject {
   this.customJQuery_ = false;
   this.showLoadingIndicator_ = new EventSignal("showload", this);
   this.hideLoadingIndicator_ = new EventSignal("hideload", this);
+  this.visibilityChangedJs_ = new JSignal1<String>(this, "Wt-visibilityChange") {};
   this.unloaded_ = new JSignal(this, "Wt-unload");
   this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
   this.focusChanged_ = new Signal();
@@ -285,6 +289,9 @@ if (  this.getEnvironment().agentIsOpera ()) {
      this.useStyleSheet (new WLink (  WApplication.getRelativeResourcesUrl() + prefix + "transitions.css"));
 } 
    this.setLoadingIndicator (new WDefaultLoadingIndicator());
+  this.visibilityChangedJs_.addListener(this, (String e1) -> {
+  	WApplication.this.onVisibilityChange(e1);
+  });
   this.unloaded_.addListener(this, () -> {
   	WApplication.this.doUnload();
   });
@@ -294,6 +301,11 @@ if (  this.getEnvironment().agentIsOpera ()) {
   this.updateNotificationPermission_.addListener(this, (String e1) -> {
   	WApplication.this.onUpdateNotificationPermission(e1);
   });
+   this.globalEnterPressed ().ignoreBubbling ();
+   this.globalEscapePressed ().ignoreBubbling ();
+   this.globalKeyPressed ().ignoreBubbling ();
+   this.globalKeyWentDown ().ignoreBubbling ();
+   this.globalKeyWentUp ().ignoreBubbling ();
 }
   /**
   
@@ -655,6 +667,7 @@ break;
   public void setTheme(final WTheme theme) { 
     this.theme_=  theme;
     this.theme_.init (this);
+  this.colorModeChanged_.trigger(   this.theme_.getColorMode());
 }
   /**
   
@@ -682,6 +695,23 @@ break;
   public void setCssTheme(final String theme) { 
    this.setTheme (new WCssTheme(theme));
 }
+  /**
+  
+  {@link Signal} emitted when the theme&apos;s color-mode changed. 
+          
+  <p>
+  
+  This signal is emitted when the theme&apos;s color-mode changed.
+  
+  <p>
+  @see WTheme#setColorMode(String mode)
+  
+  
+          
+  */
+  public Signal1<String> themeColorModeChanged() {
+  return   this.colorModeChanged_;
+  }
   /**
   
   Sets the layout direction. 
@@ -725,7 +755,9 @@ break;
     this.layoutDirection_ = direction;
   this.bodyHtmlClassChanged_ = true;
 }
-  }
+   final String dir  =   direction == LayoutDirection.RightToLeft? "rtl": "ltr"; 
+   this.setHtmlAttribute ("dir", dir);
+}
   /**
   
   Returns the layout direction. 
@@ -2168,6 +2200,7 @@ return result;
   */
   public void setCookie(final Cookie cookie) { 
      this.session_.getRenderer().setCookie (cookie);
+  this.addedCookies_.put(cookie.getName(),cookie.getValue());
 }
   /**
   
@@ -2503,8 +2536,8 @@ if (name.length()==0) {
   this.loadingIndicator_ = indicator;
 if (   this.loadingIndicator_ != null) { 
        this.domRoot_.addWidget (indicator);
-   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_13_4.inline('" +    this.loadingIndicator_.getId() + "');}");
-   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_13_4.hide('" +    this.loadingIndicator_.getId() + "');}");
+   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_14_0.inline('" +    this.loadingIndicator_.getId() + "');}");
+   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_14_0.hide('" +    this.loadingIndicator_.getId() + "');}");
     this.loadingIndicator_.hide ();
 }
   }
@@ -2738,6 +2771,47 @@ if (   this.loadingIndicator_ != null) {
   }
    boolean isDebug() {
   return    this.session_.isDebug();
+  }
+  /**
+  
+  Returns the current visibility state of the application. 
+          
+  <p>
+  
+  This returns whether the application is currently visible to the user, or if it is hidden. This is only available when ajax is enabled, and will return {@link VisibilityState#Unknown} otherwise.
+  
+  <p>
+  @see WApplication#visibilityChanged()
+  
+  
+          
+  */
+  public VisibilityState getVisibilityState() {
+  return   this.visibilityState_;
+  }
+  /**
+  
+  {@link Signal} that is emitted when the visibility state of the application changed. 
+          
+  <p>
+  
+  This is emitted when the visibility state of the application changed, for instance, when the user switches tab.
+  
+  <p>
+  This is never emitted when ajax is not supported by the browser.
+  
+  <p>
+  
+  <p><i><b>Note: </b>When using progressive bootstrap, this signal will likely also be emitted when ajax is being enabled.
+  </i></p>
+  
+  @see WApplication#getVisibilityState()
+  
+  
+          
+  */
+  public Signal1<VisibilityState> visibilityChanged() {
+  return   this.visibilityChanged_;
   }
   public void setFocus(final String id, int selectionStart, int selectionEnd) {
    final boolean didFocusChange =!   this.focusId_.equals(id); 
@@ -3064,8 +3138,12 @@ if (   this.session_.isUseUglyInternalPaths()) {
 if (   this.domRoot2_ != null) { 
        this.domRoot2_.enableAjax ();
 } 
-   this.doJavaScript (  "Wt4_13_4.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+   this.doJavaScript (  "Wt4_14_0.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+if (   this.visibilityState_ !=  this.getEnvironment().getVisibilityState()) {  
+    this.visibilityState_ =  this.getEnvironment().getVisibilityState();
+  this.visibilityChanged_.trigger(  this.visibilityState_);
 }
+  }
   /**
   
   Handles a browser unload event. 
@@ -3161,6 +3239,7 @@ if (   this.domRoot2_ != null) {
 }
   private Signal1<Long> requestTooLarge_ ;
   private Signal unsuspended_ ;
+  private Signal1<VisibilityState> visibilityChanged_ ;
   static class ScriptLibrary {
     private static Logger logger = LoggerFactory.getLogger(ScriptLibrary.class);
     
@@ -3241,11 +3320,13 @@ if (   this.domRoot2_ != null) {
   private HashMap<String, String> bodyAttributes_ ;
    boolean htmlAttributeChanged_ ;
    boolean bodyAttributeChanged_ ;
+  private VisibilityState visibilityState_ ;
    List<WApplication.ScriptLibrary> scriptLibraries_ ;
    int scriptLibrariesAdded_ ;
   private WTheme theme_ ;
    List<WLinkedCssStyleSheet> styleSheets_ ;
    List<WLinkedCssStyleSheet> styleSheetsToRemove_ ;
+  private Signal1<String> colorModeChanged_ ;
    int styleSheetsAdded_ ;
    List<MetaHeader> metaHeaders_ ;
    List<WApplication.MetaLink> metaLinks_ ;
@@ -3265,6 +3346,7 @@ if (   this.domRoot2_ != null) {
   private boolean customJQuery_ ;
    EventSignal showLoadingIndicator_ ;
    EventSignal hideLoadingIndicator_ ;
+  private JSignal1<String> visibilityChangedJs_ ;
   private JSignal unloaded_ ;
   private JSignal idleTimeout_ ;
    Signal focusChanged_ ;
@@ -3467,7 +3549,7 @@ if (!   this.internalPathValid_) {
   for ( int i =    this.javaScriptPreamble_.size () -   this.newJavaScriptPreamble_; 
   i <    this.javaScriptPreamble_.size ();++ i) {
      final WJavaScriptPreamble preamble =  this.javaScriptPreamble_.get(i);
-     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_13_4";
+     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_14_0";
     if (  preamble.type == JavaScriptObjectType.JavaScriptFunction) {
       out.append(scope).append('.').append(  preamble.name).append(" = function() { return (").append(  preamble.src).append(").apply(").append(scope).append(", arguments) };\n");
 }
@@ -3483,6 +3565,20 @@ if (!   this.internalPathValid_) {
    boolean isExposeSignals() {
   return   this.exposeSignals_;
   }
+  private void onVisibilityChange(final String visibility) {
+  if (visibility.equals("visible")) {  
+    this.visibilityState_ = VisibilityState.Visible;
+}
+  else  {
+    if (visibility.equals("hidden")) {  
+      this.visibilityState_ = VisibilityState.Hidden;
+}
+    else  {  
+      this.visibilityState_ = VisibilityState.Unknown;
+}
+  }
+    this.visibilityChanged_.trigger(  this.visibilityState_);
+}
   private void doUnload() {
   if (   this.session_.isSuspended()) {
     return ;

@@ -14,6 +14,7 @@
   _$_KEEP_ALIVE_$_
   _$_MAX_FORMDATA_SIZE_$_
   _$_MAX_PENDING_EVENTS_$_
+  _$_NO_DEFAULT_CLASS_$_
   _$_QUITTED_STR_$_
   _$_SERVER_PUSH_TIMEOUT_$_
   _$_SESSION_URL_$_
@@ -740,6 +741,99 @@ if (!window._$_WT_CLASS_$_) {
       }
     };
 
+    // u
+    function addSignalUpdate(app, sig, f) {
+      /*
+       * This order, first JavaScript and then event propagation is important
+       * for WCheckBox where the tristate state is cleared before propagating
+       * its value
+       */
+
+      if (typeof f === UNDEFINED) {
+        return (o, e) => app._p_.update(o, sig, e, true);
+      }
+      return function(o, e) {
+        e.wtu = () => app._p_.update(o, sig, e, true);
+        return f.call(this, o, e);
+      };
+    }
+
+    // c
+    function addSignalGuard(dc, f) {
+      return function(o, e) {
+        if (o.classList.contains(dc)) {
+          WT.cancelEvent(e);
+          return true;
+        }
+        if (o.classList.contains(_$_NO_DEFAULT_CLASS_$_)) {
+          e.preventDefault();
+        }
+        return f.call(this, o, e);
+      };
+    }
+
+    // a
+    function addAnchorSignalGuard(f) {
+      return function(o, e) {
+        if (e.ctrlKey || e.metaKey || e.shiftKey || (WT.button(e) > 1)) {
+          return true;
+        }
+        return f.call(this, o, e);
+      };
+    }
+
+    // s
+    function finalizeSignalFunction(f) {
+      return function(event) {
+        const e = event || window.event, o = this;
+        return f.call(this, o, e);
+      };
+    }
+
+    this.mks = function(f = (_o, _e) => {}) {
+      return finalizeSignalFunction(f);
+    };
+
+    this.mksu = function(app, sig, f) {
+      const res = addSignalUpdate(app, sig, f);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mksc = function(dc, f = (_o, _e) => {}) {
+      const res = addSignalGuard(dc, f);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mksa = function(f = (_o, _e) => {}) {
+      const res = addAnchorSignalGuard(f);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mkscu = function(dc, app, sig, f) {
+      let res = addSignalUpdate(app, sig, f);
+      res = addSignalGuard(dc, res);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mksau = function(app, sig, f) {
+      let res = addSignalUpdate(app, sig, f);
+      res = addAnchorSignalGuard(res);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mksac = function(dc, f = (_o, _e) => {}) {
+      let res = addSignalGuard(dc, f);
+      res = addAnchorSignalGuard(res);
+      return finalizeSignalFunction(res);
+    };
+
+    this.mksacu = function(dc, app, sig, f) {
+      let res = addSignalUpdate(app, sig, f);
+      res = addSignalGuard(dc, res);
+      res = addAnchorSignalGuard(res);
+      return finalizeSignalFunction(res);
+    };
+
     this.getElement = function(id) {
       let el = document.getElementById(id);
       if (!el) {
@@ -1238,18 +1332,34 @@ if (!window._$_WT_CLASS_$_) {
       return parseCss(v, /^\s*(-?\d+(?:\.\d+)?)\s*%\s*$/i, defaultValue);
     };
 
+    this.useClac = function(v) {
+      return v.match(/^\s*calc\(/i) !== null;
+    };
+
     // Get an element metric in pixels
     this.px = function(c, s) {
-      return WT.parsePx(WT.css(c, s));
+      const v = WT.css(c, s);
+      if (WT.useClac(v)) {
+        return WT.pxComputedStyle(c, s);
+      }
+      return WT.parsePx(v);
     };
 
     // Get a widget style in pixels, when set directly
     this.pxself = function(c, s) {
-      return WT.parsePx(c.style[s]);
+      const v = c.style[s];
+      if (WT.useClac(v)) {
+        return WT.pxComputedStyle(c, s);
+      }
+      return WT.parsePx(v);
     };
 
     this.pctself = function(c, s) {
-      return WT.parsePct(c.style[s], 0);
+      let v = c.style[s];
+      if (WT.useClac(v)) {
+        v = getComputedStyle(c)[s];
+      }
+      return WT.parsePct(v, 0);
     };
 
     this.pxComputedStyle = function(c, s) {
@@ -1804,6 +1914,19 @@ if (!window._$_WT_CLASS_$_) {
       return { x: x, y: y, width: w, height: h };
     };
 
+    this.anchorRelativeDistance = function(side, dist) {
+      return "calc(anchor(" + side + ") + " + dist + ")";
+    };
+
+    this.useAnchorPosition = function(e) {
+      return CSS.supports("position-area", "right") &&
+        e.style.positionAnchor !== "" &&
+        e.style.positionAnchor !== "auto" &&
+        e.style.positionAnchor !== "none" &&
+        e.style.positionAnchor !== "normal" &&
+        e.style.positionAnchor !== "match-parent";
+    };
+
     /*
      * position right to (x) or left from (rightx) and
      * bottom of (y) or top from (bottomy)
@@ -1812,6 +1935,8 @@ if (!window._$_WT_CLASS_$_) {
       const hsides = ["left", "right"],
         vsides = ["top", "bottom"];
 
+      const useAnchor = WT.useAnchorPosition(e);
+
       e.style[hsides[0]] = e.style[hsides[1]] = "auto";
       e.style[vsides[0]] = e.style[vsides[1]] = "auto";
 
@@ -1819,6 +1944,9 @@ if (!window._$_WT_CLASS_$_) {
         reserveHeight = e.offsetHeight,
         hside,
         vside;
+
+      let anchorRight = x > rightx,
+        anchorBottom = y > bottomy;
 
       let windowSize = WT.windowSize(),
         windowX = document.body.scrollLeft + document.documentElement.scrollLeft,
@@ -1857,32 +1985,49 @@ if (!window._$_WT_CLASS_$_) {
 
       if (x + reserveWidth > windowX + windowSize.x) {
         // too far right, chose other side
+        anchorRight = !anchorRight;
+
         if (adjustX && reserveWidth > rightx - windowX) {
           /*
            * Too large to be displayed from the left starting from the
            * current rightx, and can be displayed between x and rightx
            */
-          rightx = windowX + reserveWidth;
+
+          if (useAnchor) {
+            x = windowX - reserveWidth + Math.min(x, rightx);
+          } else {
+            rightx = windowX + reserveWidth;
+          }
+        } else if (useAnchor) {
+          x = 0;
         }
-        let scrollX = op.scrollLeft;
-        if (op === document.body) {
-          scrollX = op.clientWidth - windowSize.x;
+
+        if (!useAnchor) {
+          let scrollX = op.scrollLeft;
+          if (op === document.body) {
+            scrollX = op.clientWidth - windowSize.x;
+          }
+          rightx = rightx - offsetParent.x + scrollX;
+          x = op.clientWidth - (rightx + WT.px(e, "marginRight"));
         }
-        rightx = rightx - offsetParent.x + scrollX;
-        x = op.clientWidth - (rightx + WT.px(e, "marginRight"));
         hside = 1;
       } else {
-        let scrollX = op.scrollLeft;
-        if (op === document.body) {
-          scrollX = 0;
+        if (useAnchor) {
+          x = 0;
+        } else {
+          let scrollX = op.scrollLeft;
+          if (op === document.body) {
+            scrollX = 0;
+          }
+          x = x - offsetParent.x + scrollX;
+          x = x - WT.px(e, "marginLeft");
         }
-        x = x - offsetParent.x + scrollX;
-        x = x - WT.px(e, "marginLeft");
         hside = 0;
       }
 
       if (y + reserveHeight > windowY + windowSize.y) {
         // too far below, chose other side
+        anchorBottom = !anchorBottom;
         if (bottomy > windowY + windowSize.y) {
           // requested bottom edge is already off screen
           bottomy = windowY + windowSize.y;
@@ -1892,23 +2037,36 @@ if (!window._$_WT_CLASS_$_) {
            * Too tall to be displayed upwards starting from the current
            * bottomy, and can be displayed between y and bottomy
            */
-          bottomy = windowY + reserveHeight;
+          if (useAnchor) {
+            y = windowY - reserveHeight + Math.min(y, bottomy);
+          } else {
+            bottomy = windowY + reserveHeight;
+          }
+        } else if (useAnchor) {
+          y = 0;
         }
-        let scrollY = op.scrollTop;
-        if (op === document.body) {
-          scrollY = op.clientHeight - windowSize.y;
+        if (!useAnchor) {
+          let scrollY = op.scrollTop;
+          if (op === document.body) {
+            scrollY = op.clientHeight - windowSize.y;
+          }
+
+          bottomy = bottomy - offsetParent.y + scrollY;
+          y = op.clientHeight -
+            (bottomy + WT.px(e, "marginBottom") + WT.pxComputedStyle(e, "borderBottomWidth"));
         }
-        bottomy = bottomy - offsetParent.y + scrollY;
-        y = op.clientHeight -
-          (bottomy + WT.px(e, "marginBottom") + WT.pxComputedStyle(e, "borderBottomWidth"));
         vside = 1;
       } else {
-        let scrollY = op.scrollTop;
-        if (op === document.body) {
-          scrollY = 0;
+        if (useAnchor) {
+          y = 0;
+        } else {
+          let scrollY = op.scrollTop;
+          if (op === document.body) {
+            scrollY = 0;
+          }
+          y = y - offsetParent.y + scrollY;
+          y = y - WT.px(e, "marginTop") + WT.pxComputedStyle(e, "borderTopWidth");
         }
-        y = y - offsetParent.y + scrollY;
-        y = y - WT.px(e, "marginTop") + WT.pxComputedStyle(e, "borderTopWidth");
         vside = 0;
       }
 
@@ -1919,8 +2077,18 @@ if (!window._$_WT_CLASS_$_) {
         y = wy + ws.y - e.offsetHeight - 3;
       */
 
-      e.style[hsides[hside]] = x + "px";
-      e.style[vsides[vside]] = y + "px";
+      let hDist = x + "px",
+        vDist = y + "px";
+
+      if (useAnchor) {
+        const hAnchorSide = anchorRight ? "right" : "left";
+        const vAnchorSide = anchorBottom ? "bottom" : "top";
+        hDist = WT.anchorRelativeDistance(hAnchorSide, hDist);
+        vDist = WT.anchorRelativeDistance(vAnchorSide, vDist);
+      }
+
+      e.style[hsides[hside]] = hDist;
+      e.style[vsides[vside]] = vDist;
     };
 
     this.positionXY = function(id, x, y, adjustX = true, adjustY = true) {
@@ -1976,6 +2144,8 @@ if (!window._$_WT_CLASS_$_) {
        */
       let p, pp = atw;
       w.parentNode.removeChild(w);
+      const isPopup = w.classList.contains("Wt-popup");
+      const useAnchor = WT.useAnchorPosition(w);
 
       for (p = pp.parentNode; !p.classList.contains("Wt-domRoot"); p = p.parentNode) {
         if (p.wtReparentBarrier) {
@@ -1991,6 +2161,7 @@ if (!window._$_WT_CLASS_$_) {
         // of an issue on Firefox where clientWidth !== scrollWidth and
         // clientHeight !== scrollHeight when using the border-collapse CSS property.
         if (
+          !(useAnchor && isPopup) &&
           WT.css(p, "display") !== "inline" &&
           p.clientHeight > 100 &&
           (getComputedStyle(p).overflowY === "scroll" ||
@@ -2908,6 +3079,8 @@ window._$_APP_CLASS_$_ = new (function() {
     }
     result.push("button=" + button);
 
+    result.push("key=" + encodeURIComponent(e.key));
+
     if (typeof e.keyCode !== UNDEFINED) {
       result.push("keyCode=" + e.keyCode);
     }
@@ -3359,6 +3532,7 @@ window._$_APP_CLASS_$_ = new (function() {
   let updating = false;
 
   function update(el, signalName, e, feedback) {
+    emitWaitingSignals();
     checkEventOverflow();
 
     /*
@@ -3800,10 +3974,8 @@ window._$_APP_CLASS_$_ = new (function() {
     }
   }
 
-  function emit(object, config) {
-    checkEventOverflow();
-
-    const userEvent = {}, ei = pendingEvents.length;
+  function createUserEvent(object, config, args) {
+    const userEvent = {};
     userEvent.signal = "user";
 
     if (typeof object === "string") {
@@ -3824,8 +3996,8 @@ window._$_APP_CLASS_$_ = new (function() {
     }
 
     userEvent.args = [];
-    for (let i = 2; i < arguments.length; ++i) {
-      const a = arguments[i];
+    for (let i = 2; i < args.length; ++i) {
+      const a = args[i];
       let r;
       if (a === false) {
         r = 0;
@@ -3838,11 +4010,41 @@ window._$_APP_CLASS_$_ = new (function() {
       }
       userEvent.args[i - 2] = r;
     }
+    return userEvent;
+  }
+
+  let waitingSignals = new Map();
+
+  function emitOnUpdate(object, config) {
+    const userEvent = createUserEvent(object, config, arguments);
+    waitingSignals.set(userEvent.id + "_" + userEvent.name, userEvent);
+  }
+
+  function emitWaitingSignals() {
+    const signals = waitingSignals;
+    waitingSignals = new Map();
+
+    for (const [_name, userEvent] of signals) {
+      makePending(userEvent);
+    }
+  }
+
+  function makePending(userEvent) {
+    checkEventOverflow();
+
+    const ei = pendingEvents.length;
+
     userEvent.feedback = true;
     userEvent.evAckId = ackUpdateId;
 
     pendingEvents[ei] = encodeEvent(userEvent);
+  }
 
+  function emit(object, config) {
+    const userEvent = createUserEvent(object, config, arguments);
+    waitingSignals.delete(userEvent.id + "_" + userEvent.name);
+    emitWaitingSignals();
+    makePending(userEvent);
     scheduleUpdate();
   }
 
@@ -3922,6 +4124,13 @@ window._$_APP_CLASS_$_ = new (function() {
     }
   }
 
+  function jsLoadFailed(path) {
+    if (typeof jsLibsLoaded[path] !== UNDEFINED) {
+      delete jsLibsLoaded[path];
+    }
+    waitingForJavaScript = false;
+  }
+
   function loadScript(uri, symbol, tries) {
     let loaded = false, error = false;
 
@@ -3934,11 +4143,13 @@ window._$_APP_CLASS_$_ = new (function() {
           loadScript(uri, symbol, t - 1);
         } else {
           const err = {
-            "error-description": "Fatal error: failed loading " + uri,
+            "error-description": "Error: failed loading " + uri,
             "client_url": window.location.href,
+            "script_uri": uri,
+            "script_symbol": symbol,
           };
+          jsLoadFailed(uri);
           sendError(err, err["error-description"]);
-          quit(null);
         }
       }
     }
@@ -4104,6 +4315,14 @@ window._$_APP_CLASS_$_ = new (function() {
   window.addEventListener("pagehide", () => {
     if (!hasQuit) {
       self.emit(self, "Wt-unload");
+      scheduleUpdate();
+      sendUpdate();
+    }
+  });
+
+  window.addEventListener("visibilitychange", () => {
+    if (!hasQuit) {
+      self.emit(self, "Wt-visibilityChange", document.visibilityState);
       scheduleUpdate();
       sendUpdate();
     }
@@ -4316,6 +4535,7 @@ window._$_APP_CLASS_$_ = new (function() {
 
   this.WT = _$_WT_CLASS_$_;
   this.emit = emit;
+  this.emitOnUpdate = emitOnUpdate;
 })();
 
 window._$_APP_CLASS_$_SignalEmit = _$_APP_CLASS_$_.emit;

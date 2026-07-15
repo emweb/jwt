@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
   public int button ;
   public int keyCode ;
   public int charCode ;
+  public String key ;
   public EnumSet<KeyboardModifier> modifiers ;
   public List<Touch> touches ;
   public List<Touch> targetTouches ;
@@ -84,6 +85,7 @@ if (  request.getParameter (concat (s, seLength, "altKey")) != null) {
 }  
   this.keyCode = parseIntParameter (request, concat (s, seLength, "keyCode"), 0);
   this.charCode = parseIntParameter (request, concat (s, seLength, "charCode"), 0);
+   this.key=  getStringParameter (request, concat (s, seLength, "key"));
   this.button = parseIntParameter (request, concat (s, seLength, "button"), 0);
   this.scrollX = parseIntParameter (request, concat (s, seLength, "scrollX"), 0);
   this.scrollY = parseIntParameter (request, concat (s, seLength, "scrollY"), 0);
@@ -101,6 +103,7 @@ decodeTouches (getStringParameter (request, concat (s, seLength, "ttouches")),  
 decodeTouches (getStringParameter (request, concat (s, seLength, "ctouches")),   this.changedTouches);
 }
   public  JavaScriptEvent() {
+  this.key = "";
   this.modifiers = EnumSet.noneOf(KeyboardModifier.class);
   this.touches = new ArrayList<Touch>();
   this.targetTouches = new ArrayList<Touch>();
