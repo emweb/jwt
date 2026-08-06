@@ -42,7 +42,8 @@ import org.slf4j.LoggerFactory;
     ExpectLoad,
     Loaded,
     Suspended,
-    Dead;
+    Dead,
+    BeingDestroyed;
     
     /**
     Returns the numerical representation of this enum.
@@ -540,6 +541,7 @@ if ( handler.getRequest() != null) {
 }
       }
     }
+    case BeingDestroyed:
     case Dead:
     break;
   }
@@ -561,7 +563,7 @@ if ( handler.getRequest() != null) {
   if (  handler.getResponse() != null) { 
       handler.getSession().render ( handler);
 }
-  if (   this.state_ == WebSession.State.Dead) {  
+  if ( this.isDead()) {  
     this.recursiveEventHandler_ = null;
 throw new WException("doRecursiveEventLoop(): session was killed");
 }
@@ -571,7 +573,7 @@ throw new WException("doRecursiveEventLoop(): session was killed");
 while (! (   this.newRecursiveEvent_ != null)) {
       this.recursiveEvent_.awaitUninterruptibly();
 }
-  if (   this.state_ == WebSession.State.Dead) {  
+  if ( this.isDead()) {  
     this.recursiveEventHandler_ = null;
 
   this.newRecursiveEvent_ = null;
@@ -627,7 +629,7 @@ return true;
   // public void popEmitStack() ;
   // public WObject  getEmitStackTop() ;
   public boolean isDead() {
-  return    this.state_ == WebSession.State.Dead;
+  return     this.state_ == WebSession.State.Dead ||    this.state_ == WebSession.State.BeingDestroyed;
   }
   public boolean isSuspended() {
   return    this.state_ == WebSession.State.Suspended;
@@ -1036,7 +1038,7 @@ return url;
   }
   }
   public void setState(WebSession.State state, int timeout) {
-  if (   this.state_ != WebSession.State.Dead) {  
+  if (!  this.isDead()) {  
     this.state_ = state;
 logger.debug(new StringWriter().append("Setting to expire in ").append(String.valueOf(timeout)).append("s").toString());
 }
@@ -1155,7 +1157,7 @@ if (    this.session_.triggerUpdate_) {
 if (! ( session != null)) {
       return ;
     }
-    if (   session.state_ == WebSession.State.Dead) {
+    if ( session.isDead()) {
       logger.warn(new StringWriter().append("attaching to dead session?").toString());
 }
     if (!  session.isAttachThreadToLockedHandler()) {
@@ -1488,6 +1490,7 @@ if (  handler.getResponse() != null && ! requestForResource) {
           }
           break;
         }
+        case BeingDestroyed:
         case Dead:
         logger.info(new StringWriter().append("request to dead session, ignoring").toString());
 break;
@@ -1536,7 +1539,7 @@ if ( handler.getResponse() != null) {
    this.setState (WebSession.State.Loaded,    this.controller_.getConfiguration().getSessionTimeout());
 if (wasSuspended) {
     if (    this.env_.hasAjax() &&     this.controller_.getConfiguration().reloadIsNewSession ()) { 
-         this.app_.doJavaScript ("Wt4_14_0.history.removeSessionId()");
+         this.app_.doJavaScript ("Wt4_14_1.history.removeSessionId()");
   this.sessionIdInUrl_ = false;
 }
         this.app_.unsuspended ().trigger();
@@ -1959,7 +1962,7 @@ if ( signalE.equals("hash")) {
              String  hashE = request.getParameter ( se + "_");
             if ( hashE != null) { 
                this.changeInternalPath ( hashE, handler.getResponse());
-    this.app_.doJavaScript ("Wt4_14_0.scrollHistory();");
+    this.app_.doJavaScript ("Wt4_14_1.scrollHistory();");
 }
             else  { 
                this.changeInternalPath ("", handler.getResponse());
@@ -2126,7 +2129,7 @@ throw e;
   return    this.app_ != null;
   }
   private String getSessionQuery() {
-   String wtd  =      this.env_.agentIsSpiderBot ()? "bot":   this.sessionId_;
+   String wtd  =     this.env_.isTreatLikeBot()? "bot":   this.sessionId_;
    String result  =  "?wtd=" + DomElement.urlEncodeS (wtd);
   if (  this.getType() == EntryPointType.WidgetSet) { 
     result+=  "&wtt=widgetset";

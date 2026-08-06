@@ -328,9 +328,11 @@ if (   this.getMfaThrottle() != null && throttle) {
   logger.info(new StringWriter().append("verifyCode(): The validation resulted in ").append( validation? "success": "failure").append(" for user: ").append( this.getLogin().getUser().getId()).toString());
 if (   this.getMfaThrottle() != null && throttle) {  
     this.throttlingDelay_ =    this.getMfaThrottle().delayForNextAttempt ( this.getLogin().getUser());
-if (   this.throttlingDelay_ > 0) {
-      validation = false;
-}
+if (   this.throttlingDelay_ > 0) { 
+       this.update (view, throttle);
+  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-throttle")));
+return ;
+    }
   }
   try ( AbstractUserDatabase.Transaction t  =   this.getUsers().startTransaction ();
   ) { 
@@ -339,11 +341,9 @@ if ( t != null) {
      t.commit ();
 }
   if (! validation) {
-    if (   this.throttlingDelay_ > 0) { 
-       this.update (view, throttle);
-  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-throttle")));
-return ;
-    } 
+    if (   this.getMfaThrottle() != null && throttle) {  
+      this.throttlingDelay_ =    this.getMfaThrottle().delayForNextAttempt ( this.getLogin().getUser());
+} 
      this.update (view, throttle);
   this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-invalid")));
 }

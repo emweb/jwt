@@ -1142,7 +1142,7 @@ bestI = i;
    void select(int index, boolean changePath) {
   if (    this.parentItem_ != null &&  index != - 1) {
      WMenu  parentItemMenu =   this.parentItem_.getParentMenu();
-    if (   parentItemMenu.getCurrentItem() !=   this.parentItem_ &&     this.parentItem_.isSelectable ()) { 
+    if (    this.parentItem_.isSelectable ()) { 
        parentItemMenu.select (  parentItemMenu.indexOf (  this.parentItem_), false);
 }
   }
@@ -1269,8 +1269,10 @@ if (  this.internalPathEnabled_) {
   }
    void updateSelectionEvent() {  
   this.needSelectionEventUpdate_ = true;
-  this.scheduleRender ();
+if (  this.isRendered ()) { 
+     this.scheduleRender ();
 }
+  }
    static int match(final String path, final String component) {
   if (component.length()==0) {
     return 0;

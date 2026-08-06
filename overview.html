@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.14.0</title>
+<title>JWt 4.14.1</title>
 </head>
 <body>
 
@@ -24,6 +24,50 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.14.1 (August 6, 2026)</h2>
+
+<p>JWt 4.14.1 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14676" target="_blank">Issue #14676</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/auth/mfa/TotpProcess.html" target="_blank">Auth.Mfa.TotpProcess</a> considering a user
+    trying to login while being throttled as a failed attempt, which would increase the throttle time.
+
+    Additionally, fixed the throttle time shown to the user when trying to enter the TOTP code being smaller than it actually is.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14677" target="_blank">Issue #14677</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> selection sometimes not propagating their selection
+    correctly to the top-most menu.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/13654" target="_blank">Issue #13654</a>:
+    fixed a JavaScript error when adding a submenu to a
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a> that had been
+    removed from the page by a
+    <a href="eu/webtoolkit/jwt/WTemplate.html" target="_blank">WTemplate</a> condition.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14691" target="_blank">Issue #14691</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> not correctly
+    handling margins, especially when in a layout with
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#JavaScript" target="_blank">LayoutImplementation.JavaScript</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14685" target="_blank">Issue #14685</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> ignoring the offsets.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14675" target="_blank">Issue #14675</a>:
+    fixed JWt-gallery theme having a wrong path for some resources.
+  </li>
+</ul>
 
 <h2>Release 4.14.0 (July 15, 2026)</h2>
 
