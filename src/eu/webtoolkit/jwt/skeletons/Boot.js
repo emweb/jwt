@@ -143,10 +143,10 @@ _$_$endif_$_();
       const params = getParams();
 
       for (let i = 0, len = params.length; i < len; i++) {
-        const tokens = params[i].split("=");
-        if (tokens.length >= 2) {
-          if (tokens[0] === name) {
-            return unescape(tokens[1]);
+        const eqPos = params[i].indexOf("=");
+        if (eqPos !== -1) {
+          if (params[i].substring(0, eqPos) === name) {
+            return unescape(params[i].substring(eqPos + 1));
           }
         }
       }
@@ -160,11 +160,10 @@ _$_$endif_$_();
       const params = getParams();
 
       for (let i = 0, len = params.length; i < len; i++) {
-        const tokens = params[i].split("=");
-        if (tokens.length >= 2) {
-          if (tokens[0] === name) {
-            tokens[1] = escape(value);
-            params[i] = tokens.join("=");
+        const eqPos = params[i].indexOf("=");
+        if (eqPos !== -1) {
+          if (params[i].substring(0, eqPos) === name) {
+            params[i] = name + "=" + escape(value);
             found = true;
             break;
           }

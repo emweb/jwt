@@ -133,6 +133,7 @@ if (  scheme == PositionScheme.Absolute ||  scheme == PositionScheme.Fixed) {
           this.layoutImpl_.offsets_[3]=  offset;
 } 
     this.flags_.set (BIT_GEOMETRY_CHANGED);
+   this.flags_.set (BIT_OFFSETS_CHANGED);
   this.repaint ();
 }
   public WLength getOffset(Side s) {
@@ -1394,7 +1395,7 @@ if (! ( app != null)) {
   i.setAttribute ("title", "Popup Shim");
   i.setAttribute ("tabindex", "-1");
   i.setAttribute ("frameborder", "0");
-  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_14_1.isHidden(w)) {var i = Wt4_14_1.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
+  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_14_2.isHidden(w)) {var i = Wt4_14_2.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
  element.addChild (i);
 }
       }
@@ -1445,7 +1446,7 @@ break;
       if (!      this.layoutImpl_.maximumHeight_.isAuto ()) { 
         element.setProperty (Property.StyleMaxHeight,     this.layoutImpl_.maximumHeight_.getCssText());
 }
-      if (     this.layoutImpl_.positionScheme_ != PositionScheme.Static) {
+      if (      this.layoutImpl_.positionScheme_ != PositionScheme.Static && (   this.flags_.get(BIT_OFFSETS_CHANGED) || all)) {
         if (   !        this.layoutImpl_.offsets_[0].isAuto () || !        this.layoutImpl_.offsets_[1].isAuto () || !        this.layoutImpl_.offsets_[2].isAuto () || !        this.layoutImpl_.offsets_[3].isAuto ()) {
           for ( int i =0; 
           i < 4;++ i) {
@@ -1458,7 +1459,8 @@ break;
 }
           }
         }
-      }
+          this.flags_.clear(BIT_OFFSETS_CHANGED);
+}
       switch (    this.layoutImpl_.verticalAlignment_) {
         case Baseline:
         break;
@@ -1572,7 +1574,7 @@ break;
            String deferred  =    this.flags_.get(BIT_TOOLTIP_DEFERRED)? "true": "false";
            String showOnHover  =  jsShowOnHover? "true": "false";
            String forceShow  =    this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)? "true": "false"; 
-          element.callJavaScript (                "Wt4_14_1.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
+          element.callJavaScript (                "Wt4_14_2.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
 if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTip_.isConnected ()) {
                 this.lookImpl_.loadToolTip_.addListener(this, () -> {
             	WWebWidget.this.loadToolTip();
@@ -1610,11 +1612,11 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
   if ( ! all &&    this.transientImpl_ != null) {
     for ( int i =0; 
     i <      this.transientImpl_.addedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_14_1.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_14_2.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
 }
     for ( int i =0; 
     i <      this.transientImpl_.removedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_14_1.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_14_2.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
 }
     if (!     this.transientImpl_.childRemoveChanges_.isEmpty()) {
       if (   (int)   this.getChildren().size () !=     this.transientImpl_.addedChildren_ ||     this.transientImpl_.specialChildRemove_) {
@@ -1622,7 +1624,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         i <      this.transientImpl_.childRemoveChanges_.size ();++ i) {
            final String js =    this.transientImpl_.childRemoveChanges_.get(i);
           if ( js.charAt(0) == '_') { 
-            element.callJavaScript (  "Wt4_14_1.remove('" + js.substring(1) + "');", true);
+            element.callJavaScript (  "Wt4_14_2.remove('" + js.substring(1) + "');", true);
 }
           else  { 
             element.callJavaScript (js, true);
@@ -1647,7 +1649,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
       element.addPropertyWord (Property.Class, "unselectable");
  element.setAttribute ("unselectable", "on");
  StringBuilder selectJS  = new StringBuilder();
-      selectJS.append("Wt4_14_1").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
+      selectJS.append("Wt4_14_2").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     else  {
@@ -1655,7 +1657,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         element.addPropertyWord (Property.Class, "selectable");
  element.setAttribute ("unselectable", "off");
  StringBuilder selectJS  = new StringBuilder();
-        selectJS.append("Wt4_14_1").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
+        selectJS.append("Wt4_14_2").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     }
@@ -1733,7 +1735,7 @@ break;
   if (  this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
     if (   this.flags_.get(BIT_HIDDEN_CHANGED) ||  all &&   this.flags_.get(BIT_HIDDEN)) {
       if (  this.flags_.get(BIT_HIDDEN)) { 
-        element.callJavaScript (  "Wt4_14_1.$('" +  this.getId() + "').classList.add('Wt-hidden');");
+        element.callJavaScript (  "Wt4_14_2.$('" +  this.getId() + "').classList.add('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "hidden");
 if (  this.flags_.get(BIT_HIDE_WITH_OFFSETS)) { 
           element.setProperty (Property.StylePosition, "absolute");
@@ -1777,7 +1779,7 @@ break;
  element.setProperty (Property.StyleInsetInlineStart, "");
 }
         } 
-        element.callJavaScript (  "Wt4_14_1.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
+        element.callJavaScript (  "Wt4_14_2.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "visible");
 }
     }
@@ -1792,7 +1794,7 @@ break;
   app.loadJavaScript (THIS_JS, wtjs2 ());
 if (!   this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_14_1").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
+        ss.append("Wt4_14_2").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleDisplay, "none");
@@ -1803,7 +1805,7 @@ if (all) {
       }
       else  {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_14_1").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleInsetBlockStart)).append("','").append( element.getProperty (Property.StyleInsetInlineStart)).append("');");
+        ss.append("Wt4_14_2").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleInsetBlockStart)).append("','").append( element.getProperty (Property.StyleInsetInlineStart)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleVisibility, "hidden");
@@ -1848,13 +1850,13 @@ if (  this.flags_.get(BIT_GOT_FOCUS)) {
     if ( !  app.isJavaScriptLoaded(SCROLL_JS) &&  this.isScrollVisibilityEnabled()) { 
        app.loadJavaScript (SCROLL_JS, wtjs3 ());
  StringBuilder ss  = new StringBuilder();
-      ss.append("if (!Wt4_14_1.scrollVisibility) {Wt4_14_1.scrollVisibility = new ");
-ss.append("Wt4_14_1.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
+      ss.append("if (!Wt4_14_2.scrollVisibility) {Wt4_14_2.scrollVisibility = new ");
+ss.append("Wt4_14_2.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
  element.callJavaScript (ss.toString());
 }
     if ( this.isScrollVisibilityEnabled()) {
        StringBuilder ss  = new StringBuilder();
-      ss.append("Wt4_14_1.scrollVisibility.add({");
+      ss.append("Wt4_14_2.scrollVisibility.add({");
 ss.append("el:").append( this.getJsRef()).append(',');
 ss.append("margin:").append( this.getScrollVisibilityMargin()).append(',');
 ss.append("visible:").append(  this.isScrollVisible ());
@@ -1864,7 +1866,7 @@ ss.append("});");
 }
     else  {
       if (  this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) { 
-        element.callJavaScript (  "Wt4_14_1.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
+        element.callJavaScript (  "Wt4_14_2.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
     }
@@ -1883,10 +1885,12 @@ ss.append("});");
 }
   if ( all ||   this.flags_.get(BIT_POSITION_ANCHOR_CHANGED)) {
     if ( this.getPositionAnchor().length()!=0) {
-      if (    this.layoutImpl_.anchorOrientations_.isEmpty()) { 
-        element.removeProperty (Property.StylePositionArea);
- element.removeProperty (Property.StylePositionTryFallbacks);
+      if (    this.layoutImpl_.anchorOrientations_.isEmpty()) {
+        if (! all) { 
+          element.setProperty (Property.StylePositionArea, "");
+ element.setProperty (Property.StylePositionTryFallbacks, "");
 }
+      }
       else  {
          StringBuilder anchorArea  = new StringBuilder();
         if (    this.layoutImpl_.anchorOrientations_.contains(Orientation.Vertical)) {
@@ -1906,9 +1910,11 @@ ss.append("});");
 } 
       element.setProperty (Property.StylePositionAnchor,  this.getPositionAnchor());
 }
-    else  { 
-      element.removeProperty (Property.StylePositionAnchor);
- element.removeProperty (Property.StylePositionArea);
+    else  {
+      if (  this.flags_.get(BIT_POSITION_ANCHOR_CHANGED)) { 
+        element.setProperty (Property.StylePositionAnchor, "");
+} 
+      element.removeProperty (Property.StylePositionArea);
  element.removeProperty (Property.StylePositionTryFallbacks);
 }
       this.flags_.clear(BIT_POSITION_ANCHOR_CHANGED);
@@ -1953,6 +1959,7 @@ return   canBeSaved[0];
   this.flags_.clear(BIT_PARENT_CHANGED);
   this.flags_.clear(BIT_POSITION_ANCHOR_NAME_CHANGED);
   this.flags_.clear(BIT_POSITION_ANCHOR_CHANGED);
+  this.flags_.clear(BIT_OFFSETS_CHANGED);
   this.renderOk ();
 if (deep) {
      this.iterateChildren( (WWidget c) ->  { 
@@ -1968,7 +1975,7 @@ if (deep) {
    String renderRemoveJs(boolean recursive) {
    final StringBuilder result  = new StringBuilder();
   if (   this.isRendered () &&  this.isScrollVisibilityEnabled()) {
-    result.append("Wt4_14_1.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
+    result.append("Wt4_14_2.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
    this.flags_.set (BIT_SCROLL_VISIBILITY_CHANGED);
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
@@ -1981,7 +1988,7 @@ if (! recursive) {
       result.append("_").append( this.getId());
 }
     else  {
-      result.append("Wt4_14_1.remove('").append( this.getId()).append("');");
+      result.append("Wt4_14_2.remove('").append( this.getId()).append("');");
 }
   }
   return result.toString();
@@ -2171,6 +2178,7 @@ if ( managed != null) {
   private static final int BIT_FOCUS_CONNECTED =43;
   private static final int BIT_POSITION_ANCHOR_NAME_CHANGED =44;
   private static final int BIT_POSITION_ANCHOR_CHANGED =45;
+  private static final int BIT_OFFSETS_CHANGED =46;
   private static String  FOCUS_SIGNAL ="focus";
   private static String  BLUR_SIGNAL ="blur";
   private static final int DEFAULT_BASE_Z_INDEX =1100;

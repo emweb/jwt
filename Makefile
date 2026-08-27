@@ -1,4 +1,4 @@
-JWT_VERSION=4.14.1
+JWT_VERSION=4.14.2
 
 # Servlet classifier: `jakarta` for Servlet >= 6
 ifndef CLASSIFIER

@@ -98,12 +98,33 @@ Optionally, additional arguments can be specified as with a variable placeholder
 
 <p>
 {@link Functions} are resolved by {@link WTemplate#resolveFunction(String name, List args, Writer result) resolveFunction()}, and the default implementation considers functions bound with {@link WTemplate#addFunction(String name, WTemplate.Function  function) addFunction()}. There are currently three functions that are generally useful:<ul>
-<li>: resolves a localized strings, this is convenient to create a language neutral template, which contains translated strings Functions::id : resolves the id of a bound widget, this is convenient to bind &lt;label&gt; elements to a form widget using its for attribute.
+<li>{@link WTemplate.Functions#tr Functions#tr} : resolves a localized strings, this is convenient to create a language neutral template, which contains translated strings
 </li>
-<li>: recursively renders another string as macro block optional arguments substituted before processing template substitution. For example, the following template uses the &quot;tr&quot; function to translate the age-label using the &quot;age-label&quot; internationalized key.  WTemplate t = new WTemplate(); t.setTemplateText(&quot;&lt;div&gt; ${tr:age-label} ${age-input} &lt;/div&gt;&quot;); t.addFunction(&quot;tr&quot;, WTemplate.Functions.tr); t.bindWidget(&quot;age-input&quot;, ageEdit = new WLineEdit());  C. Conditional blocks
+<li>{@link WTemplate.Functions#id Functions#id} : resolves the id of a bound widget, this is convenient to bind &lt;label&gt; elements to a form widget using its for attribute.
+</li>
+<li>{@link WTemplate.Functions#block Functions#block} : recursively renders another string as macro block optional arguments substituted before processing template substitution.
 </li>
 </ul>
 
+
+
+<p>
+For example, the following template uses the &quot;tr&quot; function to translate the age-label using the &quot;age-label&quot; internationalized key.
+
+<p>
+<pre>
+{@code
+ WTemplate t = new WTemplate();
+ t.setTemplateText("<div> ${tr:age-label} ${age-input} </div>");
+ t.addFunction("tr", WTemplate.Functions.tr);
+ t.bindWidget("age-input", ageEdit = new WLineEdit());
+ 
+}
+</pre>
+
+
+<p>
+<h3>C. Conditional blocks</h3>
 
 
 <p>
@@ -1595,7 +1616,7 @@ state = Next;
   private void unrenderWidget(WWidget  w, final DomElement el) {
    String removeJs  =   w.renderRemoveJs (false);
   if ( removeJs.charAt(0) == '_') { 
-    el.callJavaScript (  "Wt4_14_1.remove('" + removeJs.substring(1) + "');", true);
+    el.callJavaScript (  "Wt4_14_2.remove('" + removeJs.substring(1) + "');", true);
 }
   else  { 
     el.callJavaScript (removeJs, true);

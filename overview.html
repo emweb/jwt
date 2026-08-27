@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.14.1</title>
+<title>JWt 4.14.2</title>
 </head>
 <body>
 
@@ -24,6 +24,84 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.14.2 (August 27, 2026)</h2>
+
+<p>JWt 4.14.2 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14614" target="_blank">Issue #14614</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WWidget.html#positionAt(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.Orientation,java.util.EnumSet)" target="_blank">WWidget.positionAt()</a>
+    sometimes not correctly positioning the widget, especially when the widget it was positioned at
+    was inside of another popup.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14716" target="_blank">Issue #14716</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>
+    being incorrectly positioned relative to a widget after previously being
+    popped up at a point.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14767" target="_blank">Issue #14767</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#popup(eu.webtoolkit.jwt.WPoint)" target="_blank">WPopupMenu.popup(WPoint)</a> (and therefore
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html#popup(eu.webtoolkit.jwt.WMouseEvent)" target="_blank">WPopupMenu.popup(WMouseEvent)</a>)
+    not changing the position of the
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14475" target="_blank">Issue #14475</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> sometimes moving for no reason, or teleporting
+    to the wrong position when being moved by the user.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14712" target="_blank">Issue #14712</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html#moved()" target="_blank">WDialog.moved()</a> signal
+    sometimes being emitted with an incorrect x coordinate when being moved by something else than the user.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14744" target="_blank">Issue #14744</a>:
+    fixed JavaScript error sometimes happening when resizing or adding a
+    <a href="eu/webtoolkit/jwt/WTreeView.html" target="_blank">WTreeView</a> after another one had
+    been removed.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14714" target="_blank">Issue #14714</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> not being
+    resizable below the TinyMCE default height of 400px, for example when placed
+    in a layout using
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#JavaScript" target="_blank">LayoutImplementation.JavaScript</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14713" target="_blank">Issue #14713</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> ignoring its offset
+    and always rendering in the top-left corner when positioned.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14690" target="_blank">Issue #14690</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> not filling the
+    available width and height when in a layout using
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14437" target="_blank">Issue #14437</a>:
+    fixed layouts with
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    not correctly removing some wrappers when removing a widget from itself.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14596" target="_blank">Issue #14596</a>:
+    fixed incorrect handling, on the client side, of url parameters containing <code>=</code> as part of their value.
+  </li>
+</ul>
 
 <h2>Release 4.14.1 (August 6, 2026)</h2>
 

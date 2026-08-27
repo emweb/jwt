@@ -522,10 +522,29 @@ if (!window._$_WT_CLASS_$_) {
     };
 
     this.remove = function(id) {
-      const e = WT.getElement(id);
+      let e = WT.getElement(id);
       if (e) {
         WT.saveReparented(e);
-        e.parentNode.removeChild(e);
+        WT.beforeRemove(e);
+
+        // ensure we remove wrappers as well.
+        let parent = e.parentNode;
+        while (
+          parent.classList.contains("Wt-justify-wrap") ||
+          parent.classList.contains("Wt-fill-width") ||
+          parent.classList.contains("Wt-fill-height")
+        ) {
+          e = parent;
+          parent = e.parentNode;
+        }
+
+        parent.removeChild(e);
+      }
+    };
+
+    this.beforeRemove = function(tv) {
+      if (tv && tv.wtObj && tv.wtObj.beforeRemove) {
+        tv.wtObj.beforeRemove();
       }
     };
 
@@ -1932,8 +1951,9 @@ if (!window._$_WT_CLASS_$_) {
      * bottom of (y) or top from (bottomy)
      */
     this.fitToWindow = function(e, x, y, rightx, bottomy, adjustX = true, adjustY = true) {
-      const hsides = ["left", "right"],
-        vsides = ["top", "bottom"];
+      const rtl = getComputedStyle(e).direction === "rtl";
+      const hsides = rtl ? ["insetInlineEnd", "insetInlineStart"] : ["insetInlineStart", "insetInlineEnd"],
+        vsides = ["insetBlockStart", "insetBlockEnd"];
 
       const useAnchor = WT.useAnchorPosition(e);
 
@@ -1977,11 +1997,12 @@ if (!window._$_WT_CLASS_$_) {
       }
 
       const op = e.offsetParent;
-      if (!op) {
+      if (!op && !useAnchor) {
         return;
       }
 
-      const offsetParent = WT.widgetPageCoordinates(op);
+      // offsetParent is not used with anchor positioning.
+      const offsetParent = useAnchor ? null : WT.widgetPageCoordinates(op);
 
       if (x + reserveWidth > windowX + windowSize.x) {
         // too far right, chose other side
@@ -2096,6 +2117,7 @@ if (!window._$_WT_CLASS_$_) {
 
       if (!WT.isHidden(w)) {
         w.style.display = "block";
+        w.style.position = "absolute";
         WT.fitToWindow(w, x, y, x, y, adjustX, adjustY);
       }
     };
@@ -2121,7 +2143,9 @@ if (!window._$_WT_CLASS_$_) {
         rightx,
         bottomy;
 
-      w.style.position = "absolute";
+      const useAnchor = WT.useAnchorPosition(w);
+
+      w.style.position = useAnchor ? "fixed" : "absolute";
       if (WT.css(w, "display") === "none") {
         w.style.display = "block";
       }
@@ -2145,7 +2169,6 @@ if (!window._$_WT_CLASS_$_) {
       let p, pp = atw;
       w.parentNode.removeChild(w);
       const isPopup = w.classList.contains("Wt-popup");
-      const useAnchor = WT.useAnchorPosition(w);
 
       for (p = pp.parentNode; !p.classList.contains("Wt-domRoot"); p = p.parentNode) {
         if (p.wtReparentBarrier) {
