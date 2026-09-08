@@ -475,7 +475,7 @@ for (String word :valueWords) {
    boolean anchorClick =   this.getType() == DomElementType.A &&  eventName == WInteractWidget.CLICK_SIGNAL;
    StringBuilder js  = new StringBuilder();
   if (  isExposed || anchorClick || jsCode.length()!=0) {
-    js.append("Wt4_14_2").append(".mks");
+    js.append("Wt4_14_3").append(".mks");
  StringBuilder param  = new StringBuilder();
      boolean firstParam =true;
     if (anchorClick) {
@@ -641,7 +641,7 @@ if ( actions.get(i).exposed) {
   public void callMethod(final String method) {
   ++   this.numManipulations_;
 if (  this.var_.length()==0) {
-      this.javaScript_.append("Wt4_14_2").append(".$('").append(  this.id_).append("').");
+      this.javaScript_.append("Wt4_14_3").append(".$('").append(  this.id_).append("').");
 }
   else  {
       this.javaScript_.append(  this.var_).append('.');
@@ -711,7 +711,7 @@ if (  this.var_.length()==0) {
           
   */
   public void removeFromParent() { 
-   this.callJavaScript (  "Wt4_14_2.remove('" +  this.getId() + "');", true);
+   this.callJavaScript (  "Wt4_14_3.remove('" +  this.getId() + "');", true);
 }
   /**
   
@@ -827,7 +827,7 @@ eout.append(  this.var_).append(".setAttribute('id', '").append(  this.id_).appe
 if (   this.removeAllChildren_ >= 0) { 
          this.declare (out);
 if (   this.removeAllChildren_ == 0) {
-          out.append("Wt4_14_2").append(".setHtml(").append(  this.var_).append(", '');\n");
+          out.append("Wt4_14_3").append(".setHtml(").append(  this.var_).append(", '');\n");
 }
         else  {
           out.append("(Array.from(").append(  this.var_).append(".querySelectorAll(':scope > *')).slice(").append(  this.removeAllChildren_).append(")).forEach( elem => elem.remove());");
@@ -858,21 +858,21 @@ if (   this.removeAllChildren_ == 0) {
 if (   this.properties_.get(Property.StyleDisplay) != null) {
            String style  =   this.properties_.get(Property.StyleDisplay);
           if (style.equals("none")) {
-            out.append("Wt4_14_2.hide('").append(  this.id_).append("');\n");
+            out.append("Wt4_14_3.hide('").append(  this.id_).append("');\n");
 return   this.var_;
           }
           else  {
             if (style.equals("inline")) {
-              out.append(  "Wt4_14_2.inline('" +   this.id_ + "');\n");
+              out.append(  "Wt4_14_3.inline('" +   this.id_ + "');\n");
 return   this.var_;
             }
             else  {
               if (style.equals("block")) {
-                out.append(  "Wt4_14_2.block('" +   this.id_ + "');\n");
+                out.append(  "Wt4_14_3.block('" +   this.id_ + "');\n");
 return   this.var_;
               }
               else  {
-                out.append("Wt4_14_2.show('").append(  this.id_).append("', '").append(style).append("');\n");
+                out.append("Wt4_14_3.show('").append(  this.id_).append("', '").append(style).append("');\n");
 return   this.var_;
               }
             }
@@ -886,7 +886,7 @@ return   this.var_;
         }
       }
       if (  this.unwrapped_) {
-        out.append("Wt4_14_2.unwrap('").append(  this.id_).append("');\n");
+        out.append("Wt4_14_3.unwrap('").append(  this.id_).append("');\n");
 } 
        this.processEvents (app);
   this.processProperties (app);
@@ -897,7 +897,7 @@ if (   this.replaced_ != null) {
         insertJs.append(  this.var_).append(".parentNode.replaceChild(").append(varr).append(',').append(  this.var_).append(");\n");
     this.replaced_.createElement (out, app, insertJs.toString());
 if (  this.unstubbed_) {
-          out.append("Wt4_14_2.unstub(").append(  this.var_).append(',').append(varr).append(',').append(   this.hideWithDisplay_? 1: 0).append(");\n");
+          out.append("Wt4_14_3.unstub(").append(  this.var_).append(',').append(varr).append(',').append(   this.hideWithDisplay_? 1: 0).append(");\n");
 }
         return   this.var_;
       }
@@ -913,11 +913,11 @@ return   this.var_;
       }
       if (!   this.childrenToSave_.isEmpty()) { 
          this.declare (out);
-out.append("Wt4_14_2").append(".saveReparented(").append(  this.var_).append(");");
+out.append("Wt4_14_3").append(".saveReparented(").append(  this.var_).append(");");
 }
       for ( int i =0; 
       i <    this.childrenToSave_.size ();++ i) {
-        out.append("var c").append(  this.var_).append( (int) i).append('=').append("Wt4_14_2.$('").append(  this.childrenToSave_.get(i)).append("')");
+        out.append("var c").append(  this.var_).append( (int) i).append('=').append("Wt4_14_3.$('").append(  this.childrenToSave_.get(i)).append("')");
 if (  app.getEnvironment().agentIsIE ()) {
           out.append(".detach()");
 }
@@ -937,7 +937,7 @@ if (  app.getEnvironment().agentIsIE ()) {
        this.renderInnerHtmlJS (out, app);
 for ( int i =0; 
       i <    this.childrenToSave_.size ();++ i) {
-        out.append("Wt4_14_2.replaceWith('").append(  this.childrenToSave_.get(i)).append("',c").append(  this.var_).append( (int) i).append(");");
+        out.append("Wt4_14_3.replaceWith('").append(  this.childrenToSave_.get(i)).append("',c").append(  this.var_).append( (int) i).append(");");
 } 
        this.renderDeferredJavaScript (out);
 if (! childrenUpdated) {
@@ -1301,7 +1301,7 @@ if (   this.timeOut_ != - 1) {
   */
   public void declare(final EscapeOStream out) {
   if (  this.var_.length()==0) {
-    out.append("var ").append( this.getCreateVar()).append("=Wt4_14_2.$('").append(  this.id_).append("');\n");
+    out.append("var ").append( this.getCreateVar()).append("=Wt4_14_3.$('").append(  this.id_).append("');\n");
 }
   }
   /**
@@ -1588,7 +1588,7 @@ return   this.var_;
    DomElement.EventHandler  keypress =  this.eventHandlers_.get(S_keypress);
   if (  keypress != null &&  keypress.jsCode.length()!=0) {
      StringBuilder js  = new StringBuilder();
-    js.append("if (").append("Wt4_14_2").append(".isKeyPress(event)){").append( MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode);
+    js.append("if (").append("Wt4_14_3").append(".isKeyPress(event)){").append( MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).jsCode);
 if ( keypress.useJsFunctionGenerator) {
       js.append(".call(this, event);");
  MapUtils.access(  self.eventHandlers_, S_keypress, DomElement.EventHandler.class).useJsFunctionGenerator = false;
@@ -1606,7 +1606,7 @@ if ( keypress.useJsFunctionGenerator) {
     if (  minw != null ||  maxw != null) {
       if ( w == null) {
          StringBuilder expr  = new StringBuilder();
-        expr.append("Wt4_14_2.IEwidth(this,");
+        expr.append("Wt4_14_3.IEwidth(this,");
 if ( minw != null) {
           expr.append('\'').append(minw).append('\'');
   self.properties_.remove(Property.StyleMinWidth);
@@ -1646,7 +1646,7 @@ switch ( i.getKey()) {
       if (  this.willRenderInnerHtmlJS (app)) {
         break;
       }
-      out.append("Wt4_14_2.setHtml(").append(  this.var_).append(',');
+      out.append("Wt4_14_3.setHtml(").append(  this.var_).append(',');
 if (! pushed) { 
         escaped.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 pushed = true;
@@ -1887,7 +1887,7 @@ if (   this.type_ == DomElementType.TD) {
   else  {
      StringBuilder insertJS  = new StringBuilder();
     if ( pos != - 1) {
-      insertJS.append("Wt4_14_2.insertAt(").append(parentVar).append(",").append(  this.var_).append(",").append(pos).append(");");
+      insertJS.append("Wt4_14_3.insertAt(").append(parentVar).append(",").append(  this.var_).append(",").append(pos).append(");");
 }
     else  {
       insertJS.append(parentVar).append(".appendChild(").append(  this.var_).append(");\n");
@@ -1912,7 +1912,7 @@ if ( i != null) {
     }
     if (       this.type_ == DomElementType.DIV &&   app.getEnvironment().getAgent() == UserAgent.IE6 || !   this.childrenToAdd_.isEmpty() || !   this.childrenHtml_.isEmpty() || innerHTML.length()!=0) { 
        this.declare (out);
-out.append("Wt4_14_2.setHtml(").append(  this.var_).append(",'");
+out.append("Wt4_14_3.setHtml(").append(  this.var_).append(",'");
  out.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
  List<DomElement.TimeoutEvent> timeouts  = new ArrayList<DomElement.TimeoutEvent>();
        EscapeOStream js  = new EscapeOStream();

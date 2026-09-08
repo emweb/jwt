@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
 
+import eu.webtoolkit.jwt.Configuration;
 import eu.webtoolkit.jwt.Utils;
 import eu.webtoolkit.jwt.WResource;
 import eu.webtoolkit.jwt.WtServlet;

@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.14.2</title>
+<title>JWt 4.14.3</title>
 </head>
 <body>
 
@@ -24,6 +24,25 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.14.3 (September 8, 2026)</h2>
+
+<p>JWt 4.14.3 is a patch release that addresses the following issues:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14799" target="_blank">Issue #14799</a>:
+    fixed compilation error when compiling JWt with Jakarta.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14789" target="_blank">Issue #14789</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setText(java.lang.String)" target="_blank">WLineEdit.setText()</a>
+    causing a JavaScript error when called after
+    <a href="eu/webtoolkit/jwt/WLineEdit.html#setInputMask(java.lang.String,java.util.EnumSet)" target="_blank">WLineEdit.setInputMask()</a>
+    if the widget was already rendered.
+  </li>
+</ul>
 
 <h2>Release 4.14.2 (August 27, 2026)</h2>
 
