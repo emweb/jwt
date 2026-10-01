@@ -160,6 +160,7 @@ public enum Property {
   StyleFlexDirection,
   StyleFlexFlow,
   StyleAlignSelf,
+  StyleJustifySelf,
   StyleJustifyContent,
   StyleAnchorName,
   StylePositionAnchor,

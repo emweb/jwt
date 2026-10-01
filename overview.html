@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.14.3</title>
+<title>JWt 4.14.4</title>
 </head>
 <body>
 
@@ -24,6 +24,34 @@ This page lists important notes on migrating existing applications to
 newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
+
+<h2>Release 4.14.4 (October 1, 2026)</h2>
+
+<p>Wt 4.14.4 is a patch release that addresses the following issue:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14635" target="_blank">Issue #14635</a>
+    fixed
+    <a href="eu/webtoolkit/jwt/WFormWidget.html#changed()" target="_blank">WFormWidget.changed()</a> signal sometimes being emitted
+    a second time with incorrect informations when the form-data caching was enabled.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14824" target="_blank">Issue #14824</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WWidget.html#anchorAt(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.Orientation)" target="_blank">WWidget.anchorAt()</a>
+    (and therefore
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>) sometimes not correctly aligning the widget with its
+    position anchor.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14619" target="_blank">Issue #14619</a>:
+    fixed resizable layouts not filling their available height when revealed as
+    deferred <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a>
+    content or as a lazily loaded
+    <a href="eu/webtoolkit/jwt/WTabWidget.html" target="_blank">WTabWidget</a> tab.
+  </li>
+</ul>
 
 <h2>Release 4.14.3 (September 8, 2026)</h2>
 

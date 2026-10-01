@@ -1539,7 +1539,7 @@ if ( handler.getResponse() != null) {
    this.setState (WebSession.State.Loaded,    this.controller_.getConfiguration().getSessionTimeout());
 if (wasSuspended) {
     if (    this.env_.hasAjax() &&     this.controller_.getConfiguration().reloadIsNewSession ()) { 
-         this.app_.doJavaScript ("Wt4_14_3.history.removeSessionId()");
+         this.app_.doJavaScript ("Wt4_14_4.history.removeSessionId()");
   this.sessionIdInUrl_ = false;
 }
         this.app_.unsuspended ().trigger();
@@ -1933,7 +1933,7 @@ return highPriority;
       return ;
     }
     logger.debug(new StringWriter().append("signal: ").append( signalE).toString());
-if (   this.getType() != EntryPointType.WidgetSet ||  !  signalE.equals("none") && !  signalE.equals("load")) { 
+if (  signalI.handleSignal && (   this.getType() != EntryPointType.WidgetSet ||  !  signalE.equals("none") && !  signalE.equals("load"))) { 
         this.renderer_.setRendered (true);
 }
     if (  signalE.equals("none") ||  signalE.equals("load")) {
@@ -1953,7 +1953,10 @@ if (   this.getType() != EntryPointType.WidgetSet ||  !  signalE.equals("none") 
       else  {
         if (!  signalE.equals("poll")) { 
            this.propagateFormValues (e, se, signalI);
- boolean discardStateless = !  request.isWebSocketMessage () &&  i == 0;
+if (!  signalI.handleSignal) {
+            continue;
+          }
+           boolean discardStateless = !  request.isWebSocketMessage () &&  i == 0;
           if (discardStateless) { 
               this.renderer_.saveChanges ();
 } 
@@ -1962,7 +1965,7 @@ if ( signalE.equals("hash")) {
              String  hashE = request.getParameter ( se + "_");
             if ( hashE != null) { 
                this.changeInternalPath ( hashE, handler.getResponse());
-    this.app_.doJavaScript ("Wt4_14_3.scrollHistory();");
+    this.app_.doJavaScript ("Wt4_14_4.scrollHistory();");
 }
             else  { 
                this.changeInternalPath ("", handler.getResponse());
