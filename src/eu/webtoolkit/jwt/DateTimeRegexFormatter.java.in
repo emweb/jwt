@@ -1,0 +1,242 @@
+/*
+ * Copyright (C) 2020 Emweb bv, Herent, Belgium.
+ *
+ * See the LICENSE file for terms of use.
+ */
+package eu.webtoolkit.jwt;
+
+import java.util.*;
+import java.util.regex.*;
+import java.io.*;
+import java.lang.ref.*;
+import java.time.*;
+import java.util.concurrent.locks.ReentrantLock;
+import m4_changecom(`µµµ')m4_changequote(`°°°')m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.http.*;
+import m4_ifelse(CLASSIFIER,°°°javax',°°°javax',°°°jakarta').servlet.*;
+import eu.webtoolkit.jwt.*;
+import eu.webtoolkit.jwt.auth.*;
+import eu.webtoolkit.jwt.auth.mfa.*;
+import eu.webtoolkit.jwt.chart.*;
+import eu.webtoolkit.jwt.utils.*;
+import eu.webtoolkit.jwt.servlet.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+ class DateTimeRegexFormatter {
+  private static Logger logger = LoggerFactory.getLogger(DateTimeRegexFormatter.class);
+  
+  public static final String specialRegex =".+$^*[]{}()?!/\\|";
+  public static WDate.RegExpInfo processChar(final WDate.RegExpInfo info, final String format) {
+  if ( specialRegex.indexOf(format.charAt( info.index)) != -1) { 
+     info.regexp+=  "\\";
+} 
+   info.regexp+=  format.charAt( info.index);
+return info;
+  }
+  public static WDate.RegExpInfo formatYearToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+while (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+if ( next != 'y') {
+      break;
+    } 
+    sf+=  next;
+++  info.index;
+}
+  if (sf.equals("yy")) { 
+     info.regexp+=  "(\\d{2})";
+  info.yearGetJS=    "var y = parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10); return y > 38 ? 1900 + y : 2000 + y;";
+}
+  else  {
+    if (sf.equals("yyyy")) { 
+       info.regexp+=  "(\\d{4})";
+  info.yearGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+}
+    else  {
+      fatalFormatRegExpError (format, sf.length(), "y");
+}
+  }
+  return info;
+  }
+  public static WDate.RegExpInfo formatMonthToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+while (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+if ( next != 'M') {
+      break;
+    } 
+    sf+=  next;
+++  info.index;
+}
+  if (sf.equals("M")) { 
+     info.regexp+=  "(\\d{1,2})";
+}
+  else  {
+    if (sf.equals("MM")) { 
+       info.regexp+=  "(\\d{2})";
+}
+    else  {
+      fatalFormatRegExpError (format, sf.length(), "M");
+}
+  } 
+   info.monthGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+  public static WDate.RegExpInfo formatDayToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+while (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+if ( next != 'd') {
+      break;
+    } 
+    sf+=  next;
+++  info.index;
+}
+  if (sf.equals("d")) { 
+     info.regexp+=  "(\\d{1,2})";
+}
+  else  {
+    if (sf.equals("dd")) { 
+       info.regexp+=  "(\\d{2})";
+}
+    else  {
+      fatalFormatRegExpError (format, sf.length(), "d");
+}
+  } 
+   info.dayGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+  public static WDate.RegExpInfo formatHourToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   boolean ap =true;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+if (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+}
+  if (  next == 'h' ||  next == 'H') { 
+    sf+=  next;
+++  info.index;
+}
+  if ( sf.equals("HH") ||  sf.equals("hh") && ! ap) { 
+     info.regexp+=  "([0-1][0-9]|2[0-3])";
+}
+  else  {
+    if ( sf.equals("hh") && ap) { 
+       info.regexp+=  "(0[1-9]|1[012])";
+}
+    else  {
+      if ( sf.equals("H") ||  sf.equals("h") && ! ap) { 
+         info.regexp+=  "(0|[1-9]|1[0-9]|2[0-3])";
+}
+      else  {
+        if ( sf.equals("h") && ap) { 
+           info.regexp+=  "([1-9]|1[012])";
+}
+        else  {
+          fatalFormatRegExpError (format, sf.length(), "h/H");
+}
+      }
+    }
+  } 
+   info.hourGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+  public static WDate.RegExpInfo formatMinuteToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+if (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+}
+  if ( next == 'm') { 
+    sf+=  next;
+++  info.index;
+}
+  if (sf.equals("m")) { 
+     info.regexp+=  "(0|[1-5]?[0-9])";
+}
+  else  {
+    if (sf.equals("mm")) { 
+       info.regexp+=  "([0-5][0-9])";
+}
+    else  {
+      fatalFormatRegExpError (format, sf.length(), "m");
+}
+  } 
+   info.minuteGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+  public static WDate.RegExpInfo formatSecondToRegex(final WDate.RegExpInfo info, final String format) {
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+if (  info.index <  format.length() - 1) {
+    next = format.charAt(  info.index + 1);
+}
+  if ( next == 's') { 
+    sf+=  next;
+++  info.index;
+}
+  if (sf.equals("s")) { 
+     info.regexp+=  "(0|[1-5]?[0-9])";
+}
+  else  {
+    if (sf.equals("ss")) { 
+       info.regexp+=  "([0-5][0-9])";
+}
+    else  {
+      fatalFormatRegExpError (format, sf.length(), "s");
+}
+  } 
+   info.secGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+  public static WDate.RegExpInfo formatAPToRegex(final WDate.RegExpInfo info, final String format) { 
+   info.regexp+=  "([AP]M)";
+++  info.currentGroup;
+return info;
+  }
+  public static WDate.RegExpInfo formatMSecondToRegex(final WDate.RegExpInfo info, final String format) {
+   char msecChar ='S';
+   char next =0;
+   String sf  = ""; 
+  sf+=  format.charAt( info.index);
+for ( int k =0; 
+  k < 2;++ k) {
+    if (  info.index <  format.length() - 1) {
+      next = format.charAt(  info.index + 1);
+}
+    if ( next == msecChar) { 
+      sf+=  msecChar;
+next = 0;
+++  info.index;
+}
+    else  {
+      next = 0;
+break;
+    }
+  }
+  if (  sf.length () == 1) { 
+     info.regexp+=  "(0|[1-9][0-9]{0,2})";
+}
+  else  {
+    if (  sf.length () == 3) { 
+       info.regexp+=  "([0-9]{3})";
+}
+  } 
+   info.msecGetJS=    "return parseInt(results[" + String.valueOf(  info.currentGroup++) + "], 10);";
+return info;
+  }
+   static void fatalFormatRegExpError(final CharSequence format, int c, String  cs) {
+   StringWriter s  = new StringWriter();
+  s.append("Date/Time formatting to regex: (for \"").append(format.toString()).append("\"): cannot handle ").append(String.valueOf(c)).append(" consecutive ").append(cs);
+throw new WException(s.toString());
+}
+}

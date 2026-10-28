@@ -118,6 +118,7 @@ public class WMenu extends WCompositeWidget {
   this.contentsStack_ = null;
   this.internalPathEnabled_ = false;
   this.emitPathChange_ = false;
+  this.preventEmit_ = false;
   this.basePath_ = "";
   this.previousInternalPath_ = "";
   this.parentItem_ = null;
@@ -156,6 +157,7 @@ if ( parentContainer != null) parentContainer.addWidget (this);
   this.contentsStack_ = contentsStack;
   this.internalPathEnabled_ = false;
   this.emitPathChange_ = false;
+  this.preventEmit_ = false;
   this.basePath_ = "";
   this.previousInternalPath_ = "";
   this.parentItem_ = null;
@@ -523,7 +525,7 @@ if (    this.contentsStack_ != null &&   item.getContentsInStack() != null) {
 if (  itemIndex <=   this.current_ &&    this.current_ >= 0) {
       --   this.current_;
 } 
-     this.select (  this.current_, true);
+     this.select (  this.current_, !  this.isPreventEmit());
 }
   return result;
   }
@@ -1165,11 +1167,15 @@ if (! ( self != null)) {
       this.emitPathChange_ = false;
 }
     if ( last != index) {
-        item.triggered ().trigger(item);
-if ( self != null) {
-        if (   this.getUl().getIndexOf(item) != - 1) {
-            this.itemSelected_.trigger(item);
+      if (!  this.isPreventEmit()) {
+          item.triggered ().trigger(item);
 }
+      if ( self != null) {
+        if (   this.getUl().getIndexOf(item) != - 1) {
+          if (!  this.isPreventEmit()) {
+              this.itemSelected_.trigger(item);
+}
+        }
         else  { 
            this.select (- 1);
 }
@@ -1181,6 +1187,7 @@ if ( self != null) {
    WStackedWidget  contentsStack_ ;
   private boolean internalPathEnabled_ ;
   private boolean emitPathChange_ ;
+  private boolean preventEmit_ ;
   private String basePath_ ;
   private String previousInternalPath_ ;
    WMenuItem  parentItem_ ;
@@ -1257,8 +1264,10 @@ if (  this.internalPathEnabled_) {
          this.contentsStack_.setCurrentWidget (contents);
 }
   }
-    this.itemSelectRendered_.trigger(item);
+  if (!  this.isPreventEmit()) {
+      this.itemSelectRendered_.trigger(item);
 }
+  }
    void onItemHidden(int index, boolean hidden) {
   if (hidden) {
      int nextItem =  this.nextAfterHide (index);
@@ -1266,6 +1275,18 @@ if (  this.internalPathEnabled_) {
        this.select (nextItem);
 }
   }
+  }
+   void setPreventEmit(boolean prevent) {  
+  this.preventEmit_ = prevent;
+if (   this.contentsStack_ != null) { 
+       this.contentsStack_.setPreventEmit (prevent);
+}
+  if (    this.parentItem_ != null &&     this.parentItem_.getParentMenu() != null) { 
+        this.parentItem_.getParentMenu().setPreventEmit (prevent);
+}
+  }
+  private boolean isPreventEmit() {
+  return    this.preventEmit_ ||      this.parentItem_ != null &&     this.parentItem_.getParentMenu() != null &&     this.parentItem_.getParentMenu().isPreventEmit();
   }
    void updateSelectionEvent() {  
   this.needSelectionEventUpdate_ = true;

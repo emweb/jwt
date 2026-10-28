@@ -138,6 +138,10 @@ public class WApplication extends WObject {
   this.focusedWidget_ = null;
   this.selectionStart_ = - 1;
   this.selectionEnd_ = - 1;
+  this.trackFocus_ = false;
+  this.focusChanged_ = new JSignal(this, "Wt-focusChanged");
+  this.elementFocused_ = new Signal();
+  this.elementBlurred_ = new Signal();
   this.layoutDirection_ = LayoutDirection.LeftToRight;
   this.htmlAttributes_ = new HashMap<String, String>();
   this.bodyAttributes_ = new HashMap<String, String>();
@@ -172,7 +176,6 @@ public class WApplication extends WObject {
   this.visibilityChangedJs_ = new JSignal1<String>(this, "Wt-visibilityChange") {};
   this.unloaded_ = new JSignal(this, "Wt-unload");
   this.idleTimeout_ = new JSignal(this, "Wt-idleTimeout");
-  this.focusChanged_ = new Signal();
   this.addedCookies_ = new HashMap<String, String>();
   this.notificationPermissionAsked_ = false;
   this.updateNotificationPermission_ = new JSignal1<String>(this, "Wt-updateNotificationPermission") {};
@@ -289,6 +292,9 @@ if (  this.getEnvironment().agentIsOpera ()) {
      this.useStyleSheet (new WLink (  WApplication.getRelativeResourcesUrl() + prefix + "transitions.css"));
 } 
    this.setLoadingIndicator (new WDefaultLoadingIndicator());
+  this.focusChanged_.addListener(this, () -> {
+  	WApplication.this.onFocusChange();
+  });
   this.visibilityChangedJs_.addListener(this, (String e1) -> {
   	WApplication.this.onVisibilityChange(e1);
   });
@@ -2536,8 +2542,8 @@ if (name.length()==0) {
   this.loadingIndicator_ = indicator;
 if (   this.loadingIndicator_ != null) { 
        this.domRoot_.addWidget (indicator);
-   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_14_4.inline('" +    this.loadingIndicator_.getId() + "');}");
-   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_14_4.hide('" +    this.loadingIndicator_.getId() + "');}");
+   this.showLoadJS.setJavaScript (  "function(o,e) {Wt4_15_0.inline('" +    this.loadingIndicator_.getId() + "');}");
+   this.hideLoadJS.setJavaScript (  "function(o,e) {Wt4_15_0.hide('" +    this.loadingIndicator_.getId() + "');}");
     this.loadingIndicator_.hide ();
 }
   }
@@ -2813,15 +2819,11 @@ if (   this.loadingIndicator_ != null) {
   public Signal1<VisibilityState> visibilityChanged() {
   return   this.visibilityChanged_;
   }
-  public void setFocus(final String id, int selectionStart, int selectionEnd) {
-   final boolean didFocusChange =!   this.focusId_.equals(id); 
+  public void setFocus(final String id, int selectionStart, int selectionEnd) { 
     this.focusId_=  id;
   this.selectionStart_ = selectionStart;
   this.selectionEnd_ = selectionEnd;
-if (didFocusChange) {
-      this.focusChanged_.trigger();
 }
-  }
   public void setFocus(WWidget  widget, int selectionStart, int selectionEnd) { 
    this.setFocusedWidget (widget);
  String widgetId  =   widget != null?  widget.getId(): ""; 
@@ -2867,6 +2869,116 @@ if (didFocusChange) {
       this.focusedWidget_ =    this.focusId_.length()==0? null:   this.findById (  this.focusId_);
 }
   return   this.focusedWidget_;
+  }
+  /**
+  
+  Enables or disables tracking of client-side focus. 
+          
+  <p>
+  
+  When enabled, the application will actively keep track of which widget has focus on the client side, and enables the {@link WApplication#elementFocused() elementFocused()} and {@link WApplication#elementBlurred() elementBlurred()} signals.
+  
+  <p>
+  By default, tracking of client-side focus is disabled.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Even if tracking of client-side focus is disabled, the value returned by {@link WApplication#getFocus() getFocus()} and {@link WApplication#getFocusedWidget() getFocusedWidget()} will still be updated every time an event is received from the client.
+  </i></p>
+  
+  
+  <p><i><b>Warning: </b>Enabling tracking of client-side focus may considerably increase client-server communication.
+  </i></p>
+  
+  @see WApplication#getFocus()
+  @see WApplication#elementFocused()
+  @see WApplication#elementBlurred()
+  
+  
+          
+  */
+  public void setTrackFocus(boolean enable) {
+  if (   this.trackFocus_ == enable) {
+    return ;
+  }  
+  this.trackFocus_ = enable;
+  this.doJavaScript (     this.javaScriptClass_ + "._p_.setTrackFocus(" + ( enable? "true": "false") + ");");
+}
+  /** 
+  
+  Enables or disables tracking of client-side focus. 
+          
+  <p>Calls {@link #setTrackFocus(boolean enable) setTrackFocus(true)} */public  final void setTrackFocus()  {
+    setTrackFocus(true);
+  }
+  /**
+  
+  Returns whether tracking of client-side focus is enabled. 
+          
+  <p>
+  
+  @see WApplication#setTrackFocus(boolean enable)
+  
+  
+          
+  */
+  public boolean isTrackFocus() {
+  return   this.trackFocus_;
+  }
+  /**
+  
+  {@link Signal} that is emitted when an element receives focus. 
+          
+  <p>
+  
+  This signal is emitted whenever an element in the application receives focus on the client side. This newly focused widget can be retrieved using {@link WApplication#getFocus() getFocus()} or {@link WApplication#getFocusedWidget() getFocusedWidget()}.
+  
+  <p>
+  For this signal to be emitted, tracking of client-side focus must be enabled using {@link WApplication#setTrackFocus(boolean enable) setTrackFocus()}.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you need to react to a specific widget being focused, consider connecting to WWebWidget::focused() signal instead.
+  </i></p>
+  
+  @see WApplication#setTrackFocus(boolean enable)
+  @see WApplication#elementBlurred()
+  @see WApplication#getFocus()
+  @see WApplication#getFocusedWidget()
+  
+  
+          
+  */
+  public Signal elementFocused() {
+  return   this.elementFocused_;
+  }
+  /**
+  
+  {@link Signal} that is emitted when an element loses focus. 
+          
+  <p>
+  
+  This signal is emitted whenever an element in the application loses focus on the client side.
+  
+  <p>
+  For this signal to be emitted, tracking of client-side focus must be enabled using {@link WApplication#setTrackFocus(boolean enable) setTrackFocus()}.
+  
+  <p>
+  
+  <p><i><b>Note: </b>If you need to react to a specific widget losing focus, consider connecting to {@link WWebWidget#blurred()} signal instead.
+  </i></p>
+  
+  @see WApplication#setTrackFocus(boolean enable)
+  @see WApplication#elementFocused()
+  @see WApplication#getFocus()
+  @see WApplication#getFocusedWidget()
+  @see WWebWidget#blurred()
+  
+  
+          
+  */
+  public Signal elementBlurred() {
+  return   this.elementBlurred_;
   }
   /**
   
@@ -3138,7 +3250,7 @@ if (   this.session_.isUseUglyInternalPaths()) {
 if (   this.domRoot2_ != null) { 
        this.domRoot2_.enableAjax ();
 } 
-   this.doJavaScript (  "Wt4_14_4.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
+   this.doJavaScript (  "Wt4_15_0.ajaxInternalPaths(" + WWebWidget.jsStringLiteral (  this.resolveRelativeUrl ( this.getBookmarkUrl("/"))) + ");");
 if (   this.visibilityState_ !=  this.getEnvironment().getVisibilityState()) {  
     this.visibilityState_ =  this.getEnvironment().getVisibilityState();
   this.visibilityChanged_.trigger(  this.visibilityState_);
@@ -3315,6 +3427,10 @@ if (   this.visibilityState_ !=  this.getEnvironment().getVisibilityState()) {
   private WWidget focusedWidget_ ;
   private int selectionStart_ ;
   private int selectionEnd_ ;
+  private boolean trackFocus_ ;
+   JSignal focusChanged_ ;
+  private Signal elementFocused_ ;
+  private Signal elementBlurred_ ;
   private LayoutDirection layoutDirection_ ;
   private HashMap<String, String> htmlAttributes_ ;
   private HashMap<String, String> bodyAttributes_ ;
@@ -3349,7 +3465,6 @@ if (   this.visibilityState_ !=  this.getEnvironment().getVisibilityState()) {
   private JSignal1<String> visibilityChangedJs_ ;
   private JSignal unloaded_ ;
   private JSignal idleTimeout_ ;
-   Signal focusChanged_ ;
   private Map<String, String> addedCookies_ ;
   public String  findAddedCookies(final String name) {
    String  i =  this.addedCookies_.get(name);
@@ -3435,15 +3550,19 @@ logger.debug(new StringWriter().append("removeExposedSignal: ").append(s).toStri
     return     appUrl + conf.getBotResourcesPath() + "/" + Utils.urlEncode ( resource.getBotResourceId()) + fn;
   }
   else  {
+     WebSession.SessionOption sessionOption =WebSession.SessionOption.UseWeakSessionId;
+    if (!   this.getEnvironment().getServer().isWeakSessionIdEnabled()) {
+      sessionOption = WebSession.SessionOption.UseSessionId;
+}
     if ( resource.getInternalPath().length()==0) {
-      return        this.session_.getMostRelativeUrl(fn, true) + "&request=resource&resource=" + Utils.urlEncode ( resource.getId()) + "&ver=" + String.valueOf( resource.getVersion());
+      return        this.session_.getMostRelativeUrl(fn, true, sessionOption) + "&request=resource&resource=" + Utils.urlEncode ( resource.getId()) + "&ver=" + String.valueOf( resource.getVersion());
     }
     else  { 
       fn=    resource.getInternalPath() + fn;
 if (    this.session_.getApplicationName().length()!=0 &&  fn.charAt(0) != '/') { 
         fn=   '/' + fn;
 }
-      return    this.session_.getMostRelativeUrl(fn, true);
+      return    this.session_.getMostRelativeUrl(fn, true, sessionOption);
     }
   }
   }
@@ -3549,7 +3668,7 @@ if (!   this.internalPathValid_) {
   for ( int i =    this.javaScriptPreamble_.size () -   this.newJavaScriptPreamble_; 
   i <    this.javaScriptPreamble_.size ();++ i) {
      final WJavaScriptPreamble preamble =  this.javaScriptPreamble_.get(i);
-     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_14_4";
+     String scope  =    preamble.scope == JavaScriptScope.ApplicationScope?  this.getJavaScriptClass(): "Wt4_15_0";
     if (  preamble.type == JavaScriptObjectType.JavaScriptFunction) {
       out.append(scope).append('.').append(  preamble.name).append(" = function() { return (").append(  preamble.src).append(").apply(").append(scope).append(", arguments) };\n");
 }
@@ -3619,6 +3738,16 @@ if (!   this.internalPathValid_) {
    void setFocusedWidget(WWidget  widget) {
     this.focusedWidget_ = widget;
 }
+  private void onFocusChange() {
+  if (  this.trackFocus_) {
+    if ( this.getFocus().length()==0) {
+        this.elementBlurred_.trigger();
+}
+    else  {
+        this.elementFocused_.trigger();
+}
+  }
+  }
   private WLocalizedStrings  getLocalizedStringsPack() {
   return   this.localizedStrings_;
   }

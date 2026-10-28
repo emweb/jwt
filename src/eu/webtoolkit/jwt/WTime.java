@@ -22,10 +22,10 @@ public class WTime {
 
 	/**
 	 * Construct a time given hour, minutes.
-	 * 
+	 *
 	 * @param minutes a range 0-59 A duration can be positive or negative depending on the
 	 * sign of @param hours.
-	 * 
+	 *
 	 * When the time is invalid, isValid() is set to false.
 	 */
 	public WTime(int hours, int minutes) {
@@ -34,10 +34,10 @@ public class WTime {
 
 	/**
 	 * Construct a time given hour, minutes, seconds.
-	 * 
+	 *
 	 * minutes and seconds have range 0-59 A duration can be positive or negative depending
 	 * on the sign of hour.
-	 * 
+	 *
 	 * When the time is invalid, isValid() is set to false.
 	 */
 	public WTime(int h, int m, int s) {
@@ -46,10 +46,10 @@ public class WTime {
 
 	/**
 	 * Construct a time given hour, minutes, seconds, and milliseconds.
-	 * 
+	 *
 	 * m and s have range 0-59, and ms has range 0-999. A duration can be
 	 * positive or negative depending on the sign of h.
-	 * 
+	 *
 	 * When the time is invalid, isValid() is set to false.
 	 */
 	public WTime(int h, int m, int s, int ms) {
@@ -58,7 +58,7 @@ public class WTime {
 
 	/**
 	 * Create time from a number of milliseconds since the EPOCH.
-	 * 
+	 *
 	 * @param ms
 	 */
 	public WTime(long ms) {
@@ -68,7 +68,7 @@ public class WTime {
 
 	/**
 	 * Sets the time.
-	 * 
+	 *
 	 * m and s have range 0-59, and ms has range 0-999. When the time is
 	 * invalid, isValid() is set to false.
 	 */
@@ -161,7 +161,7 @@ public class WTime {
 
 	/**
 	 * Parses a string to a time using a default format.
-	 * 
+	 *
 	 * The default format is "HH:mm:ss". For example, a time specified as:
 	 * "22:55:15" will be parsed as a time that equals a time constructed as:
 	 * WTime d(22,55,15); When the time could not be parsed or is not valid, an
@@ -173,11 +173,11 @@ public class WTime {
 
 	/**
 	 * Parses a string to a time using a specified format.
-	 * 
+	 *
 	 * The format follows the same syntax as used by toString(String format).
 	 * When the time could not be parsed or is not valid, an invalid
 	 * time is returned (for which isValid() returns false).
-	 * 
+	 *
 	 * @see #toString()
 	 */
 	public static WTime fromString(String text, String format) {
@@ -190,13 +190,13 @@ public class WTime {
 				return new WDate(d).getTime();
 		} catch (ParseException e) {
 		}
-		
+
 		return null;
 	}
 
 	/**
 	 * Formats this time to a string using a specified format.
-	 * 
+	 *
 	 * @see java.text.SimpleDateFormat
 	 */
 	public String toString(String format) {
@@ -206,7 +206,7 @@ public class WTime {
 
 	/**
 	 * Reports the current local server time.
-	 * 
+	 *
 	 * This method returns the time as indicated by the server clock.
 	 */
 	public static WTime getCurrentServerTime() {
@@ -215,14 +215,14 @@ public class WTime {
 
 	/**
 	 * Reports the current local client time.
-	 * 
+	 *
 	 * This method uses browser information to retrieve the date that is
 	 * configured in the client.
 	 */
 	public static WTime getCurrentTime() {
 		return WDate.getCurrentDate().getTime();
 	}
-	
+
 	/**
 	 * Returns the string format of the time using the default format
 	 */
@@ -240,74 +240,82 @@ public class WTime {
 	static boolean usesAmPm(String format) {
 		return format.indexOf('a') != -1;
 	}
-	
+
 	/**
 	 * Converts the format to a regular expression
-	 * 
+	 *
 	 * The Format can contains characters with special meaning (@see
 	 * #toString(String)) Any other text is kept literally. String content
 	 * between single quotes (') are not interpreted as special codes. Inside a
 	 * string, a literal quote may be specified using two single quotes ('').
-	 * 
+	 *
 	 * @see #toString(String);
 	 */
 	public static RegExpInfo formatToRegExp(String format) {
 
-		RegExpInfo result = new RegExpInfo();
+		WDate.RegExpInfo result = new WDate.RegExpInfo();
 		String f = format;
-		int currentGroup = 1;
+		result.currentGroup = 1;
 
 		result.hourGetJS = "return 1";
 		result.minuteGetJS = "return 1";
 		result.secGetJS = "return 1";
 		result.msecGetJS = "return 1";
-		
+
 		result.regexp = "";
-		
+
 		boolean inQuote = false;
 
-		for (int i = 0; i < f.length(); ++i) {
-			if (inQuote && f.charAt(i) != '\'') {
-				i = processChar(result, f, i);
+		for (result.index = 0; result.index < f.length(); ++result.index) {
+			if (inQuote && f.charAt(result.index) != '\'') {
+				result.index = processChar(result, f, result.index);
 				continue;
 			}
 
-			switch (f.charAt(i)) {
+			switch (f.charAt(result.index)) {
 			case '\'':
-				if (i < f.length() - 2 && f.charAt(i + 1) == f.charAt(i + 2)
-						&& f.charAt(i + 1) == '\'')
-					result.regexp += f.charAt(i);
+				if (result.index < f.length() - 2 &&
+						f.charAt(result.index + 1) == f.charAt(result.index + 2)
+						&& f.charAt(result.index + 1) == '\'')
+					result.regexp += f.charAt(result.index);
 				else
 					inQuote = !inQuote;
+				break;
 			case 'h':
 			case 'H':
-				i = formatHourToRegExp(result, f, i, currentGroup++);
+				DateTimeRegexFormatter.formatHourToRegex(result, f);
 				break;
 			case 'm':
-				i = formatMinuteToRegExp(result, f, i, currentGroup++);
+				DateTimeRegexFormatter.formatMinuteToRegex(result, f);
 				break;
 			case 's':
-				i = formatSecondToRegExp(result, f, i, currentGroup++);
+				DateTimeRegexFormatter.formatSecondToRegex(result, f);
 				break;
 			case 'S':
-				i = formatMSecondToRegExp(result, f, i, currentGroup++);
+				DateTimeRegexFormatter.formatMSecondToRegex(result, f);
 				break;
 			case 'Z':
 				result.regexp += "([+-][0-9]{4})";
 				break;
 			case 'a':
-				i = formatAPToRegExp(result, f, i);
+				DateTimeRegexFormatter.formatAPToRegex(result, f);
 				break;
 			default:
-				i = processChar(result, f, i);
+				result.index = processChar(result, f, result.index);
 				break;
 			}
 		}
-		
-		return result;
+
+		RegExpInfo res = new RegExpInfo();
+		res.regexp = result.regexp;
+		res.hourGetJS = result.hourGetJS;
+		res.minuteGetJS = result.minuteGetJS;
+		res.secGetJS = result.secGetJS;
+		res.msecGetJS = result.msecGetJS;
+		return res;
 	}
 
-	private static int processChar(RegExpInfo result, String format, int i) {
+	private static int processChar(WDate.RegExpInfo result, String format, int i) {
 		switch (format.charAt(i)) {
 		case '.':
 		case '+':
@@ -329,119 +337,6 @@ public class WTime {
 		return i;
 	}
 
-	private static int formatMSecondToRegExp(RegExpInfo result, String format,
-			int i, int currentGroup) {
-		Character next = null;
-		String sf = "";
-		sf += format.charAt(i);
-		for (int k = 0; k < 2; ++k) {
-			if (i < format.length() - 1)
-				next = format.charAt(i + 1);
-
-			if (next != null && next == 'S') {
-				sf += "S";
-				next = null;
-				i++;
-			} else {
-				next = null;
-				break;
-			}
-		}
-
-		if (sf.equals("S")) /* The Ms without trailing 0 */
-			result.regexp += "(0|[1-9][0-9]{0,2})";
-		else if (sf.equals("SSS"))
-			result.regexp += "([0-9]{3})";
-		
-		result.msecGetJS = "return parseInt(results[" + Integer.toString(currentGroup) + "], 10);";
-
-		return i;
-	}
-
-	private static int formatSecondToRegExp(RegExpInfo result, String format,
-			int i, int currentGroup) {
-		Character next = null;
-		String sf = null;
-		if (i < format.length() - 1)
-			next = format.charAt(i + 1);
-
-		if (next != null && next == 's') {
-			sf = "ss";
-			i++;
-		} else {
-			sf = "s";
-			next = null;
-		}
-
-		if (sf == "s") /* Seconds without leading 0 */
-			result.regexp += "(0|[1-5]?[0-9])";
-		else
-			/* Seconds with leading 0 */
-			result.regexp += "([0-5][0-9])";
-		
-		result.secGetJS = "return parseInt(results[" + Integer.toString(currentGroup) + "], 10);";
-		return i;
-	}
-
-	private static int formatMinuteToRegExp(RegExpInfo result, String format,
-			int i, int currentGroup) {
-		Character next = null;
-		String sf = null;
-		if (i < format.length() - 1)
-			next = format.charAt(i + 1);
-
-		if (next != null && next == 'm') {
-			sf = "mm";
-			i++;
-		} else {
-			sf = "m";
-			next = null;
-		}
-
-		if (sf == "m") /* Minutes without leading 0 */
-			result.regexp += "(0|[1-5]?[0-9])";
-		else
-			/* Minutes with leading 0 */
-			result.regexp += "([0-5][0-9])";
-		
-		result.minuteGetJS = "return parseInt(results[" + Integer.toString(currentGroup) + "], 10);";
-		return i;
-	}
-
-	private static int formatHourToRegExp(RegExpInfo result, String format,
-			int i, int currentGroup) {
-		/* Possible values */
-		/* h, hh, H, HH */
-		Character next = null;
-		String sf = "";
-		sf += format.charAt(i);
-
-		if (i < format.length() - 1)
-			next = format.charAt(i + 1);
-
-		if (next != null && next == 'h' || next == 'H') {
-			sf += next;
-			i++;
-		}
-
-		if (sf.equals("HH")) { // Hour with leading 0 0-23
-			result.regexp += "(([0-1][0-9])|([2][0-3]))";
-		} else if (sf.equals("hh")) { // Hour with leading 0 01-12
-			result.regexp += "(0[1-9]|[1][0-2])";
-		} else if (sf.equals("H")) { // Hour without leading 0 0-23
-			result.regexp += "([0-9]|[1][0-9]|2[0-3])";
-		} else if (sf.equals("h")) { // Hour without leading 0 1-12
-			result.regexp += "([1-9]|1[012])";
-		}
-		result.hourGetJS = "return parseInt(results[" + Integer.toString(currentGroup) + "], 10);";
-		return i;
-	}
-
-	private static int formatAPToRegExp(RegExpInfo result, String format, int i) {
-		result.regexp += "([AP]M)";
-		return i;
-	}
-	
 	/**
 	 * Compares current time to given time
 	 * @return true when current time is earlier than given time
@@ -449,7 +344,7 @@ public class WTime {
 	public boolean before(WTime t) {
 		return this.time_ < t.time_;
 	}
-	
+
 	/**
 	 * Compares current time to given time
 	 * @return true when current time is later than given time
@@ -457,7 +352,7 @@ public class WTime {
 	public boolean after(WTime t) {
 		return this.time_ > t.time_;
 	}
-	
+
 	/**
 	 * Compares current time to given time
 	 * @return true when times are equal
@@ -465,7 +360,7 @@ public class WTime {
 	public boolean equals(WTime t) {
 		return this.time_ == t.time_;
 	}
-	
+
 	/**
 	 * Compares current time to given time
 	 * @return true when current time is earlier than or equal to given time
@@ -473,7 +368,7 @@ public class WTime {
 	public boolean beforeOrEquals(WTime t) {
 		return (this.equals(t) || this.before(t));
 	}
-	
+
 	private boolean valid_;
 	private long time_;
 }

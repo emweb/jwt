@@ -67,7 +67,7 @@ public class StringUtils {
 																				// trailing
 		FLOAT_PATTERN = Pattern.compile("^\\s*" + fpRegex);
 	}
-	
+
 	/**
 	 * Convert an object to a {@link WString}.
 	 */
@@ -87,10 +87,10 @@ public class StringUtils {
 
 	/**
 	 * Convert an object to a {@link WString}.
-	 * 
-	 * If the object is a {@link WDate}, 
+	 *
+	 * If the object is a {@link WDate},
 	 * it is formatted with the format String.
-	 * 
+	 *
 	 * If the object is numeric, then the format string is interpreted as a DecimalFormat
 	 * format.
 	 */
@@ -143,7 +143,7 @@ public class StringUtils {
 			throw new WtException("WAbstractItemModel: unsupported type "
 					+ data.getClass().getName());
 	}
-	
+
 	public static String replaceAll(String str, String pattern, String replace) {
 		int s = 0;
 		int e = 0;
@@ -156,13 +156,13 @@ public class StringUtils {
 		result.append(str.substring(s));
 		return result.toString();
 	}
-	
+
 	static String replaceAll(final String string, final String charsToChange, String[] newSubstrings) {
 		boolean changed = false;
 		StringBuffer sb = new StringBuffer(string.length());
 
 		assert charsToChange.length() == newSubstrings.length;
-		
+
 		for (int i = 0; i < string.length(); i++) {
 			for (int j = 0; j < charsToChange.length(); j++) {
 				if (string.charAt(i) == charsToChange.charAt(j)) {
@@ -260,6 +260,21 @@ public class StringUtils {
 		return -1;
 	}
 
+	static final int strrpbrk(char[] srcArray, int startPos, char[] matchesArray) {
+		int matchesL = matchesArray.length;
+		int srcL = srcArray.length;
+		for (int i = Math.min(startPos, srcL - 1); i >= 0; i--) {
+			char c = srcArray[i];
+			for (int j = 0; j < matchesL ; j++) {
+				if (c == matchesArray[j]) {
+					return i;
+				}
+			}
+		}
+
+		return -1;
+	}
+
 	static String addWord(String s, String w) {
 		if (s.length() == 0)
 			return w;
@@ -281,6 +296,17 @@ public class StringUtils {
 			return s;
 	}
 
+	static String erase(String s, int pos) {
+		return s.substring(0, Math.min(pos, s.length()));
+	}
+
+	static String erase(String s, int pos, int len) {
+		if (pos >= s.length()) {
+			return s;
+		}
+		return s.substring(0, pos) + s.substring(Math.min(pos + len, s.length()));
+	}
+
 	static boolean startsWithIgnoreCase(String name, String string) {
 		return name.toLowerCase().startsWith(string.toLowerCase());
 	}
@@ -288,7 +314,7 @@ public class StringUtils {
 	static boolean containsIgnoreCase(String value, String string) {
 		return value.toLowerCase().contains(string.toLowerCase());
 	}
-	
+
     static String trimLeft(String s) {
         int start = 0;
         while (start < s.length()) {
@@ -299,12 +325,27 @@ public class StringUtils {
         }
         return s.substring(start);
     }
-    
+
+	public static int findFirstOf(String text, String chars) {
+		return findFirstOf(text, chars, 0);
+	}
+
 	public static int findFirstOf(String text, String chars, int pos) {
 		char[] textA = text.toCharArray();
 		char[] charsA = chars.toCharArray();
-		
+
 		return strpbrk(textA, pos, charsA);
+	}
+
+	public static int findLastOf(String text, String chars) {
+		return findLastOf(text, chars, text.length() - 1);
+	}
+
+	public static int findLastOf(String text, String chars, int pos) {
+		char[] textA = text.toCharArray();
+		char[] charsA = chars.toCharArray();
+
+		return strrpbrk(textA, pos, charsA);
 	}
 
 	static boolean isValidUnicode(char c) {
@@ -312,13 +353,13 @@ public class StringUtils {
 				|| ((c >= 0x20) && (c <= 0xD7FF))
 				|| ((c >= 0xE000) && (c <= 0xFFFD)) || ((c >= 0x10000) && (c <= 0x10FFFF)));
 	}
-	
+
 	static void sanitizeUnicode(EscapeOStream sout, String text) {
 		for (int i = 0; i < text.length(); i++) {
 			char c = text.charAt(i);
 		      if (isValidUnicode(c))
 		    	  sout.append(c);
-		      else 
+		      else
 		    	  sout.append(0xFFFD);
 		}
 	}
@@ -349,18 +390,18 @@ public class StringUtils {
 		List<String> expanded = new ArrayList<String>();
 
 		StringBuffer localeBuffer = new StringBuffer(locale);
-		
+
 		while (localeBuffer.length() != 0) {
 			expanded.add(bundleName + "_" + localeBuffer.toString());
-			
+
 			int index = localeBuffer.lastIndexOf("_");
 			if (index == -1)
 				index = 0;
-			
+
 			localeBuffer.delete(index, localeBuffer.length());
 		}
 		expanded.add(bundleName);
-		
+
 		return expanded;
 	}
 
@@ -370,7 +411,7 @@ public class StringUtils {
 		  else
 		    return s;
 	}
-	
+
 	public static String prepend(String s, char c) {
 		if (s.length() == 0 || s.charAt(0) != c)
 		    return c + s;
@@ -381,7 +422,7 @@ public class StringUtils {
 	static WString formatFloat(WString format, double value) {
 		return new WString(String.format(format.toString(), value));
 	}
-	
+
 	static String asJSLiteral(Object v, TextFormat textFormat) {
 		if (v.getClass().equals(WString.class)) {
 			WString s = (WString) v;
@@ -427,7 +468,7 @@ public class StringUtils {
 			return "'" + v.toString() + "'";
 		}
 	}
-	
+
 	static String urlEncode(String url) {
 		return DomElement.urlEncodeS(url);
 	}
@@ -440,7 +481,7 @@ public class StringUtils {
 		// This implements RFC 5987
 		return fieldname + "*=UTF-8''" + StringUtils.urlEncode(fieldValue);
 	}
-	
+
 	private final static char base64Array [] = {
 	      'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
 	      'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
@@ -494,7 +535,7 @@ public class StringUtils {
 	         break;
 	       }
 	    }
-	    
+
 	    return encodedString;
 	}
 

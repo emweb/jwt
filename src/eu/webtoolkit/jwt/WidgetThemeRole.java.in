@@ -48,6 +48,7 @@ public class WidgetThemeRole {
   public final static int DatePickerIcon = 401;
   public final static int TimePickerPopup = 410;
   public final static int TimePickerPopupContent = 411;
+  public final static int DateTimePickerPopup = 420;
   public final static int PanelTitleBar = 500;
   public final static int PanelCollapseButton = 501;
   public final static int PanelTitle = 502;

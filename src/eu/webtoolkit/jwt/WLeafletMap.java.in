@@ -2218,7 +2218,7 @@ if ( leafletJSURL.length()!=0 && leafletCSSURL.length()!=0) {
  String optionsStr  =   this.options_.toString();
    StringBuilder ss  = new StringBuilder();
    EscapeOStream es  = new EscapeOStream(ss);
-  es.append("new Wt4_14_4.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
+  es.append("new Wt4_15_0.WLeafletMap(").append( app.getJavaScriptClass()).append(",").append( this.getJsRef()).append(",'");
  es.pushEscape (EscapeOStream.RuleSet.JsStringLiteralSQuote);
 es.append(optionsStr);
  es.popEscape ();
@@ -2487,6 +2487,11 @@ if ( parentContainer != null) parentContainer.addWidget (this);
     }
      DomElementType getDomElementType() {
     return DomElementType.DIV;
+    }
+    protected DomElement  createDomElement(WApplication  app) {
+     DomElement  element =  super.createDomElement (app);
+    ResizeSensor.applyIfNeeded (this);
+return element;
     }
   }
 }

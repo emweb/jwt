@@ -79,6 +79,7 @@ public abstract class AbstractMfaProcess extends WObject {
   this.baseAuth_ = authService;
   this.users_ = users;
   this.login_ = login;
+  this.altLogin_ = null;
   this.mfaThrottle_ = null;
   }
   /**
@@ -161,6 +162,35 @@ return ;
   public void setMfaThrottle(AuthThrottle authThrottle) { 
     this.mfaThrottle_=  authThrottle;
 }
+  /**
+  
+  Sets an alternative login instance. 
+          
+  <p>
+  
+  This changes the login instance used by the MFA process (the one returned by {@link AbstractMfaProcess#getLogin() getLogin()}). Setting this to nullptr will revert to using the original login instance. 
+          
+  */
+  public void setAlternativeLogin(Login  altLogin) {  
+  this.altLogin_ = altLogin;
+}
+  /**
+  
+  Returns the alternative login instance. 
+          
+  <p>
+  
+  This returns the login instance that has been set as an alternative for the MFA process, or <code>null</code> if none has been set.
+  
+  <p>
+  @see AbstractMfaProcess#setAlternativeLogin(Login  altLogin)
+  
+  
+          
+  */
+  public Login  getAlternativeLogin() {
+  return   this.altLogin_;
+  }
   /**
   
   Retrieves the current {@link User}&apos;s identity for the provider. 
@@ -412,8 +442,22 @@ return cookie;
   protected AbstractUserDatabase getUsers() {
   return   this.users_;
   }
+  /**
+  
+  Returns the login instance used by the MFA process. 
+          
+  <p>
+  
+  This returns the alternative login instance if one has been set, otherwise it returns the login instance set during construction.
+  
+  <p>
+  @see AbstractMfaProcess#setAlternativeLogin(Login  altLogin)
+  
+  
+          
+  */
   protected Login getLogin() {
-  return   this.login_;
+  return     this.altLogin_ != null?    this.altLogin_:   this.login_;
   }
   protected int throttlingDelay_ ;
   protected AuthThrottle  getMfaThrottle() {
@@ -422,5 +466,6 @@ return cookie;
   private final AuthService baseAuth_ ;
   private final AbstractUserDatabase users_ ;
   private final Login login_ ;
+  private Login  altLogin_ ;
   private AuthThrottle mfaThrottle_ ;
 }

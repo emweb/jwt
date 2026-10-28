@@ -11,7 +11,7 @@
   dd p { margin-top: 0px; }
   dd div { margin: 10px 0px; }
 </style>
-<title>JWt 4.14.4</title>
+<title>JWt 4.15.0</title>
 </head>
 <body>
 
@@ -25,13 +25,191 @@ newer version of JWt. It lists changes in the library that may break
 the way you build JWt, the way you configure JWt or the JWt API and
 behaviour. It also indicates the main changes from version to version.
 
-<h2>Release 4.14.4 (October 1, 2026)</h2>
+<h2>Release 4.15.0 (October 28, 2026)</h2>
 
-<p>Wt 4.14.4 is a patch release that addresses the following issue:</p>
+<dl class="section note">
+  <dt><strong>Vulnerability</strong></dt>
+  <dd>
+    Fixed the possibility to skip MFA when logging in via the register popup of the
+    <a href="eu/webtoolkit/jwt/auth/AuthWidget.html" target="_blank">auth.AuthWidget</a> when registration is enabled (this is not the default). See
+    <a href="https://redmine.emweb.be/issues/14874" target="_blank">Issue #14874</a> for more details.
+    <br/>
+    We recommend anyone relying on MFA in jwt-auth to upgrade live deployments of his application to the latest version, or to disable
+    registration via the
+    <a href="eu/webtoolkit/jwt/auth/AuthWidget.html#setRegistrationEnabled(boolean)" target="_blank">auth.AuthWidget.setRegistrationEnabled()</a>.
+    <br/>
+    Another option is to override the registration model in the
+    <a href="eu/webtoolkit/jwt/auth/AuthWidget.html" target="_blank">auth.AuthWidget</a> and
+    <a href="eu/webtoolkit/jwt/auth/RegistrationModel.html" target="_blank">auth.RegistrationModel</a> to ensure MFA cannot be bypassed.
+
+    For instance, this can be done by ensuring that
+    <a href="eu/webtoolkit/jwt/auth/AuthWidget.html#getCreateRegistrationModel()" target="_blank">auth.AuthWidget.getCreateRegistrationModel()</a> returns a
+    <a href="eu/webtoolkit/jwt/auth/RegistrationModel.html" target="_blank">auth.RegistrationModel</a> for which
+    <a href="eu/webtoolkit/jwt/auth/RegistrationModel.html#getConfirmIsExistingUser()" target="_blank">auth.RegistrationModel.getConfirmIsExistingUser()</a>
+    never returns
+    <a href="eu/webtoolkit/jwt/auth/IdentityConfirmationMethod.html#ConfirmWithPassword" target="_blank">auth.IdentityConfirmationMethod.ConfirmWithPassword</a>.
+  </dd>
+</dl>
+
+<p>
+  <strong>IMPORTANT:</strong> By default, JWt will now use the Jakarta Servlet API instead of the javax Servlet API.
+  If your application still relies on the javax Servlet API, you will need to explicitly set the CLASSIFIER to `javax`
+  when calling the Makefile.
+</p>
+
+<p>JWt 4.15.0 is a major release that introduces the following new features:</p>
 
 <ul>
   <li>
-    <a href="https://redmine.emweb.be/issues/14635" target="_blank">Issue #14635</a>
+    <a href="https://redmine.webtoolkit.eu/issues/8759" target="_blank">Issue #8759</a>:
+    added
+    <a href="eu/webtoolkit/jwt/WDateTimeEdit.html" target="_blank">WDateTimeEdit</a>.
+    This combines functionality used by
+    <a href="eu/webtoolkit/jwt/WDateEdit.html" target="_blank">WDateEdit</a> and
+    <a href="eu/webtoolkit/jwt/WTimeEdit.html" target="_blank">WTimeEdit</a>.
+
+    The native HTML5 input type for this widget is also supported, this being <code>&lt;input type="datetime-local"&gt;</code>.
+    You can enable it by setting
+    <a href="eu/webtoolkit/jwt/WDateTimeEdit.html#setNativeControl(boolean)" target="_blank">WDateTimeEdit.setNativeControl(true)</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14582" target="_blank">Issue #14582</a>:
+    added a way to reveal the password of a
+    <a href="eu/webtoolkit/jwt/WPasswordEdit.html" target="_blank">WPasswordEdit</a>. The text can be shown or hidden with
+    <a href="eu/webtoolkit/jwt/WPasswordEdit.html#setTextVisible(boolean)" target="_blank">WPasswordEdit.setTextVisible()</a>, and
+    <a href="eu/webtoolkit/jwt/WPasswordEdit.html#setRevealButtonEnabled(boolean)" target="_blank">WPasswordEdit.setRevealButtonEnabled()</a> adds an optional
+    button inside the field that lets the user toggle the visibility.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14162" target="_blank">Issue #14162</a>:
+    added support for the CSS content sizing keywords <code>fit-content</code>,
+    <code>max-content</code> and <code>min-content</code> to
+    <a href="eu/webtoolkit/jwt/WLength.html" target="_blank">WLength</a>. They are
+    available as
+    <a href="eu/webtoolkit/jwt/LengthUnit.html" target="_blank">LengthUnit</a>
+    values and can be parsed from a CSS string by the
+    <a href="eu/webtoolkit/jwt/WLength.html#&lt;init&gt;(java.lang.String)" target="_blank">WLength string constructor</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14163" target="_blank">Issue #14163</a>:
+    <a href="eu/webtoolkit/jwt/WBoxLayout.html" target="_blank">WBoxLayout</a>
+    (<a href="eu/webtoolkit/jwt/WHBoxLayout.html" target="_blank">WHBoxLayout</a> and
+    <a href="eu/webtoolkit/jwt/WVBoxLayout.html" target="_blank">WVBoxLayout</a>) now supports
+    resize handles through
+    <a href="eu/webtoolkit/jwt/WBoxLayout.html#setResizable(int,boolean,eu.webtoolkit.jwt.WLength)" target="_blank">setResizable()</a> when using the
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#Flex" target="_blank">LayoutImplementation.Flex</a>
+    implementation. Previously enabling a resize handle forced the layout to fall back to the
+    <a href="eu/webtoolkit/jwt/LayoutImplementation.html#JavaScript" target="_blank">LayoutImplementation.JavaScript</a>
+    implementation.
+  </li>
+</ul>
+
+<p>JWt 4.15.0 also fixes the following bugs:</p>
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14862" target="_blank">Issue #14862</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WLeafletMap.html" target="_blank">WLeafletMap</a>
+    not always showing the map correctly when inside a
+    <a href="eu/webtoolkit/jwt/WStackedWidget.html" target="_blank">WStackedWidget</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14701" target="_blank">Issue #14701</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WTextEdit.html" target="_blank">WTextEdit</a> not emitting
+    inherited focus, keyboard, mouse, touch, and input signals when interacting
+    with the editor.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14606" target="_blank">Issue #14606</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WMenuItem.html#setContents(eu.webtoolkit.jwt.WWidget,eu.webtoolkit.jwt.ContentLoading)" target="_blank">WMenuItem.setContents()</a>
+    changing the selected index of the
+    <a href="eu/webtoolkit/jwt/WMenu.html" target="_blank">WMenu</a>.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14758" target="_blank">Issue #14758</a>:
+    fixed a JavaScript exception when using the keyboard in a
+    <a href="eu/webtoolkit/jwt/WPopupMenu.html" target="_blank">WPopupMenu</a>
+    with the Bootstrap 5 theme, including pressing Escape in submenus.
+    Popup menus now use the <code>Wt-dropdown-menu</code> CSS class to keep
+    JWt keyboard handling independent of native Bootstrap dropdowns.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14594" target="_blank">Issue #14594</a>:
+    changing a
+    <a href="eu/webtoolkit/jwt/WTableView.html" target="_blank">WTableView</a> column's
+    alignment with
+    <a href="eu/webtoolkit/jwt/WAbstractItemView.html#setColumnAlignment(int,eu.webtoolkit.jwt.AlignmentFlag)" target="_blank">WAbstractItemView.setColumnAlignment()</a>
+    after the initial render now updates the displayed cells immediately.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14772" target="_blank">Issue #14772</a>:
+    fixed dynamically added CSS rules sometimes being written into another
+    style element in the document instead of JWt's own inline style sheet,
+    potentially preventing the application from rendering.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14730" target="_blank">Issue #14730</a>:
+    fixed
+    <a href="eu/webtoolkit/jwt/WDialog.html" target="_blank">WDialog</a> focus selection
+    skipping footer buttons and failing to provide a focus fallback. When no
+    other visible, enabled descendant accepts focus, the dialog now focuses
+    its close icon, which supports keyboard activation, or the dialog itself
+    if no close icon is available.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14916" target="_blank">Issue #14916</a>:
+    fixed a deadlock that could happen when the server was shutting down while an unload signal was being processed.
+  </li>
+</ul>
+
+<p>JWt 4.15.0 also comes with the following improvements:</p>
+
+<ul>
+  <li>
+     <a href="https://redmine.emweb.be/issues/14798" target="_blank">Issue #14798</a>:
+     deprecated the use of the javax Servlet API.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/7417" target="_blank">Issue #7417</a>:
+    HTML canvas rendering in
+    <a href="eu/webtoolkit/jwt/WPaintedWidget.html" target="_blank">WPaintedWidget</a>
+    now takes the browser's device pixel ratio into account. This makes painted
+    widgets, including charts, render more sharply on high-DPI displays.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14822" target="_blank">Issue #14822</a>:
+    Stop keeping track of focus changes on the server side by default as this was, most of the time,
+    unnecessary and did require additional client-server communication.
+
+    This can be re-enabled if needed with
+    <a href="eu/webtoolkit/jwt/WApplication.html#setTrackFocus(boolean)" target="_blank">WApplication.setTrackFocus()</a>, which
+    also enables the use of the new
+    <a href="eu/webtoolkit/jwt/WApplication.html#elementFocused()" target="_blank">WApplication.elementFocused()</a> and
+    <a href="eu/webtoolkit/jwt/WApplication.html#elementBlurred()" target="_blank">WApplication.elementBlurred()</a> signals.
+    Those 2 new signals are emitted when an element receives or loses focus on the client side, respectively.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14729" target="_blank">Issue #14729</a>:
+    moved the handling of the focus change when hiding or removing popups to the client side.
+  </li>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14709" target="_blank">Issue #14709</a>:
+    JWt now uses the browser's Beacon API to deliver the unload signal more
+    reliably when a page or tab is closed, and falls back to the previous
+    mechanism when the Beacon API is unavailable.
+  </li>
+</ul>
+
+
+<h2>Release 4.14.4 (October 1, 2026)</h2>
+
+<p>JWt 4.14.4 is a patch release that addresses the following issue:</p>
+
+<ul>
+  <li>
+    <a href="https://redmine.emweb.be/issues/14635" target="_blank">Issue #14635</a>:
     fixed
     <a href="eu/webtoolkit/jwt/WFormWidget.html#changed()" target="_blank">WFormWidget.changed()</a> signal sometimes being emitted
     a second time with incorrect informations when the form-data caching was enabled.

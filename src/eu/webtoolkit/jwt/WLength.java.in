@@ -28,7 +28,10 @@ A value class that describes a CSS length.
     
 <p>
 
-The class combines a value with a unit. There is a special value <i>auto</i> which has a different meaning depending on the context. 
+The class combines a value with a unit. There is a special value <i>auto</i> which has a different meaning depending on the context.
+
+<p>
+The keyword units {@link LengthUnit#FitContent}, {@link LengthUnit#MaxContent} and {@link LengthUnit#MinContent} have, like <i>auto</i>, no numeric component: the value of a length with such a unit is ignored. 
     
 */
 public class WLength {
@@ -83,7 +86,10 @@ public class WLength {
           
   <p>
   
-  This constructor is also used for the implicit conversion of a double to a {@link WLength}, assuming a pixel unit. 
+  This constructor is also used for the implicit conversion of a double to a {@link WLength}, assuming a pixel unit.
+  
+  <p>
+  For the keyword units ({@link LengthUnit#FitContent}, {@link LengthUnit#MaxContent} and {@link LengthUnit#MinContent}) the value is ignored and normalized to -1. 
           
   */
   public  WLength(double value, LengthUnit unit) {
@@ -97,6 +103,33 @@ public class WLength {
           
   <p>Calls {@link #WLength(double value, LengthUnit unit) this(value, LengthUnit.Pixel)} */public  WLength(double value)  {
     this(value, LengthUnit.Pixel);
+  }
+  /**
+  
+  Creates a length with a keyword unit. 
+          
+  <p>
+  
+  The length has no numeric component: {@link WLength#getValue() getValue()} is -1, as if constructed by parsing the bare keyword.
+  
+  <p>
+  This constructor is also used for the implicit conversion of a LengthUnit to a {@link WLength}.
+  
+  <p>
+  @exception {@link WException} 
+  if the unit is not one of the keyword units ({@link LengthUnit#FitContent}, {@link LengthUnit#MaxContent} or {@link LengthUnit#MinContent}), since all other units require a numeric value. 
+  
+  
+  
+          
+  */
+  public  WLength(LengthUnit unit) {
+  this.auto_ = false;
+  this.unit_ = unit;
+  this.value_ = - 1;
+  if (   unit != LengthUnit.FitContent &&  unit != LengthUnit.MaxContent &&  unit != LengthUnit.MinContent) {
+    throw new WException("WLength::WLength(LengthUnit): unit requires a numeric value");
+}
   }
   /**
   
@@ -119,6 +152,9 @@ public class WLength {
           
   <p>
   
+  This is -1 for the keyword units ({@link LengthUnit#FitContent}, {@link LengthUnit#MaxContent} and {@link LengthUnit#MinContent}).
+  
+  <p>
   @see WLength#getUnit()
   
   
@@ -151,7 +187,12 @@ public class WLength {
     return "auto";
   }
   else  {
-    return  String.valueOf(  this.value_) +   unitText[ (int)     this.unit_.getValue ()];
+    if (     this.unit_ == LengthUnit.FitContent ||    this.unit_ == LengthUnit.MaxContent ||    this.unit_ == LengthUnit.MinContent) {
+      return   unitText[ (int)     this.unit_.getValue ()];
+    }
+    else  {
+      return  String.valueOf(  this.value_) +   unitText[ (int)     this.unit_.getValue ()];
+    }
   }
   }
   /**
@@ -172,7 +213,7 @@ public class WLength {
   
   <p>
   
-  <p><i><b>Note: </b>For percentages ({@link LengthUnit#Percentage}), and units relative to viewport size ({@link LengthUnit#ViewportWidth}, {@link LengthUnit#ViewportHeight}, {@link LengthUnit#ViewportMin}, {@link LengthUnit#ViewportMax}), a percentage of the font size is used. 
+  <p><i><b>Note: </b>For percentages ({@link LengthUnit#Percentage}), and units relative to viewport size ({@link LengthUnit#ViewportWidth}, {@link LengthUnit#ViewportHeight}, {@link LengthUnit#ViewportMin}, {@link LengthUnit#ViewportMax}), a percentage of the font size is used. For the keyword units ({@link LengthUnit#FitContent}, {@link LengthUnit#MaxContent} and {@link LengthUnit#MinContent}), 0 is returned since the length depends on the content. 
   </i></p>
   
   
@@ -195,7 +236,12 @@ public class WLength {
           return     this.value_ * fontSize / 100.0;
         }
         else  {
-          return    this.value_ *   unitFactor[  (int)     this.unit_.getValue () - 2];
+          if (     this.unit_ == LengthUnit.FitContent ||    this.unit_ == LengthUnit.MaxContent ||    this.unit_ == LengthUnit.MinContent) {
+            return 0;
+          }
+          else  {
+            return    this.value_ *   unitFactor[  (int)     this.unit_.getValue () - 2];
+          }
         }
       }
     }
@@ -213,13 +259,30 @@ public class WLength {
   private double value_ ;
   private void setUnit(LengthUnit unit) {  
   this.unit_ = unit;
+if (     this.unit_ == LengthUnit.FitContent ||    this.unit_ == LengthUnit.MaxContent ||    this.unit_ == LengthUnit.MinContent) {  
+    this.value_ = - 1;
 }
+  }
   private void parseCssString(String  s) {  
   this.auto_ = false;
   this.unit_ = LengthUnit.Pixel;
   this.value_ = - 1;
-if ("auto".equals(s)) {  
+ String keyword  = s;
+  keyword = keyword.trim();
+if (keyword.equals("auto")) {  
     this.auto_ = true;
+return ;
+  }
+  if (keyword.equals("fit-content")) {  
+    this.unit_ = LengthUnit.FitContent;
+return ;
+  }
+  if (keyword.equals("max-content")) {  
+    this.unit_ = LengthUnit.MaxContent;
+return ;
+  }
+  if (keyword.equals("min-content")) {  
+    this.unit_ = LengthUnit.MinContent;
 return ;
   }
    String  end =null;
@@ -324,7 +387,10 @@ if (unit.equals("em")) {
     "vw",
     "vh",
     "vmin",
-    "vmax"
+    "vmax",
+    "fit-content",
+    "max-content",
+    "min-content"
   };
   private static final double pxPerPt = 4.0 / 3.0;
   private static double[] unitFactor = {

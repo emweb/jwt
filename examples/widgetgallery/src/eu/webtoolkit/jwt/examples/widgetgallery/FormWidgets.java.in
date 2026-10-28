@@ -158,6 +158,8 @@ return result;
   result.bindWidget ("DateEditNative", DateEditNative ());
   result.bindWidget ("TimeEdit", TimeEdit ());
   result.bindWidget ("TimeEditNative", TimeEditNative ());
+  result.bindWidget ("DateTimeEdit", DateTimeEdit ());
+  result.bindWidget ("DateTimeNativeEdit", DateTimeNativeEdit ());
 return result;
   }
   private WWidget passwordEdit() {
@@ -165,6 +167,7 @@ return result;
    result.bindWidget ("PasswordEditDefault", PasswordEditDefault ());
   result.bindWidget ("PasswordEditAutocomplete", PasswordEditAutocomplete ());
   result.bindWidget ("PasswordEditNative", PasswordEditNative ());
+  result.bindWidget ("PasswordEditReveal", PasswordEditReveal ());
 return result;
   }
   private WWidget inPlaceEdit() {
@@ -888,6 +891,136 @@ return form;
   );
 return form;
   }
+   WWidget DateTimeEdit() {
+   WTemplate form =new WTemplate(WString.tr ("dateTimeEdit-template")); 
+   form.addFunction ("id", WTemplate.Functions.id);
+  form.setCondition ("if:show-format", true);
+ final WDateTimeEdit  dte1 =new WDateTimeEdit(); 
+   form.bindWidget ("from", dte1);
+  dte1.setDateTime (WDate.getCurrentServerDate());
+  dte1.setFormat ("yyyy-MM-dd HH:mm");
+  form.bindString ("from-format",  dte1.getFormat());
+ final WDateTimeEdit  dte2 =new WDateTimeEdit(); 
+   form.bindWidget ("to", dte2);
+  dte2.setDateTime (WDate.getCurrentServerDate());
+  dte2.setFormat ("dd MM yyyy hh:mm:ss.SSS a");
+  form.bindString ("to-format",  dte2.getFormat());
+  dte2.setBottom ( dte1.getDateTime());
+ WPushButton  button =new WPushButton("Save"); 
+   form.bindWidget ("save", button);
+ final WText  out =new WText(); 
+   form.bindWidget ("out", out);
+  dte1.changed ().addListener(this,  () ->  {
+    if (   dte1.validate () == ValidationState.Valid) { 
+       out.setText ("DateTime 1 is changed.");
+  }
+  }
+  );
+  dte2.changed ().addListener(this,  () ->  {
+    if (   dte2.validate () == ValidationState.Valid) { 
+       out.setText ("DateTime 2 is changed.");
+  }
+  }
+  );
+  button.clicked ().addListener(this,  () ->  {
+    if (  dte1.getText().length()==0 ||  dte2.getText().length()==0) { 
+       out.setText ("You should enter two dates and times!");
+  }
+    else  {
+       long secs =  dte1.getDateTime().getTime().secsTo ( dte2.getDateTime().getTime());
+       int days = dte1.getDateTime().getDaysTo( dte2.getDateTime());
+      if (  days < 0 ||   days == 0 &&  secs < 0) { 
+         out.setText (new WString("You cannot rent a car for a negative amount of time."));
+  }
+      else  {
+        if ( days >= 1) { 
+           out.setText ( new WString("So, you want to rent a car for {1} day(s)?").arg (days));
+  }
+        else  {
+          if ( secs >  60 * 60) { 
+             out.setText ( new WString("So, you want you want to rent a car for {1} hour(s)?").arg ( secs / ( 60 * 60)));
+  }
+          else  {
+            if ( secs ==  60 * 60) { 
+               out.setText (new WString("So, you want to rent a car for a hour?"));
+  }
+            else  { 
+               out.setText (new WString("Sorry, you can't rent a car for less than a hour."));
+  }
+          }
+        }
+      }
+    }
+  }
+  );
+return form;
+  }
+   WWidget DateTimeNativeEdit() {
+   WTemplate form =new WTemplate(WString.tr ("dateTimeEdit-template")); 
+   form.addFunction ("id", WTemplate.Functions.id);
+  form.setCondition ("if:show-format", false);
+ final WDateTimeEdit  dte1 =new WDateTimeEdit(); 
+   form.bindWidget ("from", dte1);
+  dte1.setDateTime (WDate.getCurrentServerDate());
+  dte1.setFormat ("yyyy-MM-dd HH:mm");
+  dte1.setNativeControl (true);
+  form.bindString ("from-format",  dte1.getFormat());
+ final WDateTimeEdit  dte2 =new WDateTimeEdit(); 
+   form.bindWidget ("to", dte2);
+  dte2.setDateTime (WDate.getCurrentServerDate());
+  dte2.setNativeControl (true);
+  dte2.setFormat ("dd MM yyyy hh:mm:ss.SSS a");
+  form.bindString ("to-format",  dte2.getFormat());
+  dte2.setBottom ( dte1.getDateTime());
+ WPushButton  button =new WPushButton("Save"); 
+   form.bindWidget ("save", button);
+ final WText  out =new WText(); 
+   form.bindWidget ("out", out);
+  dte1.changed ().addListener(this,  () ->  {
+    if (   dte1.validate () == ValidationState.Valid) { 
+       out.setText ("DateTime 1 is changed.");
+  }
+  }
+  );
+  dte2.changed ().addListener(this,  () ->  {
+    if (   dte2.validate () == ValidationState.Valid) { 
+       out.setText ("DateTime 2 is changed.");
+  }
+  }
+  );
+  button.clicked ().addListener(this,  () ->  {
+    if (  dte1.getText().length()==0 ||  dte2.getText().length()==0) { 
+       out.setText ("You should enter two dates and times!");
+  }
+    else  {
+       long secs =  dte1.getDateTime().getTime().secsTo ( dte2.getDateTime().getTime());
+       int days = dte1.getDateTime().getDaysTo( dte2.getDateTime());
+      if (  days < 0 ||   days == 0 &&  secs < 0) { 
+         out.setText (new WString("You cannot rent a car for a negative amount of time."));
+  }
+      else  {
+        if ( days >= 1) { 
+           out.setText ( new WString("So, you want to rent a car for {1} day(s)?").arg (days));
+  }
+        else  {
+          if ( secs >  60 * 60) { 
+             out.setText ( new WString("So, you want you want to rent a car for {1} hour(s)?").arg ( secs / ( 60 * 60)));
+  }
+          else  {
+            if ( secs ==  60 * 60) { 
+               out.setText (new WString("So, you want to rent a car for a hour?"));
+  }
+            else  { 
+               out.setText (new WString("Sorry, you can't rent a car for less than a hour."));
+  }
+          }
+        }
+      }
+    }
+  }
+  );
+return form;
+  }
    WWidget PasswordEditDefault() {
    WTemplate form =new WTemplate(WString.tr ("passwordEditDefault-template")); 
    form.addFunction ("id", WTemplate.Functions.id);
@@ -952,6 +1085,27 @@ return form;
   psw.setPattern ("^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{1,}$");
   psw.setMinLength (5);
   psw.setToolTip ("Password should be at least of lenth 5 and contain an uppercase letter, a lowercase letter and a number.");
+return form;
+  }
+   WWidget PasswordEditReveal() {
+   WTemplate form =new WTemplate(WString.tr ("PasswordEditReveal-template")); 
+   form.addFunction ("id", WTemplate.Functions.id);
+ final WPasswordEdit  psw =new WPasswordEdit(); 
+   form.bindWidget ("password", psw);
+  psw.setPlaceholderText ("Enter a password");
+  psw.setAutoComplete (AutoCompleteMode.Off);
+  psw.setRevealButtonEnabled (true);
+ final WPushButton  toggle =new WPushButton("Show"); 
+   form.bindWidget ("toggle", toggle);
+  toggle.clicked ().addListener(this,  () ->  { 
+     psw.setTextVisible (!   psw.isTextVisible ());
+    toggle.setText (   psw.isTextVisible ()? "Hide": "Show");
+  }
+  );
+  psw.textVisibilityChanged ().addListener(this,  () ->  { 
+     toggle.setText (   psw.isTextVisible ()? "Hide": "Show");
+  }
+  );
 return form;
   }
    WWidget InPlaceEditButtons() {

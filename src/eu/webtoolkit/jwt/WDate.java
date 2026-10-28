@@ -40,6 +40,22 @@ public class WDate implements Comparable<WDate> {
 		public String yearGetJS;
 		public String dayGetJS;
 		public String monthGetJS;
+		public String hourGetJS;
+		public String minuteGetJS;
+		public String secGetJS;
+		public String msecGetJS;
+		public int index;
+		public int currentGroup;
+	}
+
+	static class FormatPair {
+		public String dateFormat;
+		public String timeFormat;
+
+		public FormatPair(String dateFormat, String timeFormat) {
+			this.dateFormat = dateFormat;
+			this.timeFormat = timeFormat;
+		}
 	}
 
 	enum Day {
@@ -121,6 +137,11 @@ public class WDate implements Comparable<WDate> {
 	 */
 	public WDate(Date date) {
 		d = date;
+	}
+
+	WDate(WDate date, WTime time) {
+		d = date.d;
+		setTime(time);
 	}
 
 	/**
@@ -799,7 +820,7 @@ public class WDate implements Comparable<WDate> {
 	static WDate.RegExpInfo formatToRegExp(String f) {
 		WDate.RegExpInfo result = new WDate.RegExpInfo();
 
-		int currentGroup = 1;
+		result.currentGroup = 1;
 
 		result.regexp = "";
 		result.dayGetJS = "1";
@@ -809,122 +830,175 @@ public class WDate implements Comparable<WDate> {
 		boolean inQuote = false;
 		boolean gotQuoteInQuote = false;
 
-		int d = 0, M = 0, y = 0;
-
-		for (int i = 0; i < f.length(); ++i) {
+		for (result.index = 0; result.index < f.length(); ++result.index) {
 			if (inQuote)
-				if (f.charAt(i) != '\'')
+				if (f.charAt(result.index) != '\'')
 					if (gotQuoteInQuote) {
 						gotQuoteInQuote = false;
 						inQuote = false;
 					} else
-						result.regexp += f.charAt(i);
+						result.regexp += f.charAt(result.index);
 				else if (gotQuoteInQuote) {
 					gotQuoteInQuote = false;
-					result.regexp += f.charAt(i);
+					result.regexp += f.charAt(result.index);
 				} else
 					gotQuoteInQuote = true;
 
 			if (!inQuote) {
-				switch (f.charAt(i)) {
+				switch (f.charAt(result.index)) {
 				case 'd':
-					if (d == 0) {
-						currentGroup = writeRegExpLast(result, d, M, y, f,
-								currentGroup);
-						d = M = y = 0;
-					}
-					++d;
+					DateTimeRegexFormatter.formatDayToRegex(result, f);
 					break;
 				case 'M':
-					if (M == 0) {
-						currentGroup = writeRegExpLast(result, d, M, y, f,
-								currentGroup);
-						d = M = y = 0;
-					}
-					++M;
+					DateTimeRegexFormatter.formatMonthToRegex(result, f);
 					break;
 				case 'y':
-					if (y == 0) {
-						currentGroup = writeRegExpLast(result, d, M, y, f,
-								currentGroup);
-						d = M = y = 0;
-					}
-					++y;
+					DateTimeRegexFormatter.formatYearToRegex(result, f);
 					break;
 				default:
-					currentGroup = writeRegExpLast(result, d, M, y, f,
-							currentGroup);
-					d = M = y = 0;
-					if (f.charAt(i) == '\'') {
+					DateTimeRegexFormatter.processChar(result, f);
+
+					if (f.charAt(result.index) == '\'') {
 						inQuote = true;
 						gotQuoteInQuote = false;
-					} else if ("/[\\^$.|?*+()".indexOf(f.charAt(i)) != -1)
-						result.regexp += "\\" + f.charAt(i);
-					else
-						result.regexp += f.charAt(i);
+					}
 				}
 			}
 		}
 
-		currentGroup = writeRegExpLast(result, d, M, y, f, currentGroup);
+		return result;
+	}
+
+	static WDate.RegExpInfo formatDateTimeToRegExp(String f) {
+		WDate.RegExpInfo result = new WDate.RegExpInfo();
+
+		result.currentGroup = 1;
+
+		result.regexp = "";
+
+		result.hourGetJS = "return 1;";
+		result.minuteGetJS = "return 0;";
+		result.secGetJS = "return 0;";
+		result.msecGetJS = "return 0;";
+
+		result.dayGetJS = "return 1;";
+		result.monthGetJS = "return 1;";
+		result.yearGetJS = "return 2000;";
+
+		boolean inQuote = false;
+		boolean gotQuoteInQuote = false;
+
+		for (result.index = 0; result.index < f.length(); ++result.index) {
+			if (inQuote)
+				if (f.charAt(result.index) != '\'')
+					if (gotQuoteInQuote) {
+						gotQuoteInQuote = false;
+						inQuote = false;
+					} else
+						result.regexp += f.charAt(result.index);
+				else if (gotQuoteInQuote) {
+					gotQuoteInQuote = false;
+					result.regexp += f.charAt(result.index);
+				} else
+					gotQuoteInQuote = true;
+
+			if (!inQuote) {
+				switch (f.charAt(result.index)) {
+				case 'h':
+				case 'H':
+					DateTimeRegexFormatter.formatHourToRegex(result, f);
+					break;
+				case 'm':
+					DateTimeRegexFormatter.formatMinuteToRegex(result, f);
+					break;
+				case 's':
+					DateTimeRegexFormatter.formatSecondToRegex(result, f);
+					break;
+				case 'S':
+					DateTimeRegexFormatter.formatMSecondToRegex(result, f);
+					break;
+				case 'a':
+				case 'A':
+					DateTimeRegexFormatter.formatAPToRegex(result, f);
+					break;
+				case 'd':
+					DateTimeRegexFormatter.formatDayToRegex(result, f);
+					break;
+				case 'M':
+					DateTimeRegexFormatter.formatMonthToRegex(result, f);
+					break;
+				case 'y':
+					DateTimeRegexFormatter.formatYearToRegex(result, f);
+					break;
+				case '\'':
+					inQuote = true;
+					break;
+				default:
+					DateTimeRegexFormatter.processChar(result, f);
+				}
+			}
+		}
 
 		return result;
 	}
 
-	private static int writeRegExpLast(RegExpInfo result, int d, int M, int y,
-			String format, int currentGroup) {
-		if (d != 0) {
-			switch (d) {
-			case 1:
-			case 2:
-				if (d == 1)
-					result.regexp += "(\\d{1,2})";
-				else
-					result.regexp += "(\\d{2})";
-				result.dayGetJS = "return parseInt(results["
-						+ String.valueOf(currentGroup++) + "], 10)";
-				break;
-			default:
-				fatalFormatRegExpError(format, d, "d's");
+	/**
+	 * Splits a date-time format into its date and time portions.
+	 */
+	public static FormatPair splitFormat(String format) {
+		String fullFormat = format.replace("Z", "");
+		String dateCharacters = "dMy";
+		String timeCharacters = "hHmszAaPp";
+
+		int firstDateFormatCharacter = StringUtils.findFirstOf(fullFormat, dateCharacters);
+		if (firstDateFormatCharacter == -1)
+			return new FormatPair("", fullFormat);
+
+		int firstTimeFormatCharacter = StringUtils.findFirstOf(fullFormat, timeCharacters);
+		if (firstTimeFormatCharacter == -1)
+			return new FormatPair(fullFormat, "");
+
+		int lastDateFormatCharacter = StringUtils.findLastOf(fullFormat, dateCharacters);
+		int lastTimeFormatCharacter = StringUtils.findLastOf(fullFormat, timeCharacters);
+
+		if ((firstDateFormatCharacter < firstTimeFormatCharacter
+				&& lastDateFormatCharacter < firstTimeFormatCharacter)
+				|| (firstTimeFormatCharacter < firstDateFormatCharacter
+				&& lastTimeFormatCharacter < firstDateFormatCharacter)) {
+			String dateFormat = fullFormat.substring(firstDateFormatCharacter,
+					Math.min(lastDateFormatCharacter + 1, fullFormat.length()));
+			String timeFormat = fullFormat.substring(firstTimeFormatCharacter,
+					Math.min(lastTimeFormatCharacter + 1, fullFormat.length()));
+			return new FormatPair(dateFormat, timeFormat);
+		}
+
+		StringBuilder dateFormat = new StringBuilder();
+		StringBuilder timeFormat = new StringBuilder();
+		boolean lastWriteWasDate = false;
+
+		for (int i = 0; i < fullFormat.length(); ++i) {
+			char formatCharacter = fullFormat.charAt(i);
+			boolean parsingDate = dateCharacters.indexOf(formatCharacter) != -1;
+			boolean parsingTime = timeCharacters.indexOf(formatCharacter) != -1;
+
+			if ((parsingDate && !parsingTime) || (!parsingTime && lastWriteWasDate)) {
+				dateFormat.append(formatCharacter);
+				lastWriteWasDate = true;
+			} else {
+				timeFormat.append(formatCharacter);
+				lastWriteWasDate = false;
 			}
 		}
 
-		if (M != 0) {
-			switch (M) {
-			case 1:
-			case 2:
-				if (M == 1)
-					result.regexp += "(\\d{1,2})";
-				else
-					result.regexp += "(\\d{2})";
-				result.monthGetJS = "return parseInt(results["
-						+ String.valueOf(currentGroup++) + "], 10)";
-				break;
-			default:
-				fatalFormatRegExpError(format, M, "M's");
-			}
-			M = 0;
-		}
+		int dateStart = StringUtils.findFirstOf(dateFormat.toString(), dateCharacters);
+		int dateEnd = StringUtils.findLastOf(dateFormat.toString(), dateCharacters);
+		String dateFormatStr = dateFormat.substring(dateStart, Math.min(dateEnd + 1, dateFormat.length()));
 
-		if (y != 0) {
-			switch (y) {
-			case 2:
-				result.regexp += "(\\d{2})";
-				result.yearGetJS = "var y=parseInt(results["
-						+ String.valueOf(currentGroup++)
-						+ "], 10);return y>38?1900+y:2000+y;";
-				break;
-			case 4:
-				result.regexp += "(\\d{4})";
-				result.yearGetJS = "return parseInt(results["
-						+ String.valueOf(currentGroup++) + "], 10)";
-				break;
-			default:
-				fatalFormatRegExpError(format, y, "y's");
-			}
-		}
+		int timeStart = StringUtils.findFirstOf(timeFormat.toString(), timeCharacters);
+		int timeEnd = StringUtils.findLastOf(timeFormat.toString(), timeCharacters);
+		String timeFormatStr = timeFormat.substring(timeStart, Math.min(timeEnd + 1, timeFormat.length()));
 
-		return currentGroup;
+		return new FormatPair(dateFormatStr, timeFormatStr);
 	}
 
 	/**

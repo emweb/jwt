@@ -27,17 +27,17 @@ PdfJet[http://pdfjet.com/] to your project.
 Building
 --------
 
-If you are using a Servlet with `javax.servlet` namespace, it can be as
+If you are using a Servlet with `jakarta.servlet` namespace, it can be as
 simple as:
 
     make all
     ant
 
-If you are using a Servlet with `jakarta.servlet` namespace, you will
+If you are using a Servlet with `javax.servlet` namespace, you will
 need to specify it as a parameter for make. Your make command will
 then look like this:
 
-    make CLASSIFIER=jakarta all
+    make CLASSIFIER=javax all
 
 Demos, examples
 ---------------
@@ -53,24 +53,24 @@ The ant build file has a separate target to generate maven pom files:
 
 To install the two artifacts in your local repository, do:
 
-    mvn install:install-file -Dfile=dist/jwt-4.14.4.jar -DpomFile=jwt-4.14.4.pom
-    mvn install:install-file -Dfile=dist/jwt-auth-4.14.4.jar -DpomFile=jwt-auth-4.14.4.pom
+    mvn install:install-file -Dfile=dist/jwt-4.15.0.jar -DpomFile=jwt-4.15.0.pom
+    mvn install:install-file -Dfile=dist/jwt-auth-4.15.0.jar -DpomFile=jwt-auth-4.15.0.pom
 
 The corresponding dependency blocks will depends on the Servlet
 namespace. Here is the what it will look like when using the
-`javax.servlet` namespace:
+`jakarta.servlet` namespace:
 
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>4.14.4</version>
-      <classifier>javax</classifier>
+      <version>4.15.0</version>
+      <classifier>jakarta</classifier>
     </dependency>
 
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>javax.servlet-api</artifactId>
-      <version>4.0.4</version>
+      <groupId>jakarta.servlet</groupId>
+      <artifactId>jakarta.servlet-api</artifactId>
+      <version>6.1.0</version>
       <scope>provided</scope>
     </dependency>
 
@@ -81,8 +81,8 @@ features you use
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt-auth</artifactId>
-      <version>4.14.4</version>
-      <classifier>javax</classifier>
+      <version>4.15.0</version>
+      <classifier>jakarta</classifier>
     </dependency>
 
     <!-- optional, for PDF Rendering -->

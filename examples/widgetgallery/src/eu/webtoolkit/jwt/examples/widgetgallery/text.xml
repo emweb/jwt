@@ -1518,6 +1518,36 @@
       </div>
   </message>
 
+  <message id="dateTimeEdit-template">
+    <p>When do you want to rent a car?</p>
+    <div class="row g-3">
+
+      <div class="row row-fluid col-sm-12 span7">
+        <div class="col-sm-3 span3">
+          <label class="form-label"  for="${id:from}">
+            From ${<if:show-format>}(format ${from-format})${</if:show-format>}
+          </label>
+          ${from}
+        </div>
+
+        <div class="col-sm-3 offset1 span3">
+          <label class="form-label" for="${id:to}">
+            To ${<if:show-format>}(format ${to-format})${</if:show-format>}
+          </label>
+          ${to}
+        </div>
+      </div>
+
+      <div class="col-sm-12 span12">
+        ${save}
+      </div>
+
+      <div class="col-sm-12 span12">
+        ${out class="help-block"}
+      </div>
+    </div>
+  </message>
+
   <message id="lineEdit-template">
     <div class="row form-horizontal">
       <div class="col-xs-10 col-md-6 col-xl-4 span4">
@@ -1994,6 +2024,33 @@
         ${src TimeEditNative}
     </fieldset>
     <p><a href="#date-entry">Top</a></p>
+
+    <h3 id="datetime-edit">Datetime entry using a datetime edit</h3>
+    <p>
+      The ${doc-link WDateTimeEdit} widget is a line edit with support for
+      datetime entry.
+    </p>
+
+    <fieldset class="example">
+        <legend>Example</legend>
+        ${DateTimeEdit}
+        ${src DateTimeEdit}
+    </fieldset>
+    <p><a href="#date-entry">Top</a></p>
+
+    <h3 id="datetimeNative-edit">Datetime entry using a native edit</h3>
+    <p>
+      The ${doc-link WDateTimeEdit} widget can be converted to a native datetime edit.
+      This essentially uses an input of the <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/datetime-local" target="_blank">type `datetime-local`</a>.
+      This will render a widget specific to the brower (and thus may look different on different browsers). This widget will always use the locale of the browser to format its content.
+    </p>
+
+    <fieldset class="example">
+        <legend>Example</legend>
+        ${DateTimeNativeEdit}
+        ${src DateTimeNativeEdit}
+    </fieldset>
+    <p><a href="#date-entry">Top</a></p>
   </message>
 
   <message id="forms-passwordEdit">
@@ -2038,6 +2095,17 @@
       regardless of whether nativeControl is set to <code>true</code> or
       <code>false</code>.
     </p>
+
+    <h3>Revealing the password</h3>
+    <p>
+      By default, the ${doc-link WPasswordEdit} widget hides the characters that
+      are typed into it. The method <code>setRevealButtonEnabled()</code> adds a
+      button inside the field with which the user can reveal the password. The
+      password can also be shown or hidden from the server side with the method
+      <code>setTextVisible()</code>.
+    </p>
+
+    ${block:basic-example PasswordEditReveal}
 
     <p><a href="#password">Top</a></p>
 
@@ -2101,6 +2169,20 @@
         <div class="login-form mt-2">
           <input type="submit" value="Register" />
         </div>
+      </div>
+    </form>
+  </message>
+
+  <message id="PasswordEditReveal-template">
+    <form action="" method="dialog" class="login-form">
+      <div>
+        <label class="form-label" for="${id:password}">
+          Password:
+        </label>
+        <div class="login-form">${password}</div>
+      </div>
+      <div class="mt-2">
+        ${toggle}
       </div>
     </form>
   </message>

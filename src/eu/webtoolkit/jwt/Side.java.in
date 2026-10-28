@@ -28,9 +28,10 @@ Enumeration that indicates a relative location.
         
 <p>
 
-Values of {@link Side#CenterX CenterX}, {@link Side#CenterY CenterY}, and CenterXY are only valid for {@link WCssDecorationStyle#setBackgroundImage(WLink image, EnumSet repeat, EnumSet sides) WCssDecorationStyle#setBackgroundImage()}
+Values of {@link Side#CenterX CenterX} and {@link Side#CenterY CenterY}, or their combination, are only valid for {@link WCssDecorationStyle#setBackgroundImage(WLink image, EnumSet repeat, EnumSet sides) WCssDecorationStyle#setBackgroundImage()}.
 
 <p>
+
 @see WWidget#setMargin(WLength margin, EnumSet sides)
 
 @see WWidget#setOffsets(WLength offset, EnumSet sides)

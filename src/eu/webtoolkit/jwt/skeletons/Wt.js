@@ -503,6 +503,34 @@ if (!window._$_WT_CLASS_$_) {
       return e.nodeType === 1 && e.tagName && e.tagName.toUpperCase() === s;
     };
 
+    /*
+     * Checks if the element is not invisible due to itself or one of
+     * its ancestors having display:none or visibility:hidden.
+     */
+    this.isVisible = function(element) {
+      return element &&
+        (element.offsetParent !== null ||
+          (element.style.position === "fixed" &&
+            element.style.display !== "none" &&
+            element.style.visibility !== "hidden"));
+    };
+
+    /**
+     * Checks if the element is in the process of an animation
+     * (from Wt) after wich it will be invisible.
+     */
+    this.isDisappearing = function(element) {
+      return element &&
+        (element.classList.contains("wt-animate-hide") ||
+          WT.isDisappearing(element.parentElement));
+    };
+
+    this.inDomTree = function(element) {
+      return typeof element.isConnected === "boolean" ?
+        element.isConnected :
+        document.documentElement.contains(element);
+    };
+
     this.insertAt = function(p, c, pos) {
       if (!p.childNodes.length) {
         p.appendChild(c);
@@ -920,37 +948,48 @@ if (!window._$_WT_CLASS_$_) {
         e = window.event;
       }
 
+      if (e.touches && e.touches[0]) {
+        e = e.touches[0];
+      } else if (e.changedTouches && e.changedTouches[0]) {
+        e = e.changedTouches[0];
+      }
+
       let posX = 0, posY = 0;
 
       const target = e.target || e.srcElement;
 
-      // if this is an iframe, offset against the frame's position
+      // Translate iframe viewport coordinates to the outer page. Using
+      // client coordinates avoids including the iframe's own scroll.
       if (target && (target.ownerDocument !== document)) {
         for (let i = 0; i < window.frames.length; i++) {
-          if (target.ownerDocument === window.frames[i].document) {
-            try {
-              const rect = window.frames[i].frameElement.getBoundingClientRect();
-              posX = rect.left;
-              posY = rect.top;
-            } catch (e) {
-              // Empty catch
+          try {
+            if (target.ownerDocument === window.frames[i].document) {
+              const frame = window.frames[i].frameElement;
+              const origin = WT.widgetPageCoordinates(frame);
+              posX = origin.x + frame.clientLeft;
+              posY = origin.y + frame.clientTop;
+              if (typeof e.clientX === "number") {
+                posX += e.clientX;
+                posY += e.clientY;
+              } else if (typeof e.pageX === "number") {
+                posX += e.pageX - window.frames[i].pageXOffset;
+                posY += e.pageY - window.frames[i].pageYOffset;
+              }
+              return { x: posX, y: posY };
             }
+          } catch (e) {
+            // Ignore inaccessible frames.
           }
         }
       }
 
-      if (e.touches && e.touches[0]) {
-        return WT.pageCoordinates(e.touches[0]);
-      } else if (e.changedTouches && e.changedTouches[0]) {
-        posX += e.changedTouches[0].pageX;
-        posY += e.changedTouches[0].pageY;
-      } else if (typeof e.pageX === "number") {
-        posX += e.pageX;
+      if (typeof e.pageX === "number") {
+        posX = e.pageX;
         posY = e.pageY;
       } else if (typeof e.clientX === "number") {
-        posX += e.clientX + document.body.scrollLeft +
+        posX = e.clientX + document.body.scrollLeft +
           document.documentElement.scrollLeft;
-        posY += e.clientY + document.body.scrollTop +
+        posY = e.clientY + document.body.scrollTop +
           document.documentElement.scrollTop;
       }
 
@@ -1526,6 +1565,11 @@ if (!window._$_WT_CLASS_$_) {
 
       if (e) {
         const t = WT.target(e);
+        // WTextEdit forwards iframe events to its textarea. Other capture
+        // targets, including its ancestors, still need explicit delivery.
+        if (t && t.ownerDocument && t.ownerDocument.wtCaptureTarget === captureElement) {
+          return null;
+        }
         let p = t;
 
         while (p && p !== captureElement) {
@@ -1666,6 +1710,7 @@ if (!window._$_WT_CLASS_$_) {
         try {
           if (!window.frames[i].document.body.hasMouseHandlers) {
             attachMouseHandlers(window.frames[i].document.body);
+            attachTouchHandlers(window.frames[i].document.body);
             window.frames[i].document.body.hasMouseHandlers = true;
           }
         } catch (e) {
@@ -1723,21 +1768,15 @@ if (!window._$_WT_CLASS_$_) {
 
     function getInlineStyleSheet() {
       if (!inlineStyleSheet) {
-        const ds = document.styleSheets;
-        for (let i = 0, il = ds.length; i < il; ++i) {
-          const s = ds[i];
-          if (WT.hasTag(ds[i].ownerNode, "STYLE")) {
-            inlineStyleSheet = s;
-            break;
-          }
-        }
+        let s = document.getElementById("Wt-inline-css");
 
-        if (!inlineStyleSheet) {
-          const s = document.createElement("style");
+        if (!s) {
+          s = document.createElement("style");
+          s.id = "Wt-inline-css";
           document.getElementsByTagName("head")[0].appendChild(s);
-
-          inlineStyleSheet = s.sheet;
         }
+
+        inlineStyleSheet = s.sheet;
       }
 
       return inlineStyleSheet;
@@ -2540,6 +2579,7 @@ window._$_APP_CLASS_$_ = new (function() {
 
   let downX = 0;
   let downY = 0;
+  let trackFocus = false;
 
   const deployUrl = _$_DEPLOY_PATH_$_;
 
@@ -2862,19 +2902,21 @@ window._$_APP_CLASS_$_ = new (function() {
 
     for (let i = 0, il = touches.length; i < il; ++i) {
       const t = touches[i];
+      const page = WT.pageCoordinates(t);
+      const client = WT.windowCoordinates(t);
       if (i !== 0) {
         result += ";";
       }
       result += [
         t.identifier,
-        Math.round(t.clientX),
-        Math.round(t.clientY),
-        Math.round(t.pageX),
-        Math.round(t.pageY),
+        Math.round(client.x),
+        Math.round(client.y),
+        Math.round(page.x),
+        Math.round(page.y),
         Math.round(t.screenX),
         Math.round(t.screenY),
-        Math.round(t.pageX - widgetCoords.x),
-        Math.round(t.pageY - widgetCoords.y),
+        Math.round(page.x - widgetCoords.x),
+        Math.round(page.y - widgetCoords.y),
       ].join(";");
     }
 
@@ -3037,7 +3079,8 @@ window._$_APP_CLASS_$_ = new (function() {
     }
 
     if (typeof e.clientX !== UNDEFINED) {
-      result.push("clientX=" + Math.round(e.clientX), "clientY=" + Math.round(e.clientY));
+      const clientCoords = WT.windowCoordinates(e);
+      result.push("clientX=" + Math.round(clientCoords.x), "clientY=" + Math.round(clientCoords.y));
     }
 
     const pageCoords = WT.pageCoordinates(e);
@@ -3157,6 +3200,31 @@ window._$_APP_CLASS_$_ = new (function() {
   }
 
   let sentEvents = [], pendingEvents = [];
+  let encodingEvent = null;
+
+  function queueEvent(event) {
+    // Reserve space before encoding, which can synchronously emit events.
+    // Saving TinyMCE form data can emit changed() while encoding an
+    // outer action. Queue that change first so the server sees the new
+    // text before the action runs, especially if it removes the editor.
+    // Reserving the outer slot also prevents nested events from being
+    // overwritten or sent while that outer event is still incomplete.
+    const parent = encodingEvent;
+    const i = parent === null ? pendingEvents.length : pendingEvents.indexOf(parent);
+    pendingEvents.splice(i, 0, event);
+    encodingEvent = event;
+    try {
+      encodeEvent(event);
+    } catch (e) {
+      const index = pendingEvents.indexOf(event);
+      if (index !== -1) {
+        pendingEvents.splice(index, 1);
+      }
+      throw e;
+    } finally {
+      encodingEvent = parent;
+    }
+  }
 
   function encodePendingEvents(maxLength) {
     let se, result = "", feedback = false;
@@ -3280,6 +3348,97 @@ window._$_APP_CLASS_$_ = new (function() {
     }
   }
 
+  let focusFallbacks = [];
+  let lastFocus = null;
+  let focusFallbackElementTimout = null;
+  let focusIsOutsideDocument = false;
+
+  const mutationObs = new MutationObserver(function(records) {
+    for (const record of records) {
+      for (const removed of record.removedNodes.values()) {
+        if (lastFocus === removed || removed.contains(lastFocus)) {
+          scheduleFocusFallbackElement();
+        }
+      }
+    }
+  });
+
+  // Returns the next element to focus in case the focus is lost.
+  function nextFocus() {
+    const next = focusFallbacks.findLast(function(entry) {
+      return WT.inDomTree(entry) &&
+        WT.isVisible(entry) &&
+        !WT.isDisappearing(entry);
+    });
+
+    return next ? next : null;
+  }
+
+  function prioritizeAsFocusFallback(element) {
+    if (
+      WT.hasTag(element, "BODY") ||
+      WT.hasTag(element, "HTML") ||
+      element === document
+    ) {
+      return;
+    }
+
+    lastFocus = element;
+    clearTimeout(focusFallbackElementTimout);
+    focusFallbackElementTimout = null;
+
+    // Remove the target and clean up the list from deleted elements
+    focusFallbacks = focusFallbacks.filter(function(entry) {
+      return entry !== element && WT.inDomTree(entry);
+    });
+
+    focusFallbacks.push(element);
+  }
+
+  function focusFallbackElement() {
+    const next = nextFocus();
+    if (next) {
+      next.focus();
+    }
+  }
+
+  function scheduleFocusFallbackElement() {
+    if (!focusFallbackElementTimout) {
+      focusFallbackElementTimout = setTimeout(function() {
+        clearTimeout(focusFallbackElementTimout);
+        focusFallbackElementTimout = null;
+        focusFallbackElement();
+      }, 0);
+    }
+  }
+
+  function communicateFocusChange() {
+    if (trackFocus) {
+      self.emit(self, "Wt-focusChanged");
+    }
+  }
+
+  function onFocusChange(event) {
+    prioritizeAsFocusFallback(event.target);
+    if (event.target.id && !focusIsOutsideDocument) {
+      communicateFocusChange();
+    } else {
+      focusIsOutsideDocument = false;
+    }
+  }
+
+  function onFocusLost(event) {
+    if (event.target.id && document.activeElement !== event.target) {
+      communicateFocusChange();
+    } else if (document.activeElement === event.target) {
+      focusIsOutsideDocument = true;
+    }
+  }
+
+  function setTrackFocus(enable) {
+    trackFocus = enable;
+  }
+
   function load(fullapp) {
     if (loaded) {
       return;
@@ -3311,6 +3470,10 @@ window._$_APP_CLASS_$_ = new (function() {
     // this could be cancelled leading to havoc?
     document.addEventListener("mousedown", WT.mouseDown);
     document.addEventListener("mouseup", WT.mouseUp);
+
+    document.addEventListener("focus", onFocusChange, true);
+    document.addEventListener("blur", onFocusLost, true);
+    mutationObs.observe(document.body, { childList: true, subtree: true });
 
     WT.history._initialize();
     initIdleTimeout();
@@ -3574,14 +3737,14 @@ window._$_APP_CLASS_$_ = new (function() {
     if (!responsePending) {
       _$_$endif_$_();
 
-      const pendingEvent = {}, i = pendingEvents.length;
+      const pendingEvent = {};
       pendingEvent.object = el;
       pendingEvent.signal = signalName;
       pendingEvent.event = window.fakeEvent || e;
       pendingEvent.feedback = feedback;
       pendingEvent.evAckId = ackUpdateId;
 
-      pendingEvents[i] = encodeEvent(pendingEvent);
+      queueEvent(pendingEvent);
 
       scheduleUpdate();
 
@@ -3613,6 +3776,10 @@ window._$_APP_CLASS_$_ = new (function() {
   }
 
   function scheduleUpdate() {
+    if (encodingEvent !== null) {
+      return;
+    }
+
     if (hasQuit) {
       if (!quitStr) {
         return;
@@ -3848,6 +4015,10 @@ window._$_APP_CLASS_$_ = new (function() {
   }
 
   function sendUpdate() {
+    if (encodingEvent !== null) {
+      return;
+    }
+
     if (self !== window._$_APP_CLASS_$_) {
       quit(null);
       return;
@@ -4055,12 +4226,10 @@ window._$_APP_CLASS_$_ = new (function() {
   function makePending(userEvent) {
     checkEventOverflow();
 
-    const ei = pendingEvents.length;
-
     userEvent.feedback = true;
     userEvent.evAckId = ackUpdateId;
 
-    pendingEvents[ei] = encodeEvent(userEvent);
+    queueEvent(userEvent);
   }
 
   function emit(object, config) {
@@ -4335,8 +4504,33 @@ window._$_APP_CLASS_$_ = new (function() {
     return "0";
   }
 
+  function sendUnloadBeacon() {
+    if (
+      hasQuit ||
+      self !== window._$_APP_CLASS_$_ ||
+      typeof navigator === UNDEFINED ||
+      typeof navigator.sendBeacon !== "function"
+    ) {
+      return false;
+    }
+
+    try {
+      const request = "request=jsupdate" +
+        "&ackId=" + ackUpdateId +
+        "&pageId=" + pageId +
+        "&signal=user&id=app&name=Wt-unload&an=0";
+      const body = new Blob(
+        [request],
+        { type: "application/x-www-form-urlencoded" }
+      );
+      return navigator.sendBeacon(sessionUrl, body);
+    } catch (e) {
+      return false;
+    }
+  }
+
   window.addEventListener("pagehide", () => {
-    if (!hasQuit) {
+    if (!sendUnloadBeacon() && !hasQuit) {
       self.emit(self, "Wt-unload");
       scheduleUpdate();
       sendUpdate();
@@ -4549,6 +4743,8 @@ window._$_APP_CLASS_$_ = new (function() {
     setConnectionMonitor,
     updateGlobal,
     bindGlobal,
+    scheduleFocusFallbackElement,
+    setTrackFocus,
     refreshCookie,
 
     propagateSize,

@@ -363,7 +363,13 @@ switch (   this.model_.getConfirmIsExistingUser()) {
       	RegistrationWidget.this.confirmedIsYou();
       });
    this.isYouDialog_=      this.authWidget_.createPasswordPromptDialog (  this.confirmPasswordLogin_);
-    this.isYouDialog_.finished ().addListener(this,  () ->  {
+ PasswordPromptDialog  pwdPromptDialog =ObjectUtils.cast(  this.isYouDialog_, PasswordPromptDialog.class);
+      if ( pwdPromptDialog != null) {
+         AbstractMfaProcess mfaProcess  =     this.authWidget_.createMfaProcess (); 
+         mfaProcess.setAlternativeLogin (  this.confirmPasswordLogin_);
+  pwdPromptDialog.setMfaProcess (mfaProcess);
+}
+          this.isYouDialog_.finished ().addListener(this,  () ->  {
         {
         WDialog toRemove =   RegistrationWidget.this.isYouDialog_;
         if (toRemove != null) toRemove.remove();}
@@ -386,8 +392,13 @@ break;
        this.model_.existingUserConfirmed ();
 }
   else  {
-      this.confirmPasswordLogin_ = null;
+    if (    this.confirmPasswordLogin_.getState() != LoginState.RequiresMfa) {
+      if (   this.isYouDialog_ != null) { 
+           this.isYouDialog_.reject ();
 }
+        this.confirmPasswordLogin_ = null;
+}
+  }
   }
   private void oAuthDone(OAuthProcess  oauth, final Identity identity) {
   if ( identity.isValid ()) {

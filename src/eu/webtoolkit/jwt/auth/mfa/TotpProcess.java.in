@@ -83,9 +83,10 @@ public class TotpProcess extends AbstractMfaProcess {
   */
   public void processEnvironment() {
    User user  =  this.getProcessMfaToken();
-  if ( user.isValid ()) { 
+  if ( user.isValid ()) {
+     Signal1  authenticated  =   this.authenticated_; 
      this.getLogin().login (user, LoginState.Weak);
-  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Success));
+ authenticated.trigger(new AuthenticationResult(AuthenticationStatus.Success));
 }
   }
   /**
@@ -330,7 +331,7 @@ if (   this.getMfaThrottle() != null && throttle) {
     this.throttlingDelay_ =    this.getMfaThrottle().delayForNextAttempt ( this.getLogin().getUser());
 if (   this.throttlingDelay_ > 0) { 
        this.update (view, throttle);
-  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-throttle")));
+   this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-throttle")));
 return ;
     }
   }
@@ -345,15 +346,16 @@ if ( t != null) {
       this.throttlingDelay_ =    this.getMfaThrottle().delayForNextAttempt ( this.getLogin().getUser());
 } 
      this.update (view, throttle);
-  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-invalid")));
+   this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Failure, WString.tr ("Wt.Auth.totp-code-info-invalid")));
 }
   else  { 
      this.createUserIdentity ( this.getCurrentSecretKey());
 if (    this.rememberMeField_.isChecked ()) { 
        this.setRememberMeCookie ( this.getLogin().getUser());
-} 
+}
+     Signal1  authenticated  =   this.authenticated_; 
      this.getLogin().login ( this.getLogin().getUser());
-  this.authenticated_.trigger(new AuthenticationResult(AuthenticationStatus.Success));
+ authenticated.trigger(new AuthenticationResult(AuthenticationStatus.Success));
 }
   } catch (RuntimeException e) {
   throw e;
@@ -376,5 +378,5 @@ if (    this.rememberMeField_.isChecked ()) {
   private WLineEdit  codeEdit_ =null;
   private WCheckBox  rememberMeField_ =null;
   private String currentSecretKey_ ;
-  private Signal1<AuthenticationResult> authenticated_ ;
+  private Signal1  authenticated_ ;
 }

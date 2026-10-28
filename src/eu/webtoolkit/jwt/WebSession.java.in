@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
       return ordinal();
     }
   }
-  public  WebSession(WtServlet  controller, final String sessionId, EntryPointType type, final String favicon, WebRequest  request, WEnvironment  env) {
+  public  WebSession(WtServlet  controller, final String sessionId, final String weakSessionId, EntryPointType type, final String favicon, WebRequest  request, WEnvironment  env) {
   this.mutex_ = new ReentrantLock();
   this.eventQueueMutex_ = new ReentrantLock();
   this.eventQueue_ = new LinkedList<ApplicationEvent>();
@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
   this.defaultFavicon_ = new WUrlFavicon(favicon);
   this.state_ = WebSession.State.JustCreated;
   this.sessionId_ = sessionId;
+  this.weakSessionId_ = weakSessionId;
   this.sessionIdCookie_ = "";
   this.multiSessionId_ = "";
   this.sessionIdChanged_ = false;
@@ -127,8 +128,8 @@ if ( request != null) {
   this.getRenderer().setCookie (cookie);
 }
   }
-  public  WebSession(WtServlet  controller, final String sessionId, EntryPointType type, final String favicon, WebRequest  request)  {
-    this(controller, sessionId, type, favicon, request, (WEnvironment)null);
+  public  WebSession(WtServlet  controller, final String sessionId, final String weakSessionId, EntryPointType type, final String favicon, WebRequest  request)  {
+    this(controller, sessionId, weakSessionId, type, favicon, request, (WEnvironment)null);
   }
   public void destruct() {
   if (   this.asyncResponse_ != null) { 
@@ -138,11 +139,12 @@ if ( request != null) {
   if (   this.deferredResponse_ != null) { 
        this.deferredResponse_.flush ();
   this.deferredResponse_ = null;
-} 
-    this.mutex_.lock ();
-  this.updatesPendingEvent_.signal();
+}
+  if (  this.mutex_.tryLock()) {
+      this.updatesPendingEvent_.signal();
    this.mutex_.unlock ();
-  this.flushBootStyleResponse ();
+} 
+   this.flushBootStyleResponse ();
 }
   public static WebSession  getInstance() {
    WebSession.Handler  handler =WebSession.Handler.getInstance();
@@ -172,6 +174,9 @@ return true;
   }
   public String getSessionId() {
   return   this.sessionId_;
+  }
+  public String getWeakSessionId() {
+  return   this.weakSessionId_;
   }
   public String getMultiSessionId() {
   return   this.multiSessionId_;
@@ -670,14 +675,28 @@ return true;
   public String getPagePathInfo() {
   return   this.pagePathInfo_;
   }
-  public String getMostRelativeUrl(final String internalPath, boolean excludeBot) {
-  return   this.appendSessionQuery ( this.getBookmarkUrl(internalPath), excludeBot);
+  enum SessionOption {
+    UseSessionId,
+    UseWeakSessionId;
+    
+    /**
+    Returns the numerical representation of this enum.
+    */
+    public int getValue() {
+      return ordinal();
+    }
+  }
+  public String getMostRelativeUrl(final String internalPath, boolean excludeBot, WebSession.SessionOption sessionOption) {
+  return   this.appendSessionQuery ( this.getBookmarkUrl(internalPath), excludeBot, sessionOption);
   }
   public  final String getMostRelativeUrl()  {
-    return getMostRelativeUrl("", false);
+    return getMostRelativeUrl("", false, WebSession.SessionOption.UseSessionId);
   }
   public  final String getMostRelativeUrl(final String internalPath)  {
-    return getMostRelativeUrl(internalPath, false);
+    return getMostRelativeUrl(internalPath, false, WebSession.SessionOption.UseSessionId);
+  }
+  public  final String getMostRelativeUrl(final String internalPath, boolean excludeBot)  {
+    return getMostRelativeUrl(internalPath, excludeBot, WebSession.SessionOption.UseSessionId);
   }
   public String appendInternalPath(final String baseUrl, final String internalPath) {
   if ( internalPath.length()==0 || internalPath.equals("/")) {
@@ -707,21 +726,21 @@ return true;
     }
   }
   }
-  public String appendSessionQuery(final String url, boolean force) {
+  public String appendSessionQuery(final String url, boolean force, WebSession.SessionOption sessionOption) {
    String result  = url;
   if (    this.env_.isTreatLikeBot() && ! force) {
     return result;
   }
    int questionPos =result.indexOf('?');
   if ( questionPos == -1) { 
-    result+=   this.getSessionQuery();
+    result+=    this.sessionQuery (sessionOption);
 }
   else  {
     if ( questionPos ==   result.length () - 1) { 
-      result+=   this.getSessionQuery().substring(1);
+      result+=    this.sessionQuery (sessionOption).substring(1);
 }
     else  { 
-      result+=   '&' +  this.getSessionQuery().substring(1);
+      result+=   '&' +   this.sessionQuery (sessionOption).substring(1);
 }
   }
   if (result.startsWith("?")) { 
@@ -739,7 +758,10 @@ return true;
 return    result.substring(0, 0 + questionPos) + ";jsessionid=" +  this.getSessionId() + result.substring(questionPos);
   }
   public  final String appendSessionQuery(final String url)  {
-    return appendSessionQuery(url, false);
+    return appendSessionQuery(url, false, WebSession.SessionOption.UseSessionId);
+  }
+  public  final String appendSessionQuery(final String url, boolean force)  {
+    return appendSessionQuery(url, force, WebSession.SessionOption.UseSessionId);
   }
   public String ajaxCanonicalUrl(final WebResponse request) {
    String  hashE =null;
@@ -1250,13 +1272,19 @@ if (! (  requestForResource || isEqual (request.getRequestMethod(), "POST") || i
  handler.flushResponse ();
 return ;
   }
+   boolean weakSession =  wtdE != null &&  wtdE.equals(  this.weakSessionId_);
+  if ( weakSession && ! requestForResource) {
+    logger.warn(new StringWriter().append("secure:").append("Received request from weakSessionId that is not for a resource").toString());
+  this.serveError (403, handler, "Forbidden");
+return ;
+  }
   if (          this.env_.hasAjax() && isEqual (request.getRequestMethod(), "GET") && ! requestForResource && ! requestForStyle &&  conf.reloadIsNewSession () && !  this.isSuspended() &&  wtdE != null &&  wtdE.equals(  this.sessionId_)) {
     logger.warn(new StringWriter().append("secure:").append("Unexpected GET request with wtd of existing Ajax session").toString());
   this.serveError (403, handler, "Forbidden");
 return ;
   }
-  if (  ( ! ( wtdE != null) || !  wtdE.equals(  this.sessionId_)) &&    this.state_ != WebSession.State.JustCreated && (  requestE != null && (   requestE.equals("jsupdate") ||  requestE.equals("jserror") ||  requestE.equals("resource")))) {
-    logger.debug(new StringWriter().append("CSRF: ").append(  wtdE != null?  wtdE: "no wtd").append(" != ").append(  this.sessionId_).append(", requestE: ").append(  requestE != null?  requestE: "none").toString());
+  if (  ( ! ( wtdE != null) ||  !  wtdE.equals(  this.sessionId_) && ! weakSession) &&    this.state_ != WebSession.State.JustCreated && (  requestE != null && (   requestE.equals("jsupdate") ||  requestE.equals("jserror") ||  requestE.equals("resource")))) {
+    logger.debug(new StringWriter().append("CSRF: ").append(  wtdE != null?  wtdE: "no wtd").append(" != (").append(  this.sessionId_).append("or weakSessionId ").append(  this.weakSessionId_).append("), requestE: ").append(  requestE != null?  requestE: "none").toString());
 logger.warn(new StringWriter().append("secure:").append("CSRF prevention kicked in.").toString());
   this.serveError (403, handler, "Forbidden");
 }
@@ -1539,7 +1567,7 @@ if ( handler.getResponse() != null) {
    this.setState (WebSession.State.Loaded,    this.controller_.getConfiguration().getSessionTimeout());
 if (wasSuspended) {
     if (    this.env_.hasAjax() &&     this.controller_.getConfiguration().reloadIsNewSession ()) { 
-         this.app_.doJavaScript ("Wt4_14_4.history.removeSessionId()");
+         this.app_.doJavaScript ("Wt4_15_0.history.removeSessionId()");
   this.sessionIdInUrl_ = false;
 }
         this.app_.unsuspended ().trigger();
@@ -1638,6 +1666,7 @@ return ;
   private WFavicon defaultFavicon_ ;
   private WebSession.State state_ ;
   private String sessionId_ ;
+  private String weakSessionId_ ;
   private String sessionIdCookie_ ;
   private String multiSessionId_ ;
    boolean sessionIdChanged_ ;
@@ -1965,7 +1994,7 @@ if ( signalE.equals("hash")) {
              String  hashE = request.getParameter ( se + "_");
             if ( hashE != null) { 
                this.changeInternalPath ( hashE, handler.getResponse());
-    this.app_.doJavaScript ("Wt4_14_4.scrollHistory();");
+    this.app_.doJavaScript ("Wt4_15_0.scrollHistory();");
 }
             else  { 
                this.changeInternalPath ("", handler.getResponse());
@@ -2131,13 +2160,19 @@ throw e;
 }
   return    this.app_ != null;
   }
-  private String getSessionQuery() {
-   String wtd  =     this.env_.isTreatLikeBot()? "bot":   this.sessionId_;
+  private String sessionQuery(WebSession.SessionOption sessionOption) {
+   String wtd  =   sessionOption == WebSession.SessionOption.UseSessionId?   this.sessionId_:   this.weakSessionId_;
+  if (   this.env_.isTreatLikeBot()) { 
+    wtd=  "bot";
+}
    String result  =  "?wtd=" + DomElement.urlEncodeS (wtd);
   if (  this.getType() == EntryPointType.WidgetSet) { 
     result+=  "&wtt=widgetset";
 }
   return result;
+  }
+  private  final String sessionQuery()  {
+    return sessionQuery(WebSession.SessionOption.UseSessionId);
   }
   private void flushBootStyleResponse() {
   if (   this.bootStyleResponse_ != null) { 
@@ -2164,7 +2199,7 @@ if (   this.getApp() != null &&    this.getApp().hasQuit ()) {
            this.kill ();
 }
         if ( this.isDead()) { 
-            this.getController().removeSession (  event.sessionId);
+            this.getController().removeSession (  this.sessionId_);
 }
       }
       else  {

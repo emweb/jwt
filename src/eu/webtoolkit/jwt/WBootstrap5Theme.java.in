@@ -154,19 +154,19 @@ if (  btn.isDefault ()) {
     }
     case DIV: 
     {
-       WDialog  dialog =ObjectUtils.cast(widget, WDialog.class);
+       WDialog  dialog =resolveImplementation(widget, WDialog.class);
       if ( dialog != null) { 
         element.addPropertyWord (Property.Class, "modal");
  element.addPropertyWord (Property.Class, "Wt-dialog");
 return ;
       }
-       WPanel  panel =ObjectUtils.cast(widget, WPanel.class);
+       WPanel  panel =resolveImplementation(widget, WPanel.class);
       if ( panel != null) { 
         element.addPropertyWord (Property.Class, "card");
  element.addPropertyWord (Property.Class, "Wt-panel");
 return ;
       }
-       WProgressBar  bar =ObjectUtils.cast(widget, WProgressBar.class);
+       WProgressBar  bar =resolveImplementation(widget, WProgressBar.class);
       if ( bar != null) {
         switch (elementRole) {
           case ElementThemeRole.MainElement: 
@@ -178,12 +178,12 @@ break;
         }
         return ;
       }
-       WGoogleMap  map =ObjectUtils.cast(widget, WGoogleMap.class);
+       WGoogleMap  map =resolveImplementation(widget, WGoogleMap.class);
       if ( map != null) { 
         element.addPropertyWord (Property.Class, "Wt-googlemap");
 return ;
       }
-       WNavigationBar  navBar =ObjectUtils.cast(widget, WNavigationBar.class);
+       WNavigationBar  navBar =resolveImplementation(widget, WNavigationBar.class);
       if ( navBar != null) { 
         element.addPropertyWord (Property.Class, "navbar");
 if (! hasNavbarExpandClass (navBar)) { 
@@ -257,9 +257,9 @@ break;
 break;
         }
       }
-       WAbstractToggleButton  tb =ObjectUtils.cast(widget, WAbstractToggleButton.class);
-       WSlider  sl =ObjectUtils.cast(widget, WSlider.class);
-       WFileUpload  fu =ObjectUtils.cast(widget, WFileUpload.class);
+       WAbstractToggleButton  tb =resolveImplementation(widget, WAbstractToggleButton.class);
+       WSlider  sl =resolveImplementation(widget, WSlider.class);
+       WFileUpload  fu =resolveImplementation(widget, WFileUpload.class);
       if (! (   tb != null ||  sl != null ||  fu != null)) { 
         element.addPropertyWord (Property.Class, "form-control");
 }
@@ -271,17 +271,22 @@ if (  sl.getOrientation() == Orientation.Vertical) {
 }
         }
       }
-       WAbstractSpinBox  spinBox =ObjectUtils.cast(widget, WAbstractSpinBox.class);
+       WAbstractSpinBox  spinBox =resolveImplementation(widget, WAbstractSpinBox.class);
       if ( spinBox != null) { 
         element.addPropertyWord (Property.Class, "Wt-spinbox");
 return ;
       }
-       WDateEdit  dateEdit =ObjectUtils.cast(widget, WDateEdit.class);
+       WDateEdit  dateEdit =resolveImplementation(widget, WDateEdit.class);
       if (  dateEdit != null && !  dateEdit.isNativeControl()) { 
         element.addPropertyWord (Property.Class, "Wt-dateedit");
 return ;
       }
-       WTimeEdit  timeEdit =ObjectUtils.cast(widget, WTimeEdit.class);
+       WDateTimeEdit  dateTimeEdit =resolveImplementation(widget, WDateTimeEdit.class);
+      if (  dateTimeEdit != null && !  dateTimeEdit.isNativeControl()) { 
+        element.addPropertyWord (Property.Class, "Wt-datetimeedit");
+return ;
+      }
+       WTimeEdit  timeEdit =resolveImplementation(widget, WTimeEdit.class);
       if (  timeEdit != null && !  timeEdit.isNativeControl()) { 
         element.addPropertyWord (Property.Class, "Wt-timeedit");
 return ;
@@ -298,7 +303,7 @@ break;
     {
        WPopupMenu  popupMenu =ObjectUtils.cast(widget, WPopupMenu.class);
       if ( popupMenu != null) { 
-        element.addPropertyWord (Property.Class, "dropdown-menu");
+        element.addPropertyWord (Property.Class, "Wt-dropdown-menu");
 if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getParentItem().getParentMenu(), WPopupMenu.class) != null) { 
           element.addPropertyWord (Property.Class, "submenu");
 }
@@ -400,7 +405,7 @@ if (   popupMenu.getParentItem() != null &&  ObjectUtils.cast(  popupMenu.getPar
    this.loadValidationStyling (app);
 if ( app.getEnvironment().hasAjax()) {
      StringBuilder js  = new StringBuilder();
-    js.append("Wt4_14_4.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
+    js.append("Wt4_15_0.setValidationState(").append( widget.getJsRef()).append(",").append( validation.getState() == ValidationState.Valid).append(",").append(WString.toWString(validation.getMessage()).getJsStringLiteral()).append(",").append(EnumUtils.valueOf(styles)).append(");");
   widget.doJavaScript (js.toString());
 }
   else  {
@@ -492,6 +497,9 @@ break;
   icon.addStyleClass ("Wt-datepicker-icon");
 break;
     }
+    case WidgetThemeRole.DateTimePickerPopup: 
+     child.addStyleClass ("Wt-datetimepicker");
+break;
     case WidgetThemeRole.TimePickerPopup: 
      child.addStyleClass ("Wt-timepicker");
 break;

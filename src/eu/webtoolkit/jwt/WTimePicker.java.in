@@ -25,10 +25,24 @@ import org.slf4j.LoggerFactory;
  class WTimePicker extends WCompositeWidget {
   private static Logger logger = LoggerFactory.getLogger(WTimePicker.class);
   
+  public  WTimePicker(WDateTimeEdit  dateTimeEdit, WContainerWidget  parentContainer) {
+  super ();
+  this.format_ = "";
+  this.timeEdit_ = null;
+  this.dateTimeEdit_ = dateTimeEdit;
+  this.selectionChanged_ = new Signal();
+  this.toggleAmPm_ = new JSlot(2, this); 
+   this.init ();
+if ( parentContainer != null) parentContainer.addWidget (this);
+}
+  public  WTimePicker(WDateTimeEdit  dateTimeEdit)  {
+    this(dateTimeEdit, (WContainerWidget)null);
+  }
   public  WTimePicker(WTimeEdit  timeEdit, WContainerWidget  parentContainer) {
   super ();
   this.format_ = "";
   this.timeEdit_ = timeEdit;
+  this.dateTimeEdit_ = null;
   this.selectionChanged_ = new Signal();
   this.toggleAmPm_ = new JSlot(2, this); 
    this.init ();
@@ -164,7 +178,6 @@ if (   this.sbsecond_ != null) {
   if ( this.isFormatS()) {  
     this.sbsecond_ = new WSpinBox();
   container.bindWidget ("second",   this.sbsecond_);
-    this.sbsecond_.setWidth (new WLength (70));
     this.sbsecond_.setRange (0, 59);
     this.sbsecond_.setSingleStep (1);
     this.sbsecond_.changed ().addListener(this, () -> {
@@ -186,7 +199,6 @@ if (   this.sbsecond_ != null) {
     if (! (   this.sbmillisecond_ != null)) {  
       this.sbmillisecond_ = new WSpinBox();
   container.bindWidget ("millisecond",   this.sbmillisecond_);
-    this.sbmillisecond_.setWidth (new WLength (70));
     this.sbmillisecond_.setRange (0, 999);
     this.sbmillisecond_.setSingleStep (1);
     this.sbmillisecond_.changed ().addListener(this, () -> {
@@ -209,7 +221,6 @@ if (   this.sbsecond_ != null) {
     if (! (   this.cbAP_ != null)) {  
       this.cbAP_ = new WComboBox();
   container.bindWidget ("ampm",   this.cbAP_);
-    this.cbAP_.setWidth (new WLength (90));
     this.cbAP_.addItem ("AM");
     this.cbAP_.addItem ("PM");
     this.cbAP_.changed ().addListener(this, () -> {
@@ -248,14 +259,12 @@ if (   this.sbsecond_ != null) {
   container.setTemplateText (tr ("Wt.WTimePicker.template"));
   this.sbhour_ = new WSpinBox();
   container.bindWidget ("hour",   this.sbhour_);
-    this.sbhour_.setWidth (new WLength (70));
     this.sbhour_.setSingleStep (1);
     this.sbhour_.changed ().addListener(this, () -> {
   	WTimePicker.this.hourValueChanged();
   });
   this.sbminute_ = new WSpinBox();
   container.bindWidget ("minute",   this.sbminute_);
-    this.sbminute_.setWidth (new WLength (70));
     this.sbminute_.setRange (0, 59);
     this.sbminute_.setSingleStep (1);
     this.sbminute_.changed ().addListener(this, () -> {
@@ -279,6 +288,7 @@ if (   this.sbsecond_ != null) {
   private WSpinBox  sbmillisecond_ ;
   private WComboBox  cbAP_ ;
   private WTimeEdit  timeEdit_ ;
+  private WDateTimeEdit  dateTimeEdit_ ;
   private void hourValueChanged() {
   if (     this.sbhour_.validate () == ValidationState.Valid) {
       this.selectionChanged_.trigger();
@@ -305,15 +315,40 @@ if (   this.sbsecond_ != null) {
 }
   }
   private boolean isFormatAp() {
-  return WTime.usesAmPm (   this.timeEdit_.getFormat());
+  if (   this.timeEdit_ != null) {
+    return WTime.usesAmPm (   this.timeEdit_.getFormat());
+  }
+  if (   this.dateTimeEdit_ != null) {
+    return WTime.usesAmPm (   this.dateTimeEdit_.getFormat());
+  }
+  logger.error(new StringWriter().append("Neither DateTimeEdit_ or TimeEdit_ was set").toString());
+return false;
   }
   private boolean isFormatMs() {
-   String format  =    this.timeEdit_.getFormat();
-  return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getMsec() == 123;
+   String format  = "";
+  if (   this.timeEdit_ != null) { 
+    format=     this.timeEdit_.getFormat();
+return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getMsec() == 123;
+  }
+  if (   this.dateTimeEdit_ != null) { 
+    format=   WDate.splitFormat(   this.dateTimeEdit_.getFormat()).timeFormat;
+return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getMsec() == 123;
+  }
+  logger.error(new StringWriter().append("Neither DateTimeEdit_ or TimeEdit_ was set").toString());
+return false;
   }
   private boolean isFormatS() {
-   String format  =    this.timeEdit_.getFormat();
-  return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getSecond() == 6;
+   String format  = "";
+  if (   this.timeEdit_ != null) { 
+    format=     this.timeEdit_.getFormat();
+return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getSecond() == 6;
+  }
+  if (   this.dateTimeEdit_ != null) { 
+    format=   WDate.splitFormat(   this.dateTimeEdit_.getFormat()).timeFormat;
+return  WTime.fromString ( new WTime(4, 5, 6, 123).toString (format), format).getSecond() == 6;
+  }
+  logger.error(new StringWriter().append("Neither DateTimeEdit_ or TimeEdit_ was set").toString());
+return false;
   }
   private Signal selectionChanged_ ;
   private JSlot toggleAmPm_ ;

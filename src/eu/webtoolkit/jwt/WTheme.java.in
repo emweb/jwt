@@ -257,6 +257,26 @@ return "";
   }
   /**
   
+  Resolves the implementation widget of type <code>T</code>. 
+          
+  <p>
+  
+  Returns the outermost widget of type <code>T</code> in the composite implementation chain starting at <code>widget</code> (inclusive), descending through each {@link WCompositeWidget}&apos;s implementation widget; returns <code>null</code> if no such widget exists.
+  
+  <p>
+  A theme&apos;s {@link WTheme#apply(WWidget  widget, WWidget  child, int widgetRole) apply()} should use this instead of a plain <code>dynamic_cast&lt;T *&gt;(widget)</code> when it needs to recognize the type of the widget that a DOM element renders. When a framework widget (e.g. a {@link WPanel}) is used as the implementation of a {@link WCompositeWidget}, the theme is called with the outer composite as <code>widget</code>; a plain cast would then fail and no style classes would be applied. For a widget that is not a composite the type is matched at the first level, so the result is identical to <code>dynamic_cast&lt;T *&gt;(widget)</code>. 
+          
+  */
+  protected static <T> T resolveImplementation(WWidget widget, Class<T> type) {
+  while (widget != null) {
+  T result = ObjectUtils.cast(widget, type);
+  if (result != null) return result;
+  widget = compositeImplementation(widget);
+  }
+  return null;
+  }
+  /**
+  
   Applies the functional part of the theme to a widget&apos;s child. 
           
   <p>
@@ -291,4 +311,8 @@ return "";
           
   */
   protected abstract void applyOptionalStyling(WWidget  widget, WWidget  child, int widgetRole) ;
+  private static WWidget  compositeImplementation(WWidget  widget) {
+   WCompositeWidget  composite =ObjectUtils.cast(widget, WCompositeWidget.class);
+  return   composite != null?  composite.getImplementation(): null;
+  }
 }

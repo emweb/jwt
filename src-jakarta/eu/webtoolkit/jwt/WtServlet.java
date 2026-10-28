@@ -402,7 +402,7 @@ public abstract class WtServlet extends HttpServlet {
 					throw new WtException("Illegal application type: " + applicationTypeS);
 				}
 
-				wsession = new WebSession(this, jsession.getId(), applicationType, getConfiguration().getFavicon(), request);
+				wsession = new WebSession(this, jsession.getId(), "", applicationType, getConfiguration().getFavicon(), request);
 				logger.info("Session created: " + jsession.getId() + " (#sessions = " + addSession(wsession) + ")");
 				jsession.setAttribute(WtServlet.WT_WEBSESSION_ID, new BoundSession(wsession));
 			}
@@ -596,6 +596,10 @@ public abstract class WtServlet extends HttpServlet {
     String getRedirectSecret(final WebRequest request) {
       return redirectSecret_;
     }
+
+	public boolean isWeakSessionIdEnabled() {
+		return false;
+	}
 
 	/**
 	 * Binds a resource to a fixed path.

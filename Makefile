@@ -1,8 +1,8 @@
-JWT_VERSION=4.14.4
+JWT_VERSION=4.15.0
 
-# Servlet classifier: `jakarta` for Servlet >= 6
+# Servlet classifier: `javax` for Servlet <= 4
 ifndef CLASSIFIER
-  CLASSIFIER := javax
+  CLASSIFIER := jakarta
 endif
 JWT_JAR := jwt-$(JWT_VERSION)-$(CLASSIFIER).jar
 JWT_AUTH_JAR := jwt-auth-$(JWT_VERSION)-$(CLASSIFIER).jar
@@ -18,6 +18,10 @@ endif
 .PHONY: all src test examples pom build.xml classpath
 
 pom: jwt-$(JWT_VERSION).pom.in jwt-auth-$(JWT_VERSION).pom.in
+  ifeq ($(CLASSIFIER), javax)
+		$(warning [Deprecated] Using javax Servlet API is deprecated and support will be removed in a future version.)
+  endif
+
 	m4 $(CLASSIFIER_M4_ARGS) jwt-$(JWT_VERSION).pom.in > jwt-$(JWT_VERSION).pom ; \
   m4 $(CLASSIFIER_M4_ARGS) jwt-auth-$(JWT_VERSION).pom.in > jwt-auth-$(JWT_VERSION).pom ;
 

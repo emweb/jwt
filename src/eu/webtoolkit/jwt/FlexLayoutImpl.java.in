@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
   i < colCount;++ i) {
     total +=   this.minimumWidthForColumn (i);
 }
-  return  total +  ( colCount - 1) *    this.grid_.horizontalSpacing_;
+  return  total +   this.totalSpacing (Orientation.Horizontal);
   }
   public int getMinimumHeight() {
    final int rowCount =    this.grid_.rows_.size ();
@@ -61,7 +61,7 @@ import org.slf4j.LoggerFactory;
   i < rowCount;++ i) {
     total +=   this.minimumHeightForRow (i);
 }
-  return  total +  ( rowCount - 1) *    this.grid_.verticalSpacing_;
+  return  total +   this.totalSpacing (Orientation.Vertical);
   }
   public int getMaximumWidth() {
    final int colCount =    this.grid_.columns_.size ();
@@ -74,7 +74,7 @@ import org.slf4j.LoggerFactory;
     }
     total += colMax;
 }
-  return  total +  ( colCount - 1) *    this.grid_.horizontalSpacing_;
+  return  total +   this.totalSpacing (Orientation.Horizontal);
   }
   public int getMaximumHeight() {
    final int rowCount =    this.grid_.rows_.size ();
@@ -87,7 +87,7 @@ import org.slf4j.LoggerFactory;
     }
     total += rowMax;
 }
-  return  total +  ( rowCount - 1) *    this.grid_.verticalSpacing_;
+  return  total +   this.totalSpacing (Orientation.Vertical);
   }
   public void itemAdded(WLayoutItem  item) {
     this.addedItems_.add(item);
@@ -157,17 +157,25 @@ if (  this.canAdjustLayout_) {
     i <    this.resizedItems_.size ();++ i) {
        WWidget  item =   this.resizedItems_.get(i).getWidget();
        StringBuilder method  = new StringBuilder();
-      method.append("layout.resizeItem(").append( item.getId()).append(",").append('"').append( item.getWidth().getCssText()).append("\",").append('"').append( item.getHeight().getCssText()).append("\",").append('"').append( item.getMaximumWidth().getCssText()).append("\",").append('"').append( item.getMaximumHeight().getCssText()).append("\"").append(")");
+      method.append("layout.resizeItem(").append( item.getId()).append(",").append('"').append( item.getWidth().getCssText()).append("\",").append('"').append( item.getHeight().getCssText()).append("\",").append('"').append( item.getMaximumWidth().getCssText()).append("\",").append('"').append( item.getMaximumHeight().getCssText()).append("\",").append(hasContentSizingKeyword (  this.resizedItems_.get(i),   this.getOrientation ())).append(")");
   div.callMethod (method.toString());
 }
   } 
     this.resizedItems_.clear ();
 for ( int i =0; 
   i <    this.removedItems_.size ();++ i) { 
-     div.callJavaScript (  "Wt4_14_4.remove('" +   this.removedItems_.get(i) + "');", true);
+     div.callJavaScript (  "Wt4_15_0.remove('" +   this.removedItems_.get(i) + "');", true);
 } 
     this.removedItems_.clear ();
-if (  this.canAdjustLayout_) { 
+if ( this.isAnyResizable()) {
+    SizeHandle.loadJavaScript (app);
+} 
+  {
+     StringBuilder config  = new StringBuilder(); 
+     this.streamConfig (config);
+  div.callMethod (config.toString());
+}
+  if (  this.canAdjustLayout_) { 
      div.callMethod ("layout.adjust()");
 }
   if ( !   this.canAdjustLayout_ && ! skipLayoutAdjust) {  
@@ -236,9 +244,15 @@ paddingBlock.append(  margin[0]).append("px ").append(  margin[2]).append("px");
      DomElement  el =  this.createElement (orientation, i, totalStretch, app); 
      result.addChild (el);
 }
+  if ( this.isAnyResizable()) {
+    SizeHandle.loadJavaScript (app);
+}
    StringBuilder js  = new StringBuilder();
-  js.append("layout=new Wt4_14_4.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
+  js.append("layout=new Wt4_15_0.FlexLayout(").append( app.getJavaScriptClass()).append(",").append("'").append(  this.elId_).append("',").append("'").append(  this.getContainer().getId()).append("');");
   result.callMethod (js.toString());
+ StringBuilder config  = new StringBuilder(); 
+   this.streamConfig (config);
+  result.callMethod (config.toString());
 return result;
   }
   public boolean itemResized(WLayoutItem  item) {
@@ -260,6 +274,7 @@ return false;
 }
   }
   private static final int BIT_OBJECT_NAME_CHANGED =0;
+  private static final int RESIZE_HANDLE_SPACE =7;
   private BitSet flags_ ;
   private final Grid grid_ ;
   private List<WLayoutItem> addedItems_ ;
@@ -465,44 +480,79 @@ default:
      StringBuilder flexProperty  = new StringBuilder();
      int stretch =Math.max(0,  s.stretch_);
      int flexGrow =  totalStretch == 0? 1: stretch;
-     int flexShrink =  totalStretch == 0? 1:   stretch == 0? 0: 1;
+     WWidget  layoutContainer = this.getContainer();
+     boolean fitContentContainer =  layoutContainer != null && (  orientation == Orientation.Horizontal?    layoutContainer.getWidth().isAuto () && !   layoutContainer.getMaximumWidth().isAuto ():    layoutContainer.getHeight().isAuto () && !   layoutContainer.getMaximumHeight().isAuto ());
+     boolean hasContentSizingItem =false;
+    for ( int i =0; 
+    i <   this.count (orientation);++ i) {
+      if (hasContentSizingKeyword (   this.item (orientation, i).item_, orientation)) {
+        hasContentSizingItem = true;
+break;
+      }
+    }
+     String  contentSizingShrinkPriority ="1000000";
+     String  flexShrink ;
+    if (fitContentContainer) {
+      flexShrink = "0";
+}
+    else  {
+      if ( totalStretch == 0) {
+        flexShrink = "1";
+}
+      else  {
+        if ( stretch != 0) {
+          flexShrink =  hasContentSizingItem? contentSizingShrinkPriority: "1";
+}
+        else  {
+          if (hasContentSizingKeyword ( it.item_, orientation)) {
+            flexShrink = "1";
+}
+          else  {
+            flexShrink = "0";
+}
+        }
+      }
+    }
     flexProperty.append(flexGrow).append(' ').append(flexShrink).append(' ').append( s.initialSize_.getCssText());
 if ( stretch == 0) { 
        el.setAttribute ("flg", "0");
-} 
+if (hasContentSizingKeyword ( it.item_, orientation)) { 
+         el.setAttribute ("csk", "1");
+}
+    } 
      el.setProperty (Property.StyleFlex, flexProperty.toString());
 }
   switch (  this.getDirection ()) {
     case LeftToRight:
     if ( index != 0) {  
-      m[3] +=  (    this.grid_.horizontalSpacing_ + 1) / 2;
+      m[3] +=  (   this.spacing (orientation,  index - 1) + 1) / 2;
 }
     if ( index !=    this.count (orientation) - 1) {  
-      m[1] +=     this.grid_.horizontalSpacing_ / 2;
+      m[1] +=    this.spacing (orientation, index) / 2;
 }
     break;
     case RightToLeft:
     if ( index != 0) {  
-      m[1] +=  (    this.grid_.horizontalSpacing_ + 1) / 2;
+      m[1] +=  (   this.spacing (orientation,  index - 1) + 1) / 2;
 }
     if ( index !=    this.count (orientation) - 1) {  
-      m[3] +=     this.grid_.horizontalSpacing_ / 2;
+      m[3] +=    this.spacing (orientation, index) / 2;
 }
     break;
     case TopToBottom:
     if ( index != 0) {  
-      m[0] +=  (    this.grid_.verticalSpacing_ + 1) / 2;
+      m[0] +=  (   this.spacing (orientation,  index - 1) + 1) / 2;
 }
     if ( index !=    this.count (orientation) - 1) {  
-      m[2] +=     this.grid_.verticalSpacing_ / 2;
+      m[2] +=    this.spacing (orientation, index) / 2;
 }
     break;
     case BottomToTop:
     if ( index != 0) {  
-      m[2] +=  (    this.grid_.verticalSpacing_ + 1) / 2;
+      m[2] +=  (   this.spacing (orientation,  index - 1) + 1) / 2;
 }
     if ( index !=    this.count (orientation) - 1) {  
-      m[0] +=     this.grid_.verticalSpacing_ / 2;
+      m[0] +=    this.spacing (orientation, index) / 2;
 }
     break;
   }
@@ -599,6 +649,48 @@ return wrapper;
   }
   return totalStretch;
   }
+  private int spacing(Orientation orientation, int index) {
+   final List<Grid.Section> sections =  orientation == Orientation.Horizontal?    this.grid_.columns_:    this.grid_.rows_;
+   final int configured =  orientation == Orientation.Horizontal?    this.grid_.horizontalSpacing_:    this.grid_.verticalSpacing_;
+  return   sections.get(index).resizable_? Math.max(configured, RESIZE_HANDLE_SPACE): configured;
+  }
+  private int totalSpacing(Orientation orientation) {
+   int total =0;
+   final int sectionCount =  this.count (orientation);
+  for ( int i =0;  
+  i + 1 < sectionCount;++ i) {
+    total +=   this.spacing (orientation, i);
+}
+  return total;
+  }
+  private boolean isAnyResizable() {
+   final List<Grid.Section> sections =    this.getOrientation () == Orientation.Horizontal?    this.grid_.columns_:    this.grid_.rows_;
+  for ( int i =0; 
+  i <  sections.size ();++ i) {
+    if ( sections.get(i).resizable_) {
+      return true;
+    }
+  }
+  return false;
+  }
+  private void streamConfig(final StringBuilder js) {
+   Orientation orientation =  this.getOrientation ();
+   final int c =  this.count (orientation);
+   boolean first =true;
+  js.append("layout.setConfig({resizable:[");
+for ( int i =0; 
+  i < c;++ i) {
+    if (!    this.section (orientation, i).resizable_) {
+      continue;
+    }
+    if (! first) {
+      js.append(',');
+}
+    first = false;
+js.append(i);
+}
+  js.append("]})");
+}
   private static StdLayoutImpl  getStdLayoutImpl(WLayoutItem  item) {
    WLayout  layout =ObjectUtils.cast(item, WLayout.class);
   if ( layout != null) {
@@ -623,6 +715,14 @@ return wrapper;
   }
   }
    static WJavaScriptPreamble wtjs1() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "FlexLayout", "(function(t,e,s){const i=t.WT;i.LayoutUninitialized?i.LayoutUninitialized+=1:i.LayoutUninitialized=1;function l(t,e){e.style.maxHeight=t.style.maxHeight;e.style.minHeight=t.style.minHeight;e.style.maxWidth=t.style.maxWidth;e.style.minWidth=t.style.minWidth}setTimeout((function(){const t=i.getElement(e);if(t){\"none\"===t.style.maxHeight||\"\"===t.style.maxHeight||\"auto\"!==t.style.height&&\"\"!==t.style.height||(t.style.height=\"fit-content\");\"none\"===t.style.maxWidth||\"\"===t.style.maxWidth||\"auto\"!==t.style.width&&\"\"!==t.style.width||(t.style.width=\"fit-content\");for(const e of t.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||\"resize-sensor\"===e.className)continue;const t=i.css(e,\"overflow\");\"visible\"!==t&&\"\"!==t||(e.style.overflow=\"hidden\");const n=e.classList.contains(\"Wt-justify-wrap\")?e.childNodes[0]:e;if(n.classList.contains(\"Wt-fill-width\")){const t=n.children[0];n.style.flexBasis=t.style.height;t.style.height=\"auto\";l(t,n);t.style.maxWidth=\"100%\";t.style.maxHeight=\"100%\"}if(n.classList.contains(\"Wt-fill-height\")){const t=n.children[0],o=t.children[0];e.style.flexBasis=o.style.width;n.style.flexBasis=o.style.width;t.style.flexBasis=o.style.height;o.style.height=\"auto\";l(o,n);o.style.maxWidth=\"100%\";o.style.maxHeight=\"100%\";const a=i.getElement(s);setTimeout((function(){a&&\"fit-content\"!==a.style.width&&(o.style.width=\"auto\")}),0)}}i.LayoutUninitialized-=1}else i.LayoutUninitialized-=1}),0);this.resizeItem=function(t,e,s,i,l){setTimeout(n,0,t,e,s,i,l)};function n(t,e,n,o,a){if(!t)return;let c=t.parentElement;if(!c)return;let h=!1;if(c.classList.contains(\"Wt-fill-width\")){c.style.flexBasis=n;t.style.height=\"auto\";t.style.maxWidth=o;t.style.maxHeight=a;h=!0;l(t,c)}c=c.parentElement;if(c&&c.classList.contains(\"Wt-fill-height\")){const y=c.parentElement;y&&y.classList.contains(\"Wt-justify-wrap\")&&(y.style.flexBasis=e);c.style.flexBasis=e;c.children[0].style.flexBasis=n;t.style.height=\"auto\";t.style.maxWidth=o;t.style.maxHeight=a;h=!0;l(t,c);const f=i.getElement(s);setTimeout((function(){f&&\"fit-content\"!==f.style.width&&(t.style.width=\"auto\")}),0)}if(h){t.style.maxWidth=\"100%\";t.style.maxHeight=\"100%\"}}this.adjust=function(){setTimeout((function(){const t=i.getElement(e);if(!t)return;const l=t.childNodes;let n=0;for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;if(\"0\"===t.getAttribute(\"flg\"))continue;const e=i.css(t,\"flex-grow\");n+=parseFloat(e)}for(const t of l){if(\"none\"===t.style.display||t.classList.contains(\"out\")||\"resize-sensor\"===t.className)continue;t.resizeSensor&&t.resizeSensor.trigger();let e;if(0===n)e=1;else{if(\"0\"===t.getAttribute(\"flg\"))e=0;else{e=i.css(t,\"flex-grow\")}}t.style.flexGrow=e;const l=t.classList.contains(\"Wt-justify-wrap\")?t.childNodes[0]:t;if(l.classList.contains(\"Wt-fill-height\")){const t=i.getElement(s);if(t&&\"fit-content\"!==t.style.width){l.childNodes[0].childNodes[0].style.width=\"auto\"}}}}),0)}})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "FlexLayout", "(function(t,e,s){const i=t.WT;i.LayoutUninitialized?i.LayoutUninitialized+=1:i.LayoutUninitialized=1;const n=5;let l={resizable:[]};const o={};let c=null;function a(t,e){e.style.maxHeight=t.style.maxHeight;e.style.minHeight=t.style.minHeight;e.style.maxWidth=t.style.maxWidth;e.style.minWidth=t.style.minWidth}setTimeout((function(){const t=i.getElement(e);if(t){\"none\"===t.style.maxHeight||\"\"===t.style.maxHeight||\"auto\"!==t.style.height&&\"\"!==t.style.height||(t.style.height=\"max-content\");\"none\"===t.style.maxWidth||\"\"===t.style.maxWidth||\"auto\"!==t.style.width&&\"\"!==t.style.width||(t.style.width=\"max-content\");for(const e of t.childNodes){if(\"none\"===e.style.display||e.classList.contains(\"out\")||e.classList.contains(\"Wt-flex-rh\")||\"resize-sensor\"===e.className)continue;const t=i.css(e,\"overflow\");\"visible\"!==t&&\"\"!==t||(e.style.overflow=\"hidden\");const n=e.classList.contains(\"Wt-justify-wrap\")?e.childNodes[0]:e;if(n.classList.contains(\"Wt-fill-width\")){const t=n.children[0];n.style.flexBasis=t.style.height;t.style.height=\"auto\";a(t,n);t.style.maxWidth=\"100%\";t.style.maxHeight=\"100%\"}if(n.classList.contains(\"Wt-fill-height\")){const t=n.children[0],l=t.children[0];e.style.flexBasis=l.style.width;n.style.flexBasis=l.style.width;t.style.flexBasis=l.style.height;l.style.height=\"auto\";a(l,n);l.style.maxWidth=\"100%\";l.style.maxHeight=\"100%\";const o=i.getElement(s);setTimeout((function(){o&&\"max-content\"!==o.style.width&&(l.style.width=\"auto\")}),0)}}i.LayoutUninitialized-=1}else i.LayoutUninitialized-=1}),0);this.resizeItem=function(t,e,s,i,n,l){setTimeout(f,0,t,e,s,i,n,l)};function f(t,n,l,o,c,f){if(!t)return;let h=t.parentElement;if(!h)return;const r=i.getElement(e);if(r){let e=t;for(;e&&e.parentElement!==r;)e=e.parentElement;e&&function(t,e){\"0\"===t.getAttribute(\"flg\")&&(e?t.setAttribute(\"csk\",\"1\"):t.removeAttribute(\"csk\"))}(e,f)}let u=!1;if(h.classList.contains(\"Wt-fill-width\")){h.style.flexBasis=l;t.style.height=\"auto\";t.style.maxWidth=o;t.style.maxHeight=c;u=!0;a(t,h)}h=h.parentElement;if(h&&h.classList.contains(\"Wt-fill-height\")){const e=h.parentElement;e&&e.classList.contains(\"Wt-justify-wrap\")&&(e.style.flexBasis=n);h.style.flexBasis=n;h.children[0].style.flexBasis=l;t.style.height=\"auto\";t.style.maxWidth=o;t.style.maxHeight=c;u=!0;a(t,h);const f=i.getElement(s);setTimeout((function(){f&&\"max-content\"!==f.style.width&&(t.style.width=\"auto\")}),0)}if(u){t.style.maxWidth=\"100%\";t.style.maxHeight=\"100%\"}}this.adjust=function(){setTimeout((function(){const t=i.getElement(e);if(!t)return;const n=t.childNodes;let l=0,o=!1;const c=t.style.flexFlow.startsWith(\"column\")?\"max-content\"===t.style.height:\"max-content\"===t.style.width;for(const t of n){if(\"none\"===t.style.display||t.classList.contains(\"out\")||t.classList.contains(\"Wt-flex-rh\")||\"resize-sensor\"===t.className)continue;const e=t.getAttribute(\"flg\");\"1\"===t.getAttribute(\"csk\")&&(o=!0);if(\"0\"===e)continue;const s=i.css(t,\"flex-grow\");l+=parseFloat(s)}for(const t of n){if(\"none\"===t.style.display||t.classList.contains(\"out\")||t.classList.contains(\"Wt-flex-rh\")||\"resize-sensor\"===t.className)continue;t.resizeSensor&&t.resizeSensor.trigger();let e;if(0===l)e=1;else{if(\"0\"===t.getAttribute(\"flg\"))e=0;else{e=i.css(t,\"flex-grow\")}}t.style.flexGrow=e;c?t.style.flexShrink=\"0\":0===l?t.style.flexShrink=\"1\":0!==e?t.style.flexShrink=o?\"1000000\":\"1\":\"1\"===t.getAttribute(\"csk\")?t.style.flexShrink=\"1\":t.style.flexShrink=\"0\";const n=t.classList.contains(\"Wt-justify-wrap\")?t.childNodes[0]:t;if(n.classList.contains(\"Wt-fill-height\")){const t=i.getElement(s);if(t&&\"max-content\"!==t.style.width){n.childNodes[0].childNodes[0].style.width=\"auto\"}}}m()}),0)};this.setConfig=function(t){l=t;setTimeout(x,0)};function h(t){const e=i.css(t,\"flex-direction\");return\"row\"===e||\"row-reverse\"===e||\"\"===e}function r(t){const e=[];for(const s of t.childNodes)!s.classList||s.classList.contains(\"out\")||s.classList.contains(\"Wt-flex-rh\")||\"resize-sensor\"===s.className||e.push(s);return e}function u(t,e){const s=i.px(t,e?\"min-width\":\"min-height\");return s>0?s:0}function y(t){return\"none\"===t.style.display}function d(t){void 0===t.wtFlexStretch&&(t.wtFlexStretch=\"0\"!==t.getAttribute(\"flg\"));return t.wtFlexStretch}function g(t,e){const s=t.getBoundingClientRect();return e?s.width:s.height}function x(){const t=i.getElement(e);if(!t)return;const s=new Set(l.resizable||[]),n=r(t),a=\"Wt-flex-rh \"+(h(t)?\"Wt-vrh2\":\"Wt-hrh2\");for(const t of Object.keys(o)){const e=parseInt(t,10);if(!s.has(e)||e+1>=n.length){const e=o[t];e&&e.parentNode&&e.parentNode.removeChild(e);delete o[t]}}let f=!1;for(let e=0;e+1<n.length;++e){if(!s.has(e))continue;f=!0;let i=o[e];if(!i){i=document.createElement(\"div\");i.di=e;i.style.position=\"absolute\";i.onmousedown=i.ontouchstart=function(t){p(this.di,t||window.event)};t.appendChild(i);o[e]=i}i.className=a}if(f){\"static\"===i.css(t,\"position\")&&(t.style.position=\"relative\");if(!c&&window.ResizeObserver){c=new ResizeObserver((function(){m()}));c.observe(t)}}else if(c){c.disconnect();c=null}m()}function m(){const t=i.getElement(e);if(!t)return;const s=r(t),l=h(t),c=t.getBoundingClientRect(),a=c.left+t.clientLeft,f=c.top+t.clientTop,u=i.pxComputedStyle(t,\"padding-left\"),d=i.pxComputedStyle(t,\"padding-right\"),g=i.pxComputedStyle(t,\"padding-top\"),x=i.pxComputedStyle(t,\"padding-bottom\");for(const e of Object.keys(o)){const i=parseInt(e,10),c=o[e];if(i+1>=s.length||y(s[i])||y(s[i+1])){c.style.display=\"none\";continue}c.style.display=\"\";const h=s[i].getBoundingClientRect(),r=s[i+1].getBoundingClientRect();if(l){const e=((h.left<r.left?h.right:r.right)+(h.left<r.left?r.left:h.left))/2;c.style.left=e-a-n/2+\"px\";c.style.width=n+\"px\";c.style.top=g+\"px\";c.style.height=t.clientHeight-g-x+\"px\"}else{const e=((h.top<r.top?h.bottom:r.bottom)+(h.top<r.top?r.top:h.top))/2;c.style.top=e-f-n/2+\"px\";c.style.height=n+\"px\";c.style.left=u+\"px\";c.style.width=t.clientWidth-u-d+\"px\"}}}function p(t,s){const l=i.getElement(e);if(!l)return;const c=r(l);if(t+1>=c.length||y(c[t])||y(c[t+1]))return;const a=h(l),f=o[t],x=c[t],p=c[t+1],w=d(x)&&!d(p)?p:x,W=w===x?p:x,L=w.getBoundingClientRect(),b=W.getBoundingClientRect(),E=(a?L.left<b.left:L.top<b.top)?1:-1,S=g(w,a),z=u(w,a);let v=S+function(t,e,s){let i=0,n=0,l=!1;for(const o of t){if(o===e||y(o))continue;const t=g(o,s)-u(o,s);if(d(o)){i+=t;l=!0}else n+=t}return l?i:n}(c,w,a);const B=function(t,e){const s=e?\"max-width\":\"max-height\",n=i.css(t,s);if(!n||\"none\"===n)return 0;const l=i.px(t,s);return l>0?l:0}(w,a);B>0&&(v=Math.min(v,B));const C=E>0?z-S:S-v,H=E>0?v-S:S-z;new i.SizeHandle(i,a?\"h\":\"v\",n,a?f.offsetHeight:f.offsetWidth,C,H,(a?\"Wt-hsh2\":\"Wt-vsh2\")+\" Wt-flex-rh\",(function(t){let e=S+E*t;e<z&&(e=z);e>v&&(e=v);!function(t,e){t.style.flexGrow=\"0\";t.style.flexShrink=\"0\";t.style.boxSizing=\"border-box\";t.style.flexBasis=e+\"px\";t.setAttribute(\"flg\",\"0\")}(w,e);setTimeout(m,0)}),f,l,s,0,0)}})");
+  }
+   static boolean hasContentSizingKeyword(WLayoutItem  item, Orientation orientation) {
+   WWidget  widget = item.getWidget();
+  if (! ( widget != null)) {
+    return false;
+  }
+   final WLength size =  orientation == Orientation.Horizontal?  widget.getWidth():  widget.getHeight();
+  return    size.getUnit() == LengthUnit.FitContent ||  size.getUnit() == LengthUnit.MaxContent ||  size.getUnit() == LengthUnit.MinContent;
   }
 }

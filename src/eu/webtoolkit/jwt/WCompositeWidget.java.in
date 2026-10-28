@@ -515,24 +515,4 @@ if (   this.impl_ != null) {
   private WWidget impl_ ;
   private String lastUnrelatedFocusId_ ;
   private AbstractSignal.Connection focusChangedConnection_ ;
-   void handleFocusOnHide(boolean hidden) {
-   WApplication  app =WApplication.getInstance();
-  if (hidden) { 
-      this.focusChangedConnection_.disconnect ();
-  app.setAsFocus (  this.lastUnrelatedFocusId_);
-}
-  else  { 
-      this.lastUnrelatedFocusId_=   app.getFocus();
-   this.focusChangedConnection_=    app.focusChanged_.addListener(this, () -> {
-    	WCompositeWidget.this.onFocusChanged();
-    });
-}
-  }
-  private void onFocusChanged() {
-   WApplication  app =WApplication.getInstance();
-   String newFocus  =  app.getFocus();
-  if ( ! newFocus.equals(  this.lastUnrelatedFocusId_) && ! (   this.findById (newFocus) != null)) { 
-      this.lastUnrelatedFocusId_=  newFocus;
-}
-  }
 }

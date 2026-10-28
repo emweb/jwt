@@ -1395,7 +1395,7 @@ if (! ( app != null)) {
   i.setAttribute ("title", "Popup Shim");
   i.setAttribute ("tabindex", "-1");
   i.setAttribute ("frameborder", "0");
-  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_14_4.isHidden(w)) {var i = Wt4_14_4.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
+  app.addAutoJavaScript (    "{var w = " +  this.getJsRef() + ";if (w && !Wt4_15_0.isHidden(w)) {var i = Wt4_15_0.getElement('" +  i.getId() + "');i.style.width=w.clientWidth + 'px';i.style.height=w.clientHeight + 'px';}}");
  element.addChild (i);
 }
       }
@@ -1574,7 +1574,7 @@ break;
            String deferred  =    this.flags_.get(BIT_TOOLTIP_DEFERRED)? "true": "false";
            String showOnHover  =  jsShowOnHover? "true": "false";
            String forceShow  =    this.flags_.get(BIT_TOOLTIP_FORCE_SHOW)? "true": "false"; 
-          element.callJavaScript (                "Wt4_14_4.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
+          element.callJavaScript (                "Wt4_15_0.toolTip(" +  app.getJavaScriptClass() + "," + jsStringLiteral ( this.getId()) + "," + WString.toWString(tooltipText).getJsStringLiteral() + ", " + forceShow + ", " + deferred + ", " + showOnHover + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipInner)) + ", " + jsStringLiteral (   app.getTheme().utilityCssClass (UtilityCssClassRole.ToolTipOuter)) + ");");
 if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTip_.isConnected ()) {
                 this.lookImpl_.loadToolTip_.addListener(this, () -> {
             	WWebWidget.this.loadToolTip();
@@ -1612,11 +1612,11 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
   if ( ! all &&    this.transientImpl_ != null) {
     for ( int i =0; 
     i <      this.transientImpl_.addedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_14_4.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_15_0.$('" +  this.getId() + "').classList.add('" +     this.transientImpl_.addedStyleClasses_.get(i) + "');");
 }
     for ( int i =0; 
     i <      this.transientImpl_.removedStyleClasses_.size ();++ i) { 
-      element.callJavaScript (    "Wt4_14_4.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
+      element.callJavaScript (    "Wt4_15_0.$('" +  this.getId() + "').classList.remove('" +     this.transientImpl_.removedStyleClasses_.get(i) + "');");
 }
     if (!     this.transientImpl_.childRemoveChanges_.isEmpty()) {
       if (   (int)   this.getChildren().size () !=     this.transientImpl_.addedChildren_ ||     this.transientImpl_.specialChildRemove_) {
@@ -1624,7 +1624,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         i <      this.transientImpl_.childRemoveChanges_.size ();++ i) {
            final String js =    this.transientImpl_.childRemoveChanges_.get(i);
           if ( js.charAt(0) == '_') { 
-            element.callJavaScript (  "Wt4_14_4.remove('" + js.substring(1) + "');", true);
+            element.callJavaScript (  "Wt4_15_0.remove('" + js.substring(1) + "');", true);
 }
           else  { 
             element.callJavaScript (js, true);
@@ -1649,7 +1649,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
       element.addPropertyWord (Property.Class, "unselectable");
  element.setAttribute ("unselectable", "on");
  StringBuilder selectJS  = new StringBuilder();
-      selectJS.append("Wt4_14_4").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
+      selectJS.append("Wt4_15_0").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { return false; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     else  {
@@ -1657,7 +1657,7 @@ if (   this.flags_.get(BIT_TOOLTIP_DEFERRED) && !      this.lookImpl_.loadToolTi
         element.addPropertyWord (Property.Class, "selectable");
  element.setAttribute ("unselectable", "off");
  StringBuilder selectJS  = new StringBuilder();
-        selectJS.append("Wt4_14_4").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
+        selectJS.append("Wt4_15_0").append(".$('").append( this.getId()).append("').onselectstart = ").append("function() { event.cancelBubble=true; return true; };");
   WApplication.getInstance().doJavaScript (selectJS.toString());
 }
     }
@@ -1735,7 +1735,7 @@ break;
   if (  this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
     if (   this.flags_.get(BIT_HIDDEN_CHANGED) ||  all &&   this.flags_.get(BIT_HIDDEN)) {
       if (  this.flags_.get(BIT_HIDDEN)) { 
-        element.callJavaScript (  "Wt4_14_4.$('" +  this.getId() + "').classList.add('Wt-hidden');");
+        element.callJavaScript (  "Wt4_15_0.$('" +  this.getId() + "').classList.add('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "hidden");
 if (  this.flags_.get(BIT_HIDE_WITH_OFFSETS)) { 
           element.setProperty (Property.StylePosition, "absolute");
@@ -1779,7 +1779,7 @@ break;
  element.setProperty (Property.StyleInsetInlineStart, "");
 }
         } 
-        element.callJavaScript (  "Wt4_14_4.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
+        element.callJavaScript (  "Wt4_15_0.$('" +  this.getId() + "').classList.remove('Wt-hidden');");
  element.setProperty (Property.StyleVisibility, "visible");
 }
     }
@@ -1794,7 +1794,7 @@ break;
   app.loadJavaScript (THIS_JS, wtjs2 ());
 if (!   this.flags_.get(BIT_HIDE_WITH_VISIBILITY)) {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_14_4").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
+        ss.append("Wt4_15_0").append(".animateDisplay(").append( app.getJavaScriptClass()).append(",'").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleDisplay)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleDisplay, "none");
@@ -1805,7 +1805,7 @@ if (all) {
       }
       else  {
          StringBuilder ss  = new StringBuilder();
-        ss.append("Wt4_14_4").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleInsetBlockStart)).append("','").append( element.getProperty (Property.StyleInsetInlineStart)).append("');");
+        ss.append("Wt4_15_0").append(".animateVisible('").append( this.getId()).append("',").append(EnumUtils.valueOf(    this.transientImpl_.animation_.getEffects())).append(",").append( (int)      this.transientImpl_.animation_.getTimingFunction().getValue ()).append(",").append(    this.transientImpl_.animation_.getDuration()).append(",'").append( element.getProperty (Property.StyleVisibility)).append("','").append( element.getProperty (Property.StylePosition)).append("','").append( element.getProperty (Property.StyleInsetBlockStart)).append("','").append( element.getProperty (Property.StyleInsetInlineStart)).append("');");
  element.callJavaScript (ss.toString());
 if (all) { 
           element.setProperty (Property.StyleVisibility, "hidden");
@@ -1850,13 +1850,13 @@ if (  this.flags_.get(BIT_GOT_FOCUS)) {
     if ( !  app.isJavaScriptLoaded(SCROLL_JS) &&  this.isScrollVisibilityEnabled()) { 
        app.loadJavaScript (SCROLL_JS, wtjs3 ());
  StringBuilder ss  = new StringBuilder();
-      ss.append("if (!Wt4_14_4.scrollVisibility) {Wt4_14_4.scrollVisibility = new ");
-ss.append("Wt4_14_4.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
+      ss.append("if (!Wt4_15_0.scrollVisibility) {Wt4_15_0.scrollVisibility = new ");
+ss.append("Wt4_15_0.ScrollVisibility(").append(  app.getJavaScriptClass() + "); }");
  element.callJavaScript (ss.toString());
 }
     if ( this.isScrollVisibilityEnabled()) {
        StringBuilder ss  = new StringBuilder();
-      ss.append("Wt4_14_4.scrollVisibility.add({");
+      ss.append("Wt4_15_0.scrollVisibility.add({");
 ss.append("el:").append( this.getJsRef()).append(',');
 ss.append("margin:").append( this.getScrollVisibilityMargin()).append(',');
 ss.append("visible:").append(  this.isScrollVisible ());
@@ -1866,7 +1866,7 @@ ss.append("});");
 }
     else  {
       if (  this.flags_.get(BIT_SCROLL_VISIBILITY_LOADED)) { 
-        element.callJavaScript (  "Wt4_14_4.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
+        element.callJavaScript (  "Wt4_15_0.scrollVisibility.remove(" + jsStringLiteral ( this.getId()) + ");");
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
     }
@@ -1979,7 +1979,7 @@ if (deep) {
    String renderRemoveJs(boolean recursive) {
    final StringBuilder result  = new StringBuilder();
   if (   this.isRendered () &&  this.isScrollVisibilityEnabled()) {
-    result.append("Wt4_14_4.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
+    result.append("Wt4_15_0.scrollVisibility.remove(").append(jsStringLiteral ( this.getId())).append(");");
    this.flags_.set (BIT_SCROLL_VISIBILITY_CHANGED);
   this.flags_.clear(BIT_SCROLL_VISIBILITY_LOADED);
 }
@@ -1992,7 +1992,7 @@ if (! recursive) {
       result.append("_").append( this.getId());
 }
     else  {
-      result.append("Wt4_14_4.remove('").append( this.getId()).append("');");
+      result.append("Wt4_15_0.remove('").append( this.getId()).append("');");
 }
   }
   return result.toString();
@@ -2122,11 +2122,11 @@ if ( managed != null) {
   return result;
   }
   protected void render(EnumSet<RenderFlag> flags) {
-  if (!   this.flags_.get(BIT_FOCUS_CONNECTED)) {
+  if ( !   this.flags_.get(BIT_ON_FOCUS_CONNECTED) &&    this.focussed ().isConnected ()) {
       this.focussed ().addListener(this, () -> {
     	WWebWidget.this.onFocus();
     });
-   this.flags_.set (BIT_FOCUS_CONNECTED);
+   this.flags_.set (BIT_ON_FOCUS_CONNECTED);
 } 
    super.render (flags);
 }
@@ -2179,7 +2179,7 @@ if ( managed != null) {
   private static final int BIT_TOOLTIP_CLEAN_FORCE_SHOW =40;
   private static final int BIT_TOOLTIP_SHOW_ON_HOVER =41;
   private static final int BIT_RESEND_FORM_DATA =42;
-  private static final int BIT_FOCUS_CONNECTED =43;
+  private static final int BIT_ON_FOCUS_CONNECTED =43;
   private static final int BIT_POSITION_ANCHOR_NAME_CHANGED =44;
   private static final int BIT_POSITION_ANCHOR_CHANGED =45;
   private static final int BIT_OFFSETS_CHANGED =46;
@@ -2742,10 +2742,10 @@ return result;
     Property.StyleInsetInlineStart
   };
    static WJavaScriptPreamble wtjs1() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateDisplay", "(function(t,n,i,e,o,s){const a=t.WT;!function n(i,e,o,s,r){const d={None:0,SlideInFromLeft:1,SlideInFromRight:2,SlideInFromBottom:3,SlideInFromTop:4,Pop:5,Fade:256},l=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],c=[0,1,3,2,4,5],p=document.getElementById(i),m=1===p.childElementCount?p.firstElementChild:null;function f(t,n,i){for(const e of Object.keys(n)){i&&void 0===i[e]&&(i[e]=t.style[e]);t.style[e]=n[e]}}const h=f;if((()=>{const t={},n=a.css(p,\"display\");f(p,{display:r},t);const i=a.css(p,\"display\");h(p,t);return n!==i})()){const F=p.parentNode;if(F.wtAnimateChild){F.wtAnimateChild(t,a,p,e,o,s,{display:r});return}if(p.classList.contains(\"animating\")){Promise.all(p.getAnimations().map((t=>t.finished))).then((()=>{n(i,e,o,s,r)}));return}p.classList.add(\"animating\");const b=255&e,x=\"none\"===r,S={},I={},T={duration:s,iterations:1,easing:l[x?c[o]:o]};function u(){p.wtAnimatedHidden&&p.wtAnimatedHidden(x);0===p.getAnimations().length&&p.classList.remove(\"animating\");t.layouts2&&t.layouts2.setElementDirty(p)}function y(){p.style.display=r;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function g(t,n,i,o){x||y();const s=a.px(p,t),l={transform:`translate${o}(${(a.px(p,n)+s)*(i?-1:1)}px)`},c={transform:`translate${o}(0px)`};if(e&d.Fade){l.opacity=0;c.opacity=1}const m=x?[c,l]:[l,c];p.animate(m,T).finished.then((()=>{x&&(p.style.display=r);u()}))}function w(){x||y();const t={},n={};switch(b){case d.Pop:f(p,{transformOrigin:\"50% 50%\"},S);t.transform=\"scale(.2)\";n.transform=\"scale(1)\";break;case d.SlideInFromRight:t.transform=\"translateX(100%)\";n.transform=\"translateX(0)\";break;case d.SlideInFromLeft:t.transform=\"translateX(-100%)\";n.transform=\"translateX(0)\"}if(e&d.Fade){t.opacity=0;n.opacity=a.css(p,\"opacity\")}const i=x?[n,t]:[t,n];p.animate(i,T).finished.then((()=>{x&&(p.style.display=r);h(p,S);u()}))}const E=[\"absolute\",\"fixed\"].includes(a.css(p,\"position\"));switch(b){case d.SlideInFromTop:case d.SlideInFromBottom:E?g(\"height\",b===d.SlideInFromTop?\"top\":\"bottom\",b===d.SlideInFromTop,\"Y\"):function(){x||y();f(p,{overflow:\"hidden\"},S);const t=[],n=(()=>{if(!m)return null;const t=p.getBoundingClientRect(),n=m.getBoundingClientRect();return{left:n.x-t.x-a.pxComputedStyle(p,\"border-left-width\"),top:n.y-t.y-a.pxComputedStyle(p,\"border-top-width\")}})();if(m&&b===d.SlideInFromTop){const n={transform:\"translateY(0px)\"},i={transform:`translateY(-${p.clientHeight}px)`},e=x?[n,i]:[i,n];t.push(m.animate(e,T))}{const n={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},i={height:a.css(p,\"height\"),paddingTop:a.css(p,\"padding-top\"),paddingBottom:a.css(p,\"padding-bottom\"),borderTopWidth:a.css(p,\"border-top-width\"),borderBottomWidth:a.css(p,\"border-bottom-width\")};if(e&d.Fade){n.opacity=0;i.opacity=1}const o=x?[i,n]:[n,i];t.push(p.animate(o,T))}if(m){f(p,{position:\"relative\"},S);const t={position:\"absolute\",left:`${n.left}px`,top:`${n.top}px`,width:`${m.clientWidth}px`};f(m,t,I)}Promise.all(t.map((t=>t.finished))).then((()=>{x&&(p.style.display=r);h(p,S);h(m,I);u()}))}();break;case d.SlideInFromLeft:case d.SlideInFromRight:E?g(\"width\",b===d.SlideInFromLeft?\"left\":\"right\",b===d.SlideInFromLeft,\"X\"):w();break;case d.None:case d.Pop:w()}}}(n,i,e,o,s)})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateDisplay", "(function(t,i,n,e,o,s){const a=t.WT;!function i(n,e,o,s,d){const r={None:0,SlideInFromLeft:1,SlideInFromRight:2,SlideInFromBottom:3,SlideInFromTop:4,Pop:5,Fade:256},l=[\"ease\",\"linear\",\"ease-in\",\"ease-out\",\"ease-in-out\"],c=[0,1,3,2,4,5],p=document.getElementById(n),m=1===p.childElementCount?p.firstElementChild:null;function f(t,i,n){for(const e of Object.keys(i)){n&&void 0===n[e]&&(n[e]=t.style[e]);t.style[e]=i[e]}}const h=f;if((()=>{const t={},i=a.css(p,\"display\");f(p,{display:d},t);const n=a.css(p,\"display\");h(p,t);return i!==n})()){const F=p.parentNode;if(F.wtAnimateChild){F.wtAnimateChild(t,a,p,e,o,s,{display:d});return}if(p.classList.contains(\"animating\")){Promise.all(p.getAnimations().map((t=>t.finished))).then((()=>{i(n,e,o,s,d)}));return}p.classList.add(\"animating\");const b=255&e,x=\"none\"===d,S=l[x?c[o]:o],I={},T={};x&&p.classList.add(\"wt-animate-hide\");const E={duration:s,iterations:1,easing:S};function u(){p.wtAnimatedHidden&&p.wtAnimatedHidden(x);if(0===p.getAnimations().length){p.classList.remove(\"animating\");p.classList.remove(\"wt-animate-hide\")}t.layouts2&&t.layouts2.setElementDirty(p)}function y(){p.style.display=d;p.wtPosition&&p.wtPosition();window.onshow&&window.onshow()}function g(t,i,n,o){x||y();const s=a.px(p,t),l={transform:`translate${o}(${(a.px(p,i)+s)*(n?-1:1)}px)`},c={transform:`translate${o}(0px)`};if(e&r.Fade){l.opacity=0;c.opacity=1}const m=x?[c,l]:[l,c];p.animate(m,E).finished.then((()=>{x&&(p.style.display=d);u()}))}function w(){x||y();const t={},i={};switch(b){case r.Pop:f(p,{transformOrigin:\"50% 50%\"},I);t.transform=\"scale(.2)\";i.transform=\"scale(1)\";break;case r.SlideInFromRight:t.transform=\"translateX(100%)\";i.transform=\"translateX(0)\";break;case r.SlideInFromLeft:t.transform=\"translateX(-100%)\";i.transform=\"translateX(0)\"}if(e&r.Fade){t.opacity=0;i.opacity=a.css(p,\"opacity\")}const n=x?[i,t]:[t,i];p.animate(n,E).finished.then((()=>{x&&(p.style.display=d);h(p,I);u()}))}const L=[\"absolute\",\"fixed\"].includes(a.css(p,\"position\"));switch(b){case r.SlideInFromTop:case r.SlideInFromBottom:L?g(\"height\",b===r.SlideInFromTop?\"top\":\"bottom\",b===r.SlideInFromTop,\"Y\"):function(){x||y();f(p,{overflow:\"hidden\"},I);const t=[],i=(()=>{if(!m)return null;const t=p.getBoundingClientRect(),i=m.getBoundingClientRect();return{left:i.x-t.x-a.pxComputedStyle(p,\"border-left-width\"),top:i.y-t.y-a.pxComputedStyle(p,\"border-top-width\")}})();if(m&&b===r.SlideInFromTop){const i={transform:\"translateY(0px)\"},n={transform:`translateY(-${p.clientHeight}px)`},e=x?[i,n]:[n,i];t.push(m.animate(e,E))}{const i={height:\"0px\",paddingTop:\"0px\",paddingBottom:\"0px\",borderTopWidth:\"0px\",borderBottomWidth:\"0px\"},n={height:a.css(p,\"height\"),paddingTop:a.css(p,\"padding-top\"),paddingBottom:a.css(p,\"padding-bottom\"),borderTopWidth:a.css(p,\"border-top-width\"),borderBottomWidth:a.css(p,\"border-bottom-width\")};if(e&r.Fade){i.opacity=0;n.opacity=1}const o=x?[n,i]:[i,n];t.push(p.animate(o,E))}if(m){f(p,{position:\"relative\"},I);const t={position:\"absolute\",left:`${i.left}px`,top:`${i.top}px`,width:`${m.clientWidth}px`};f(m,t,T)}Promise.all(t.map((t=>t.finished))).then((()=>{x&&(p.style.display=d);h(p,I);h(m,T);u()}))}();break;case r.SlideInFromLeft:case r.SlideInFromRight:L?g(\"width\",b===r.SlideInFromLeft?\"left\":\"right\",b===r.SlideInFromLeft,\"X\"):w();break;case r.None:case r.Pop:w()}}}(i,n,e,o,s)})");
   }
    static WJavaScriptPreamble wtjs2() {
-  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateVisible", "(function(t,n,i,e,o,s,a,r){})");
+  return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "animateVisible", "(function(t,i,n,e,o,s,a,d){})");
   }
    static WJavaScriptPreamble wtjs10() {
   return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptFunction, "toolTip", "(function(e,t,n,o,i,l,s,c){const u=document.getElementById(t),d=e.WT,f=u.toolTip;f||(u.toolTip=new function(){let f=null,a=null,m=null,r=null,T=null;const h=10,p=200;let y=!1,x=n,v=o,E=l,g=!1;this.setToolTipText=function(e){x=e;if(y||v){this.showToolTip();clearTimeout(f);y=!1}};this.setVisibilityParams=function(e,t){v=e;E=t;W()};this.showToolTip=function(){if(E||v){!i||x||y||function(){y=!0;e.emit(u,\"Wt-loadToolTip\")}();if(x){W();r=document.createElement(\"div\");r.className=s;r.innerHTML=x;T=document.createElement(\"div\");T.className=c;document.body.appendChild(T);T.appendChild(r);!function(){const e=v?u.offsetLeft+u.offsetWidth/2:m.x,t=v?u.offsetTop+u.offsetHeight:m.y,n=e+h,o=t+h,i=e-h;let l=t-h;const s=T.offsetWidth,c=T.offsetHeight,d={x:document.documentElement.clientWidth,y:document.documentElement.clientHeight};let f=0,a=!0;if(n+s<=d.x)f=n;else if(i>=s||i>d.x-n){f=d.x-i;a=!1}else f=n;let r=0,p=!0;if(o+c<=d.y)r=o;else if(l>=c){l>d.y&&(l=d.y);r=d.y-l;p=!1}else c<d.y&&(r=d.y-c);T.style.position=\"fixed\";T.style[a?\"left\":\"right\"]=f+\"px\";T.style[p?\"top\":\"bottom\"]=r+\"px\";T.style.maxWidth=(a?d.x-n:i)+\"px\";T.style.maxHeight=document.documentElement.clientHeight+\"px\"}();let e=0;const t=parseInt(d.css(T,\"zIndex\"),10);document.querySelectorAll(\".Wt-dialog, .modal, .modal-dialog\").forEach((function(n){e=Math.max(e,parseInt(d.css(n,\"zIndex\"),10));if(e>t){const t=e+1e3;T.style.zIndex=t}}));T.addEventListener(\"mouseenter\",(function(){g=!0}));T.addEventListener(\"mouseleave\",(function(){g=!1}))}clearInterval(a);a=null;a=setInterval((function(){document.querySelectorAll(`#${t}:hover`).length||I()}),200)}};function I(){clearTimeout(f);setTimeout((function(){g&&E||v||W()}),p)}function W(){if(T){T.remove();r=null;T=null;clearInterval(a);a=null;g=!1}}function L(e){clearTimeout(f);m=e;r||(f=setTimeout((function(){u.toolTip.showToolTip()}),500))}u.addEventListener(\"mouseenter\",L);u.addEventListener(\"mousemove\",L);u.addEventListener(\"mouseleave\",I);v&&this.showToolTip()});if(f){f.setVisibilityParams(o,l);f.setToolTipText(n)}})");

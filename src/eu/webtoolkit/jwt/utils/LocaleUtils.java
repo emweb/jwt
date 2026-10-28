@@ -13,16 +13,20 @@ public class LocaleUtils {
 		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 		return String.valueOf(symbols.getDecimalSeparator());
 	}
-	
+
 	public static String getGroupSeparator(Locale locale) {
 		DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(locale);
 		return String.valueOf(symbols.getGroupingSeparator());
 	}
-	
+
 	public static String getDateFormat(Locale locale) {
 		return "yyyy-MM-dd";
 	}
-	
+
+	public static String getDateTimeFormat(Locale locale) {
+		return "yyyy-MM-dd HH:mm:ss";
+	}
+
 	public static double toDouble(Locale locale, String value) {
 		value = value.trim();
 		ParsePosition pos = new ParsePosition(0);
@@ -58,7 +62,7 @@ public class LocaleUtils {
 		String ans = nf.format(value);
 		nf.setMaximumFractionDigits(current);
 		return ans;
-	}	
+	}
 
 	public static String toString(Locale locale, int value) {
 		return NumberFormat.getInstance(locale).format(value);
@@ -66,5 +70,5 @@ public class LocaleUtils {
 
 	public static String toString(Locale locale, double value) {
 		return NumberFormat.getInstance(locale).format(value);
-	}	
+	}
 }

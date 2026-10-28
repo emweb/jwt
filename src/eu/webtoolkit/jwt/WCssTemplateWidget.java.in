@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
   public  WCssTemplateWidget(WCssTemplateRule  rule)  {
     this(rule, (WContainerWidget)null);
   }
+  public void setAttributeValue(final String name, final String value) { 
+   super.setAttributeValue (name, value);
+if (name.equals("style")) { 
+       this.rule_.modified ();
+}
+  }
   public void setPositionScheme(PositionScheme scheme) { 
    super.setPositionScheme (scheme);
     this.rule_.modified ();

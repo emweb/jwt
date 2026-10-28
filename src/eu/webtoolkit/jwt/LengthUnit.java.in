@@ -137,7 +137,58 @@ public enum LengthUnit {
   
             
   */
-  ViewportMax;
+  ViewportMax,
+  /** 
+  
+  The content&apos;s preferred size, clamped by the available space (fit-content) 
+            
+  <p>
+  
+  This is a keyword unit without a numeric component: the value of a {@link WLength} with this unit is ignored.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Not supported on Internet Explorer 
+  </i></p>
+  
+  
+            
+  */
+  FitContent,
+  /** 
+  
+  The content&apos;s preferred size (max-content) 
+            
+  <p>
+  
+  This is a keyword unit without a numeric component: the value of a {@link WLength} with this unit is ignored.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Not supported on Internet Explorer 
+  </i></p>
+  
+  
+            
+  */
+  MaxContent,
+  /** 
+  
+  The content&apos;s smallest possible size (min-content) 
+            
+  <p>
+  
+  This is a keyword unit without a numeric component: the value of a {@link WLength} with this unit is ignored.
+  
+  <p>
+  
+  <p><i><b>Note: </b>Not supported on Internet Explorer 
+  </i></p>
+  
+  
+            
+  */
+  MinContent;
   
   /**
   Returns the numerical representation of this enum.

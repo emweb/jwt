@@ -484,7 +484,7 @@ public class WTestEnvironment extends WEnvironment {
   return true;
   }
   private void init(EntryPointType type) {  
-  this.session_ = new WebSession(  this.controller_, "testwtd", type, "", (WebRequest)null, this);
+  this.session_ = new WebSession(  this.controller_, "testwtd", "weaktestwtd", type, "", (WebRequest)null, this);
   this.theSession_ =   this.session_;
 new WebSession.Handler(  this.theSession_, WebSession.Handler.LockOption.TakeLock);
   this.doesAjax_ = true;

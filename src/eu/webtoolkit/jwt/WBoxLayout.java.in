@@ -528,10 +528,6 @@ return true;
           
   */
   public void setResizable(int index, boolean enabled, final WLength initialSize) {
-  if (  this.getPreferredImplementation() == LayoutImplementation.Flex) {
-    logger.warn(new StringWriter().append("Resize handles are not supported for flex layout implementation, using JavaScript implementation instead").toString());
-  this.setPreferredImplementation (LayoutImplementation.JavaScript);
-}
   switch (  this.direction_) {
     case RightToLeft:
     if (    this.getImpl() != null &&   this.getImplementation() != LayoutImplementation.Flex || !  this.isImplementationIsFlexLayout()) {

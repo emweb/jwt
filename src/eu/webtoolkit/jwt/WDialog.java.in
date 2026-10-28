@@ -482,7 +482,7 @@ if (resizable) {
 }
     if (  this.resizable_) {
       Resizable.loadJavaScript (WApplication.getInstance());
-  this.setJavaScriptMember (" Resizable",     "(new Wt4_14_4.Resizable(Wt4_14_4," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
+  this.setJavaScriptMember (" Resizable",     "(new Wt4_15_0.Resizable(Wt4_15_0," +  this.getJsRef() + ")).onresize(function(w, h, done) {var obj = " +  this.getJsRef() + ".wtObj;if (obj) obj.onresize(w, h, done); });");
 }
   }
   }
@@ -559,8 +559,21 @@ return ;
         this.closeIcon_=  new WPushButton((WContainerWidget)   this.titleBar_);
 }
     else  { 
-        this.closeIcon_=  new WText();
+        this.closeIcon_=  new DialogCloseText();
     this.titleBar_.insertWidget (0,   this.closeIcon_);
+} 
+       this.closeIcon_.setTabIndex (0);
+if (! ( ObjectUtils.cast(theme, WBootstrap5Theme.class) != null)) { 
+         this.closeIcon_.setAttributeValue ("role", "button");
+    this.closeIcon_.enterPressed ().addListener(this, () -> {
+      	WDialog.this.reject();
+      });
+    this.closeIcon_.keyWentDown ().addListener(this,  (WKeyEvent event) ->  {
+        if ( event.getKey() == Key.Space) { 
+           WDialog.this.reject ();
+      }
+      }
+      );
 } 
      theme.apply (this,   this.closeIcon_, WidgetThemeRole.DialogCloseIcon);
     this.closeIcon_.clicked ().addListener(this, (WMouseEvent e1) -> {
@@ -585,11 +598,11 @@ return ;
   }
   /**
   
-  Set focus on the first widget in the dialog. 
+  Enables automatic focus when the dialog is shown. 
           
   <p>
   
-  Autofocus is enabled by default. If a widget inside of this dialog already has focus, the focus will not be changed. 
+  Autofocus is enabled by default. When the dialog is rendered for the first time, {@link WDialog#isSetFirstFocus() isSetFirstFocus()} selects a focus target. If a visible, enabled descendant already has focus, that widget keeps the focus instead. 
           
   */
   public void setAutoFocus(boolean enable) {  
@@ -597,28 +610,46 @@ return ;
 }
   /**
   
-  Set focus on the widget&apos;s first descendant. 
+  Selects a descendant or the dialog to receive focus. 
           
   <p>
   
-  This sets the focus on the first focusable widget in the dialog. If no focusable widget is found, it will try to focus itself instead. 
+  This calls the virtual {@link WDialog#isSetFirstFocus() isSetFirstFocus()} on the title bar, contents and footer, in that order, until one accepts focus. Descendant overrides determine the normal focus selection.
+  
+  <p>
+  If none accepts focus, the first visible, enabled {@link WPushButton} that is a direct child of the footer receives focus, despite its normal opt-out. Next, the visible, enabled close icon receives focus. If neither is available, the dialog receives focus.
+  
+  <p>
+  Returns whether focus could be set. A hidden or disabled dialog cannot receive focus. 
           
   */
   public boolean isSetFirstFocus() {
-  if (!   this.isModal ()) { 
-       this.impl_.setCanReceiveFocus (false);
-    this.layoutContainer_.setCanReceiveFocus (false);
-}
-   boolean childFocused =   this.impl_.isSetFirstFocus();
-  if (!   this.isModal ()) { 
-       this.impl_.setCanReceiveFocus (true);
-    this.layoutContainer_.setCanReceiveFocus (true);
-if (! childFocused) { 
-         this.layoutContainer_.setFocus (true);
-}
-    return true;
+  if ( !   this.isVisible () || !   this.isEnabled ()) {
+    return false;
   }
-  return childFocused;
+  for (WWidget  child :   this.layoutContainer_.getChildren()) {
+    if ( child.isSetFirstFocus()) {
+      return true;
+    }
+  }
+  if (   this.footer_ != null) {
+    for (WWidget  child :   this.footer_.getChildren()) {
+       WPushButton  button =ObjectUtils.cast(child, WPushButton.class);
+      if (   button != null &&   button.isVisible () &&   button.isEnabled ()) { 
+         button.setFocus (true);
+return true;
+      }
+    }
+  }
+  if (     this.closeIcon_ != null &&     this.closeIcon_.isVisible () &&     this.closeIcon_.isEnabled ()) { 
+       this.closeIcon_.setFocus (true);
+return true;
+  }
+  if (!    this.layoutContainer_.isCanReceiveFocus()) { 
+       this.layoutContainer_.setTabIndex (- 1);
+} 
+     this.layoutContainer_.setFocus (true);
+return true;
   }
   public void setHidden(boolean hidden, final WAnimation animation) {
   if (    this.contents_ != null &&    this.isHidden () != hidden) {
@@ -860,7 +891,7 @@ if ( WApplication.getInstance().getEnvironment().hasJavaScript()) {
      WApplication  app =WApplication.getInstance();
      boolean centerX =   this.getOffset(Side.Left).isAuto () &&   this.getOffset(Side.Right).isAuto ();
      boolean centerY =   this.getOffset(Side.Top).isAuto () &&   this.getOffset(Side.Bottom).isAuto (); 
-     this.doJavaScript (                   "new Wt4_14_4.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
+     this.doJavaScript (                   "new Wt4_15_0.WDialog(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + "," +    this.titleBar_.getJsRef() + "," + (   this.movable_? "1": "0") + "," + ( centerX? "1": "0") + "," + ( centerY? "1": "0") + "," + (    this.moved_.isConnected ()?   '"' +   this.moved_.getName() + '"': "null") + "," + (    this.resized_.isConnected ()?   '"' +   this.resized_.getName() + '"': "null") + ",\"" +   this.zIndexChanged_.getName() + '"' + ");");
 for ( int i =0; 
     i <    this.delayedJs_.size ();++ i) { 
        this.doJavaScript (  this.delayedJs_.get(i));
@@ -891,8 +922,12 @@ if (  this.isThemeStyleEnabled ()) {
     	WDialog.this.bringToFront(e1);
     });
 }
-  if ( flags.contains(RenderFlag.Full) &&   this.autoFocus_) {
-    if (! (     this.impl_.findById ( WApplication.getInstance().getFocus()) != null)) {
+  if (  flags.contains(RenderFlag.Full) &&   this.autoFocus_ &&   this.isVisible ()) {
+     WWidget  focused =    this.impl_.findById ( WApplication.getInstance().getFocus());
+    if (     focused != null &&  focused !=   this.impl_ &&  focused !=   this.layoutContainer_ &&   focused.isVisible () &&   focused.isEnabled ()) { 
+       focused.setFocus (true);
+}
+    else  {
        this.isSetFirstFocus();
 }
   } 

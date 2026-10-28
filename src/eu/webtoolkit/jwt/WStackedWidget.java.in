@@ -70,7 +70,8 @@ public class WStackedWidget extends WContainerWidget {
   this.loadAnimateJS_ = false;
   this.loadPolicies_ = new ArrayList<ContentLoading>();
   this.currentWidgetChanged_ = new Signal1<WWidget>();
-  this.hasEmittedChanged_ = false; 
+  this.hasEmittedChanged_ = false;
+  this.preventEmit_ = false; 
    this.setOverflow (Overflow.Hidden);
   this.addStyleClass ("Wt-stack");
 if ( parentContainer != null) parentContainer.addWidget (this);
@@ -96,13 +97,15 @@ if (   this.currentIndex_ == - 1) {
    int index = this.getIndexOf(widget);
    WWidget result = super.removeWidget(widget);
     this.loadPolicies_.remove( 0 + index);
-if (   this.currentIndex_ >=  this.getCount()) {
-    if (  this.getCount() > 0) { 
-       this.setCurrentIndex (  this.getCount() - 1);
+if (   this.currentIndex_ >= index) {
+    if (   this.currentIndex_ > 0) { 
+       this.setCurrentIndex (   this.currentIndex_ - 1);
 }
-    else  {  
-      this.currentIndex_ = - 1;
+    else  {
+      if (  this.getCount() == 0) {  
+        this.currentIndex_ = - 1;
 }
+    }
   }
   return result;
   }
@@ -223,7 +226,7 @@ for ( int i =0;
        this.doJavaScript (    "setTimeout(function() { " +  this.getJsRef() + ".wtObj.setCurrent(" +   this.getWidget(  this.currentIndex_).getJsRef() + ");}, 0);");
 }
   }
-  if ( ( hasChanged || !   this.hasEmittedChanged_) &&    this.currentIndex_ >= 0) {
+  if (  !   this.preventEmit_ && ( hasChanged || !   this.hasEmittedChanged_) &&    this.currentIndex_ >= 0) {
     if (   this.loadPolicies_.get(  this.currentIndex_) == ContentLoading.Lazy) {
        WContainerWidget  container =ObjectUtils.cast( this.getCurrentWidget(), WContainerWidget.class);
       if (  container.getCount() > 0) {
@@ -352,12 +355,13 @@ if (     this.currentIndex_ >= 0 &&   this.isRendered () &&   this.javaScriptDef
    List<ContentLoading> loadPolicies_ ;
   private Signal1<WWidget> currentWidgetChanged_ ;
   private boolean hasEmittedChanged_ ;
+  private boolean preventEmit_ ;
   private void defineJavaScript() {
   if (!   this.javaScriptDefined_) {  
     this.javaScriptDefined_ = true;
  WApplication  app =WApplication.getInstance(); 
      app.loadJavaScript ("js/WStackedWidget.js", wtjs1 ());
-  this.setJavaScriptMember (" WStackedWidget",     "new Wt4_14_4.WStackedWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
+  this.setJavaScriptMember (" WStackedWidget",     "new Wt4_15_0.WStackedWidget(" +  app.getJavaScriptClass() + "," +  this.getJsRef() + ");");
   this.setJavaScriptMember (WT_RESIZE_JS,   this.getJsRef() + ".wtObj.wtResize");
   this.setJavaScriptMember (WT_GETPS_JS,   this.getJsRef() + ".wtObj.wtGetPs");
 if (  this.loadAnimateJS_) {  
@@ -378,6 +382,9 @@ if (  this.javaScriptDefined_) {
   }
    void setLoadPolicy(int index, ContentLoading loadPolicy) {  
   this.loadPolicies_.set(index,loadPolicy);
+}
+   void setPreventEmit(boolean preventEmit) {  
+  this.preventEmit_ = preventEmit;
 }
    static WJavaScriptPreamble wtjs1() {
   return new WJavaScriptPreamble(JavaScriptScope.WtClassScope, JavaScriptObjectType.JavaScriptConstructor, "WStackedWidget", "(function(t,e){e.wtObj=this;const i=t.WT,o=[],s=[];let n=null,l=null;function d(t){return 1===t.nodeType&&!t.classList.contains(\"wt-reparented\")&&!t.classList.contains(\"resize-sensor\")}this.reApplySize=function(){l&&this.wtResize(e,n,l,!1)};this.wtResize=function(t,e,o,s){n=e;l=o;const a=o>=0;if(s)if(a){t.style.height=o+\"px\";t.lh=!0}else{t.style.height=\"\";t.lh=!1}else t.lh=!1;if(i.boxSizing(t)){o-=i.px(t,\"marginTop\");o-=i.px(t,\"marginBottom\");o-=i.pxComputedStyle(t,\"borderTopWidth\");o-=i.pxComputedStyle(t,\"borderBottomWidth\");o-=i.px(t,\"paddingTop\");o-=i.px(t,\"paddingBottom\");e-=i.px(t,\"marginLeft\");e-=i.px(t,\"marginRight\");e-=i.pxComputedStyle(t,\"borderLeftWidth\");e-=i.pxComputedStyle(t,\"borderRightWidth\");e-=i.px(t,\"paddingLeft\");e-=i.px(t,\"paddingRight\")}function p(t){let e=i.px(t,\"marginTop\");e+=i.px(t,\"marginBottom\");if(!i.boxSizing(t)){e+=i.pxComputedStyle(t,\"borderTopWidth\");e+=i.pxComputedStyle(t,\"borderBottomWidth\");e+=i.px(t,\"paddingTop\");e+=i.px(t,\"paddingBottom\")}return e}for(const s of t.childNodes)if(d(s)&&!i.isHidden(s)&&!s.classList.contains(\"out\"))if(a){const t=o-p(s);if(t>0){if(s.offsetTop>0){const t=i.css(s,\"overflow\");\"visible\"!==t&&\"\"!==t||(s.style.overflow=\"auto\")}if(s.wtResize)s.wtResize(s,e,t,!0);else{const e=t+\"px\";if(s.style.height!==e){s.style.height=e;s.lh=!0}}}}else if(s.wtResize)s.wtResize(s,e,-1,!0);else{s.style.height=\"\";s.lh=!1}};this.wtGetPs=function(t,e,i,o){return o};this.adjustScroll=function(t){const i=e.scrollLeft,n=e.scrollTop;for(let l=0,a=e.childNodes.length;l<a;++l){const a=e.childNodes[l];if(d(a))if(a!==t){if(\"none\"!==a.style.display){s[l]=i;o[l]=n}}else if(void 0!==s[l]){e.scrollLeft=s[l];e.scrollTop=o[l]}else{e.scrollLeft=0;e.scrollTop=0}}};this.setCurrent=function(i){this.adjustScroll(i);for(let t=0,o=e.childNodes.length;t<o;++t){const o=e.childNodes[t];if(d(o))if(o!==i)\"none\"!==o.style.display&&(o.style.display=\"none\");else{o.style.flexFlow?o.style.display=\"flex\":o.style.display=\"\";if(e.lh){e.lh=!1;e.style.height=\"\"}}}this.reApplySize();t.layouts2&&t.layouts2.scheduleAdjust()}})");

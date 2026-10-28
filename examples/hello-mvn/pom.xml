@@ -30,14 +30,14 @@
     <dependency>
       <groupId>eu.webtoolkit</groupId>
       <artifactId>jwt</artifactId>
-      <version>4.14.4</version>
-      <classifier>javax</classifier>
+      <version>4.15.0</version>
+      <classifier>jakarta</classifier>
     </dependency>
 
     <dependency>
       <groupId>jakarta.servlet</groupId>
       <artifactId>jakarta.servlet-api</artifactId>
-      <version>4.0.4</version>
+      <version>6.1.0</version>
     </dependency>
   </dependencies>
 </project>

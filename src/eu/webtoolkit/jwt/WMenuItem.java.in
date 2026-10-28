@@ -669,11 +669,15 @@ if (  this.closeable_) {
           
   */
   public void setContents(WWidget contents, ContentLoading policy) {
+   int menuSelectedIndex =- 1;
    int menuIdx =- 1;
    WMenu  menu =  this.menu_;
    WMenuItem self  = null;
-  if ( menu != null) {
-    menuIdx =   menu.indexOf (this);
+  if ( menu != null) { 
+     menu.setPreventEmit (true);
+menuSelectedIndex =  menu.getCurrentIndex();
+  menu.select (- 1, false);
+menuIdx =   menu.indexOf (this);
  self=    menu.removeItem (this);
 } 
     this.uContents_=  contents;
@@ -689,6 +693,15 @@ if (    this.uContents_ != null &&    this.loadPolicy_ == ContentLoading.Lazy) {
   }
   if ( menu != null) { 
      menu.insertItem (menuIdx, self);
+ WMenuItem  parentMenuParent = menu.getParentItem(); 
+     menu.setCurrent (menuSelectedIndex);
+if ( ! ( parentMenuParent != null) ||   parentMenuParent.isSelected ()) {
+       WMenuItem  currentItem = menu.getCurrentItem();
+      if ( currentItem != null) { 
+         currentItem.reselect ();
+}
+    } 
+     menu.setPreventEmit (false);
 }
   }
   /** 
@@ -1132,6 +1145,19 @@ for (WMenuItem  submenuItem :   this.subMenu_.getItems()) {
        submenuItem.updateMenuZIndex ();
 }
   }
+  }
+  private void reselect() {
+  if (    this.subMenu_ != null &&     this.subMenu_.getCurrentIndex() != - 1) { 
+        this.subMenu_.getCurrentItem().reselect ();
+}
+  else  {
+    if (   this.menu_ != null) { 
+         this.menu_.select (    this.menu_.indexOf (this), false);
+}
+  }
+  }
+  private boolean isSelected() {
+  return      this.menu_ != null &&     this.menu_.getCurrentItem() == this && ( ! (    this.menu_.getParentItem() != null) ||      this.menu_.getParentItem().isSelected ());
   }
   private String getPathComponentFromText() {
    String result  = "";
